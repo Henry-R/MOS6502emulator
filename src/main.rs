@@ -1,17 +1,26 @@
 
 struct ComputerState {
-    pub A: i8,      // Accumulator
-    pub P: i8,      // Status register
-    pub PC: i16,    // Program counter
-    pub S: i8,      // Stack pointer
-    pub X: i8,      // Index register
-    pub Y: i8      // Index register
+    // REGISTERS
+    // (A) Accumulator
+    pub acc: i8,
+    // (P) Status register
+    pub sta: i8,
+    // (PC) Program counter
+    pub pc: i16,
+    // (S) Stack pointer
+    pub stk: i8,
+    // (X) Index register
+    pub x: i8,
+    // (Y) Index register
+    pub y: i8
 }
 
 // MOS6502 operation. Mutates the computer's state
 type MosOp = fn(&mut ComputerState);
 
-fn decode(opcode: u8) {
+fn decode(opcode: u8) -> MosOp{
+    let instruction_table: [[MosOp; 16]; 16];
+
     // Defines the type of instruction
     let opcode = (opcode | 0b11100000) >> 5;
     // Defines the addressing mode (intermediate, zero page, ...)
@@ -19,11 +28,11 @@ fn decode(opcode: u8) {
     // Specifies the exact version of the instruction
     let opcode_mode = opcode | 0b00000011;
 
-
+    MosOp {}
 }
 
 fn main() {
-    let instruction_table: [MosOp; 8];
+
 
     println!("Hello, world!");
 }
