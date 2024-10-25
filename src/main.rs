@@ -1,5 +1,5 @@
 
-struct RegisterState {
+struct ComputerState {
     pub A: i8,      // Accumulator
     pub P: i8,      // Status register
     pub PC: i16,    // Program counter
@@ -20,7 +20,7 @@ fn decode(opcode: u8) {
 }
 
 fn main() {
-    let instruction_table: [fn(RegisterState) -> RegisterState; 8];
+    let instruction_table: [fn(&mut ComputerState); 8];
 
     println!("Hello, world!");
 }
