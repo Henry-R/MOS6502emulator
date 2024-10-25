@@ -8,6 +8,9 @@ struct ComputerState {
     pub Y: i8      // Index register
 }
 
+// MOS6502 operation. Mutates the computer's state
+type MosOp = fn(&mut ComputerState);
+
 fn decode(opcode: u8) {
     // Defines the type of instruction
     let opcode = (opcode | 0b11100000) >> 5;
@@ -20,7 +23,7 @@ fn decode(opcode: u8) {
 }
 
 fn main() {
-    let instruction_table: [fn(&mut ComputerState); 8];
+    let instruction_table: [MosOp; 8];
 
     println!("Hello, world!");
 }
