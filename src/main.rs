@@ -1,3 +1,4 @@
+mod operations;
 
 struct ComputerState {
     // REGISTERS
@@ -13,22 +14,6 @@ struct ComputerState {
     pub x: i8,
     // (Y) Index register
     pub y: i8
-}
-
-// MOS6502 operation. Mutates the computer's state
-type MosOp = fn(&mut ComputerState);
-
-fn decode(opcode: u8) -> MosOp{
-    let instruction_table: [[MosOp; 16]; 16];
-
-    // Defines the type of instruction
-    let opcode = (opcode | 0b11100000) >> 5;
-    // Defines the addressing mode (intermediate, zero page, ...)
-    let address_mode = (opcode | 0b00011100) >> 2;
-    // Specifies the exact version of the instruction
-    let opcode_mode = opcode | 0b00000011;
-
-    MosOp {}
 }
 
 fn main() {
