@@ -4,7 +4,7 @@ use crate::computer_state::{ComputerState, StatusFlags, INTERRUPT_REQUEST_HANDLE
 pub fn nop(_state: &mut ComputerState) {}
 
 /// BRK (Force Break)
-pub fn force_break(state: &mut ComputerState) {
+pub fn brk(state: &mut ComputerState) {
     // Set break flag
     state.regs.sta |= StatusFlags::b;
     // Push return address and status onto stack
