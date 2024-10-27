@@ -37,25 +37,26 @@ struct Registers {
     pub y: u8
 }
 
+const MEMORY_SIZE: usize = 2usize.pow(16);
 struct ComputerState {
     // MEMORY
     // Each page is 256 bytes
     // First page is reserved for the Zero-Page ($0000-$00FF)
     // Second page is reserved for system stack ($0100-$01FF)
     // Last 6 bytes are reserved for interrupts ($FFFA-$FFFF)
-    mem: [u8; 2^16],
+    mem: [u8; MEMORY_SIZE],
 
     regs: Registers,
 }
 
 impl ComputerState {
     // Important memory locations
-    const ZERO_PAGE: u16 = 0x0000;
-    const STACK_PAGE: u16 = 0x0100;
+    const ZERO_PAGE: usize = 0x0000;
+    const STACK_PAGE: usize = 0x0100;
     
     fn new() -> ComputerState {
         ComputerState {
-            mem: [0u8; 2^16],
+            mem: [0u8; MEMORY_SIZE],
             regs: Registers {
                 acc: 0,
                 sta: StatusFlags::empty(),
@@ -70,7 +71,7 @@ impl ComputerState {
     // STACK INSTRUCTIONS
     /// Returns the byte at the top of the stack without mutating memory
     pub fn stk_peek_byte(& self) -> u8 {
-        self.mem[Self::STACK_PAGE as usize + self.regs.stk as usize]
+        self.mem[Self::STACK_PAGE + self.regs.stk as usize]
     }
 
     /// Returns the byte at the top of the stack and reduces the stack pointer by one
@@ -83,11 +84,13 @@ impl ComputerState {
     /// Increases the stack pointer by one, and pushed the supplied byte onto this stack location
     pub fn stk_push_byte(&mut self, byte: u8){
         self.regs.stk -= 1;
-        self.mem[Self::STACK_PAGE as usize + self.regs.stk as usize] = byte;
+        self.mem[Self::STACK_PAGE + self.regs.stk as usize] = byte;
     }
 
     pub fn stk_pop_frame(&mut self) -> (u8, u8) {
-        (self.stk_pop_byte(), self.stk_pop_byte())
+        let lo_byte = self.stk_pop_byte();
+        let hi_byte = self.stk_pop_byte();
+        (lo_byte, hi_byte)
     }
 
     pub fn stk_push_frame(&mut self, frame: (u8, u8)) {
@@ -96,7 +99,9 @@ impl ComputerState {
     }
 
     pub fn stk_pop_pc(&mut self) -> u16 {
-        (self.stk_pop_byte() as u16) + (self.stk_pop_byte() as u16 >> 8)
+        let lo_byte = self.stk_pop_byte() as u16;
+        let hi_byte = self.stk_pop_byte() as u16;
+        lo_byte + (hi_byte >> 8)
     }
 
     pub fn stk_push_pc(&mut self, pc: u16) {
@@ -104,6 +109,18 @@ impl ComputerState {
         let hi_byte: u8 = ((pc | 0xFF00) >> 8) as u8;
         self.stk_push_byte(lo_byte);
         self.stk_push_byte(hi_byte);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    pub fn test_stk_peek_byte() {
+        let state = ComputerState::new();
+        let result = state.stk_peek_byte();
+        assert_eq!(0u8, result);
     }
 }
 
