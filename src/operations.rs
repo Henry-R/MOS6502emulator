@@ -1,8 +1,5 @@
 use crate::{ComputerState, StatusFlags, INTERRUPT_REQUEST_HANDLER};
 
-// MOS6502 operation. Mutates the computer's state
-type MosOp = fn(&mut ComputerState);
-
 /// BRK (Force Break)
 fn force_break(state: &mut ComputerState) {
     // Set break flag
@@ -14,8 +11,25 @@ fn force_break(state: &mut ComputerState) {
     state.regs.pc = INTERRUPT_REQUEST_HANDLER;
 }
 
-const _INSTRUCTION_TABLE: [[MosOp; 1]; 1] = [
-    [
-        force_break
-    ]
+fn nop(state: &mut ComputerState) {
+
+}
+
+const INSTRUCTION_TABLE: [fn (&mut ComputerState); 16 * 16] = [
+        force_break, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
+        nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
+        nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
+        nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
+        nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
+        nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
+        nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
+        nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
+        nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
+        nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
+        nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
+        nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
+        nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
+        nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
+        nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
+        nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
 ];
