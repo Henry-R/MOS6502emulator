@@ -76,7 +76,7 @@ impl ComputerState {
     // STACK INSTRUCTIONS
     /// Returns the stack pointer's index in memory
     const fn stk_index(&self) -> usize {
-        Self::STACK_PAGE + self.regs.stk as usize
+        STACK_PAGE + self.regs.stk as usize
     }
 
     /// Returns the byte at the top of the stack without mutating memory
@@ -136,9 +136,9 @@ mod tests {
     fn test_stk_peek_byte() {
         let mut state = ComputerState::new();
         assert_eq!(0, state.stk_peek_byte());
-        state.mem[ComputerState::STACK_PAGE + ComputerState::PAGE_SIZE] = 1;
+        state.mem[STACK_PAGE + PAGE_SIZE] = 1;
         assert_eq!(1, state.stk_peek_byte());
-        state.mem[ComputerState::STACK_PAGE + ComputerState::PAGE_SIZE - 1] = 2;
+        state.mem[STACK_PAGE + PAGE_SIZE - 1] = 2;
         state.regs.stk -= 1;
         assert_eq!(2, state.stk_peek_byte());
     }
