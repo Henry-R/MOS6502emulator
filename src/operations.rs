@@ -11,9 +11,7 @@ fn force_break(state: &mut ComputerState) {
     state.regs.pc = INTERRUPT_REQUEST_HANDLER;
 }
 
-fn nop(state: &mut ComputerState) {
-
-}
+fn nop(_state: &mut ComputerState) {}
 
 const INSTRUCTION_TABLE: [fn (&mut ComputerState); 16 * 16] = [
         force_break, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop, nop,
