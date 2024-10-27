@@ -51,6 +51,7 @@ struct ComputerState {
 
 impl ComputerState {
     // Important memory locations
+    const PAGE_SIZE: usize = 0xFF;
     const ZERO_PAGE: usize = 0x0000;
     const STACK_PAGE: usize = 0x0100;
     
@@ -69,9 +70,36 @@ impl ComputerState {
     }
 
     // STACK INSTRUCTIONS
+    /// Returns the stack pointer's index in memory
+    const fn stk_index(&self) -> usize {
+        Self::STACK_PAGE + self.regs.stk as usize
+    }
+
     /// Returns the byte at the top of the stack without mutating memory
     pub fn stk_peek_byte(& self) -> u8 {
-        self.mem[Self::STACK_PAGE + self.regs.stk as usize]
+        self.mem[self.stk_index()]
+    }
+
+    /// Points the stack pointer at the next stack byte
+    /// Pushes the supplied byte onto this stack location
+    pub fn stk_push_byte(&mut self, byte: u8){
+        self.regs.stk -= 1;
+        self.mem[self.stk_index()] = byte;
+    }
+
+    /// Points the stack pointer at the next stack frame (two byte difference)
+    /// Pushes the supplied stack frame onto this stack location
+    pub fn stk_push_frame(&mut self, frame: (u8, u8)) {
+        self.stk_push_byte(frame.0);
+        self.stk_push_byte(frame.1);
+    }
+
+    /// Points the stack pointer at the next stack frame (two byte difference)
+    /// Pushes the supplied program counter onto this stack location
+    pub fn stk_push_pc(&mut self, pc: u16) {
+        let lo_byte: u8 =  (pc & 0x00FF)       as u8;
+        let hi_byte: u8 = ((pc & 0xFF00) >> 8) as u8;
+        self.stk_push_frame((lo_byte, hi_byte));
     }
 
     /// Returns the byte at the top of the stack and reduces the stack pointer by one
@@ -81,34 +109,18 @@ impl ComputerState {
         ret
     }
 
-    /// Increases the stack pointer by one, and pushed the supplied byte onto this stack location
-    pub fn stk_push_byte(&mut self, byte: u8){
-        self.regs.stk -= 1;
-        self.mem[Self::STACK_PAGE + self.regs.stk as usize] = byte;
-    }
-
+    /// Returns the two bytes at the top of the stack and reduces the stack pointer by two
     pub fn stk_pop_frame(&mut self) -> (u8, u8) {
         let lo_byte = self.stk_pop_byte();
         let hi_byte = self.stk_pop_byte();
         (lo_byte, hi_byte)
     }
 
-    pub fn stk_push_frame(&mut self, frame: (u8, u8)) {
-        self.stk_push_byte(frame.0);
-        self.stk_push_byte(frame.1);
-    }
-
+    /// Returns the top two bytes at the top of the stack and interprets them as one number
+    /// Reduces the stack pointer by two.
     pub fn stk_pop_pc(&mut self) -> u16 {
-        let lo_byte = self.stk_pop_byte() as u16;
-        let hi_byte = self.stk_pop_byte() as u16;
-        lo_byte + (hi_byte >> 8)
-    }
-
-    pub fn stk_push_pc(&mut self, pc: u16) {
-        let lo_byte: u8 =  (pc | 0x00FF)       as u8;
-        let hi_byte: u8 = ((pc | 0xFF00) >> 8) as u8;
-        self.stk_push_byte(lo_byte);
-        self.stk_push_byte(hi_byte);
+        let frame = self.stk_pop_frame();
+        frame.1 as u16 + ((frame.0 as u16) << 8)
     }
 }
 
@@ -117,10 +129,54 @@ mod tests {
     use super::*;
 
     #[test]
-    pub fn test_stk_peek_byte() {
-        let state = ComputerState::new();
-        let result = state.stk_peek_byte();
-        assert_eq!(0u8, result);
+    fn test_stk_peek_byte() {
+        let mut state = ComputerState::new();
+        assert_eq!(0, state.stk_peek_byte());
+        state.mem[ComputerState::STACK_PAGE + ComputerState::PAGE_SIZE] = 1;
+        assert_eq!(1, state.stk_peek_byte());
+        state.mem[ComputerState::STACK_PAGE + ComputerState::PAGE_SIZE - 1] = 2;
+        state.regs.stk -= 1;
+        assert_eq!(2, state.stk_peek_byte());
+    }
+
+    #[test]
+    fn test_stk_push_byte() {
+        let mut state = ComputerState::new();
+        let old_stk_ptr = state.regs.stk;
+        state.stk_push_byte(1);
+        assert_ne!(old_stk_ptr, state.regs.stk);
+        assert_eq!(1, state.mem[state.stk_index()]);
+    }
+
+    #[test]
+    fn test_stk_push_frame() {
+        let mut state = ComputerState::new();
+        // Pushes 0xAB then 0xCD onto the stack in that order
+        state.stk_push_frame((0x01, 0x02));
+        assert_eq!(0x02, state.mem[state.stk_index()]);
+        assert_eq!(0x01, state.mem[state.stk_index() + 1]);
+    }
+
+    #[test]
+    fn test_stk_push_pc() {
+        let mut state = ComputerState::new();
+        state.stk_push_pc(0x0102);
+        assert_eq!(0x01, state.mem[state.stk_index()]);
+        assert_eq!(0x02, state.mem[state.stk_index() + 1]);
+    }
+
+    #[test]
+    fn test_stk_pop_byte() {
+        let mut state = ComputerState::new();
+        state.stk_push_byte(1);
+        assert_eq!(1, state.stk_pop_byte());
+    }
+
+    #[test]
+    fn test_stk_pop_pc() {
+        let mut state = ComputerState::new();
+        state.stk_push_pc(0x0102);
+        assert_eq!(0x0102, state.stk_pop_pc());
     }
 }
 
