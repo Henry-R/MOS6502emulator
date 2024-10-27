@@ -3,22 +3,16 @@ mod operations;
 struct StatusFlags {
     // (n) Negative
     pub n: bool,
-
     // (v) Overflow
     pub v: bool,
-
     // (b) Break
     pub b: bool,
-
     // (d) Decimal
     pub d: bool,
-
     // (i) Interrupt disable
     pub i: bool,
-
     // (z) Zero
     pub z: bool,
-
     // (c) Carry
     pub c: bool,
 }
