@@ -1,9 +1,9 @@
-mod computer_state;
 
+mod operations;
 use bitflags::bitflags;
 
 bitflags! {
-    struct StatusFlags: u8 {
+    pub struct StatusFlags: u8 {
         // (n) Negative
         const n = 0b0000_0001;
         // (v) Overflow
@@ -38,16 +38,16 @@ struct Registers {
 }
 
 // Important constants
-const MEMORY_SIZE: usize = 2usize.pow(16);
+pub const MEMORY_SIZE: usize = 2usize.pow(16);
 // Important memory locations
-const PAGE_SIZE: usize = 0xFF;
-const ZERO_PAGE: usize = 0x0000;
-const STACK_PAGE: usize = 0x0100;
-const NON_MASKABLE_INTERRUPT_HANDLER: u16 = 0xFFFA;
-const POWER_ON_RESET_LOCATION: u16 = 0xFFFC;
-const INTERRUPT_REQUEST_HANDLER: u16 = 0xFFFE;
+pub const PAGE_SIZE: usize = 0xFF;
+pub const ZERO_PAGE: usize = 0x0000;
+pub const STACK_PAGE: usize = 0x0100;
+pub const NON_MASKABLE_INTERRUPT_HANDLER: u16 = 0xFFFA;
+pub const POWER_ON_RESET_LOCATION: u16 = 0xFFFC;
+pub const INTERRUPT_REQUEST_HANDLER: u16 = 0xFFFE;
 
-struct ComputerState {
+pub struct ComputerState {
     // MEMORY
     // Each page is 256 bytes
     // First page is reserved for the Zero-Page ($0000-$00FF)
@@ -80,13 +80,13 @@ impl ComputerState {
     }
 
     /// Returns the byte at the top of the stack without mutating memory
-    pub fn stk_peek_byte(& self) -> u8 {
+    pub fn stk_peek_byte(&self) -> u8 {
         self.mem[self.stk_index()]
     }
 
     /// Points the stack pointer at the next stack byte
     /// Pushes the supplied byte onto this stack location
-    pub fn stk_push_byte(&mut self, byte: u8){
+    pub fn stk_push_byte(&mut self, byte: u8) {
         self.regs.stk -= 1;
         self.mem[self.stk_index()] = byte;
     }
@@ -101,7 +101,7 @@ impl ComputerState {
     /// Points the stack pointer at the next stack frame (two byte difference)
     /// Pushes the supplied program counter onto this stack location
     pub fn stk_push_pc(&mut self, pc: u16) {
-        let lo_byte: u8 =  (pc & 0x00FF)       as u8;
+        let lo_byte: u8 = (pc & 0x00FF) as u8;
         let hi_byte: u8 = ((pc & 0xFF00) >> 8) as u8;
         self.stk_push_frame((lo_byte, hi_byte));
     }
@@ -182,10 +182,4 @@ mod tests {
         state.stk_push_pc(0x0102);
         assert_eq!(0x0102, state.stk_pop_pc());
     }
-}
-
-fn main() {
-
-
-    println!("Hello, world!");
 }
