@@ -1,5 +1,5 @@
 
-use crate::{ComputerState, StatusFlags, INTERRUPT_REQUEST_HANDLER};
+use crate::computer_state::{ComputerState, StatusFlags, INTERRUPT_REQUEST_HANDLER};
 
 pub fn nop(_state: &mut ComputerState) {}
 
