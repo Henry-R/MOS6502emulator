@@ -37,7 +37,16 @@ struct Registers {
     pub y: u8
 }
 
+// Important constants
 const MEMORY_SIZE: usize = 2usize.pow(16);
+// Important memory locations
+const PAGE_SIZE: usize = 0xFF;
+const ZERO_PAGE: usize = 0x0000;
+const STACK_PAGE: usize = 0x0100;
+const NON_MASKABLE_INTERRUPT_HANDLER: u16 = 0xFFFA;
+const POWER_ON_RESET_LOCATION: u16 = 0xFFFC;
+const INTERRUPT_REQUEST_HANDLER: u16 = 0xFFFE;
+
 struct ComputerState {
     // MEMORY
     // Each page is 256 bytes
@@ -50,11 +59,6 @@ struct ComputerState {
 }
 
 impl ComputerState {
-    // Important memory locations
-    const PAGE_SIZE: usize = 0xFF;
-    const ZERO_PAGE: usize = 0x0000;
-    const STACK_PAGE: usize = 0x0100;
-    
     fn new() -> ComputerState {
         ComputerState {
             mem: [0u8; MEMORY_SIZE],
