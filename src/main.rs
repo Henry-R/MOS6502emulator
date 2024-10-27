@@ -46,8 +46,30 @@ struct ComputerState {
 
 impl ComputerState {
     // Important memory locations
-    const ZERO_PAGE: u16 = 0x0100;
+    const ZERO_PAGE: u16 = 0x0000;
     const STACK_PAGE: u16 = 0x0100;
+    
+    fn new() -> ComputerState {
+        ComputerState {
+            mem: [0u8; 2^16],
+            regs: Registers {
+                acc: 0,
+                sta: StatusFlags {
+                    n: false,
+                    v: false,
+                    b: false,
+                    d: false,
+                    i: false,
+                    z: false,
+                    c: false,
+                },
+                pc: 0,
+                stk: 0xFF,  // Stack grows downwards, so initialise stack to top of memory
+                x: 0,
+                y: 0,
+            },
+        }
+    }
 
     // STACK INSTRUCTIONS
     /// Returns the byte at the top of the stack without mutating memory
