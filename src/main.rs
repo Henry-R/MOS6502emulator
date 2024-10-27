@@ -1,20 +1,24 @@
+use bitflags::bitflags;
+
 mod operations;
 
-struct StatusFlags {
-    // (n) Negative
-    pub n: bool,
-    // (v) Overflow
-    pub v: bool,
-    // (b) Break
-    pub b: bool,
-    // (d) Decimal
-    pub d: bool,
-    // (i) Interrupt disable
-    pub i: bool,
-    // (z) Zero
-    pub z: bool,
-    // (c) Carry
-    pub c: bool,
+bitflags! {
+    struct StatusFlags: u8 {
+        // (n) Negative
+        const n = 0b0000_0001;
+        // (v) Overflow
+        const v = 0b0000_0010;
+        // (b) Break
+        const b = 0b0000_0100;
+        // (d) Decimal
+        const d = 0b0000_1000;
+        // (i) Interrupt disable
+        const i = 0b0001_0000;
+        // (z) Zero
+        const z = 0b0010_0000;
+        // (c) Carry
+        const c = 0b0100_0000;
+    }
 }
 
 
@@ -54,15 +58,7 @@ impl ComputerState {
             mem: [0u8; 2^16],
             regs: Registers {
                 acc: 0,
-                sta: StatusFlags {
-                    n: false,
-                    v: false,
-                    b: false,
-                    d: false,
-                    i: false,
-                    z: false,
-                    c: false,
-                },
+                sta: StatusFlags::empty(),
                 pc: 0,
                 stk: 0xFF,  // Stack grows downwards, so initialise stack to top of memory
                 x: 0,
@@ -73,21 +69,41 @@ impl ComputerState {
 
     // STACK INSTRUCTIONS
     /// Returns the byte at the top of the stack without mutating memory
-    fn stk_peek(& self) -> u8 {
-        self.mem[Self::STACK_PAGE + self.regs.stk as u16]
+    pub fn stk_peek_byte(& self) -> u8 {
+        self.mem[Self::STACK_PAGE as usize + self.regs.stk as usize]
     }
 
     /// Returns the byte at the top of the stack and reduces the stack pointer by one
-    fn stk_pop(&mut self) -> u8 {
-        let ret = self.stk_peek();
+    pub fn stk_pop_byte(&mut self) -> u8 {
+        let ret = self.stk_peek_byte();
         self.regs.stk += 1;
         ret
     }
 
     /// Increases the stack pointer by one, and pushed the supplied byte onto this stack location
-    fn stk_push(&mut self, byte: u8){
+    pub fn stk_push_byte(&mut self, byte: u8){
         self.regs.stk -= 1;
-        self.mem[Self::STACK_PAGE + self.regs.stk as u16] = byte;
+        self.mem[Self::STACK_PAGE as usize + self.regs.stk as usize] = byte;
+    }
+
+    pub fn stk_pop_frame(&mut self) -> (u8, u8) {
+        (self.stk_pop_byte(), self.stk_pop_byte())
+    }
+
+    pub fn stk_push_frame(&mut self, frame: (u8, u8)) {
+        self.stk_push_byte(frame.0);
+        self.stk_push_byte(frame.1);
+    }
+
+    pub fn stk_pop_pc(&mut self) -> u16 {
+        (self.stk_pop_byte() as u16) + (self.stk_pop_byte() as u16 >> 8)
+    }
+
+    pub fn stk_push_pc(&mut self, pc: u16) {
+        let lo_byte: u8 =  (pc | 0x00FF)       as u8;
+        let hi_byte: u8 = ((pc | 0xFF00) >> 8) as u8;
+        self.stk_push_byte(lo_byte);
+        self.stk_push_byte(hi_byte);
     }
 }
 
