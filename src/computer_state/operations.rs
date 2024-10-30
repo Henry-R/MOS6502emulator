@@ -10,7 +10,7 @@ mod branch;
 mod bitwise;
 mod flags;
 
-pub const INSTRUCTION_TABLE: [fn (&mut ComputerState); 16 * 16] = [
+pub const INSTRUCTION_TABLE: [fn (&mut ComputerState); 256] = [
  //      0         2         4         6         8         A         C         E
  //           1         3         5         7         9         B         D         F
  /* 0 */ brk,      nop,      nop,      asl_zp,   nop,      asl_acc,  nop,      asl_ab,
