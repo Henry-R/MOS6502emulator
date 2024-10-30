@@ -207,6 +207,60 @@ pub fn dey(state: &mut ComputerState) {
     state.regs.sta |= flags
 }
 
+
+/// INC (Increment memory by one)
+/// Returns tuple containing the new value to place in memory,
+/// and the status flags after the operation has completed
+fn inc(val: u8) -> (u8, StatusFlags) {
+    // No documentation says this function can wrap
+    let result = val + 1;
+    let mut flags = StatusFlags::empty();
+
+    if result == i8::MAX as u8 { flags.insert(StatusFlags::z); }
+    if result <  i8::MAX as u8 { flags.insert(StatusFlags::n); }
+
+    (result, flags)
+}
+/// INC (zero-page addressing mode)
+/// Opcode: E6
+pub fn inc_zp(state: &mut ComputerState) {
+    let zp_addr = state.fetch_zero_page_address();
+    (state.mem[zp_addr], state.regs.sta) = inc(state.mem[zp_addr])
+}
+/// INC (zero-page X addressing mode)
+/// Opcode: F6
+pub fn inc_zpx(state: &mut ComputerState) {
+    let zpx_addr = state.fetch_zero_page_x_address();
+    (state.mem[zpx_addr], state.regs.sta) = inc(state.mem[zpx_addr])
+}
+/// INC (absolute addressing mode)
+/// Opcode: EE
+pub fn inc_ab(state: &mut ComputerState) {
+    let ab_addr = state.fetch_absolute_address();
+    (state.mem[ab_addr], state.regs.sta) = inc(state.mem[ab_addr])
+}
+/// INC (absolute X addressing mode)
+/// Opcode: FE
+pub fn inc_abx(state: &mut ComputerState) {
+    let abx_addr = state.fetch_absolute_address_x();
+    (state.mem[abx_addr], state.regs.sta) = inc(state.mem[abx_addr])
+}
+
+/// INX (implied addressing mode)
+/// Opcode: E8
+pub fn inx(state: &mut ComputerState) {
+    let (result, flags) = inc(state.regs.x);
+    state.regs.x = result;
+    state.regs.sta |= flags
+}
+/// INY (implied addressing mode)
+/// Opcode: C8
+pub fn iny(state: &mut ComputerState) {
+    let (result, flags) = inc(state.regs.y);
+    state.regs.y = result;
+    state.regs.sta |= flags
+}
+
 #[cfg(test)]
 mod tests {
     use crate::computer_state::StatusFlags;
