@@ -1,7 +1,6 @@
 
 pub(crate) mod operations;
 
-use std::mem;
 use bitflags::bitflags;
 
 bitflags! {
