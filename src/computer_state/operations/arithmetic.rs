@@ -1,4 +1,5 @@
 use crate::computer_state::{ComputerState, StatusFlags};
+use crate::computer_state::operations::u8_to_i8;
 
 // ADDITION
 /// ADd with carry
@@ -17,11 +18,6 @@ fn add(state: &mut ComputerState, value: i8) {
     }
     // Result was zero
     if sum == 0 { state.regs.sta.insert(StatusFlags::z) }
-}
-
-/// Helper function that converts an u8 byte to the i8 represented by its bits
-const fn u8_to_i8(n: u8) -> i8 {
-    (n as i16 - i8::MAX as i16) as i8
 }
 
 /// ADc (intermediate addressing mode)
