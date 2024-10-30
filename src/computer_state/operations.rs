@@ -1,12 +1,14 @@
 use crate::computer_state::ComputerState;
 use crate::computer_state::operations::arithmetic::*;
 use crate::computer_state::operations::bitwise::*;
+use crate::computer_state::operations::flags::*;
 use crate::computer_state::operations::interrupt::*;
 
 mod arithmetic;
 mod interrupt;
 mod branch;
 mod bitwise;
+mod flags;
 
 /// Helper function that reinterprets an u8 to an i8
 fn u8_to_i8(n: u8) -> i8 {
