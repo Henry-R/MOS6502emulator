@@ -1,5 +1,6 @@
 use crate::computer_state::ComputerState;
 use crate::computer_state::operations::arithmetic::*;
+use crate::computer_state::operations::bitwise::*;
 use crate::computer_state::operations::interrupt::*;
 
 mod arithmetic;
@@ -20,9 +21,9 @@ pub const INSTRUCTION_TABLE: [fn (&mut ComputerState); 16 * 16] = [
  /* 1 */ brk,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
               nop,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
  /* 2 */ brk,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
-              nop,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
+              and_inx,  nop,      and_zp,   nop,      and_im,   nop,      and_ab,   nop,
  /* 3 */ brk,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
-              nop,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
+              and_iny,  nop,      and_zpx,  nop,      and_aby,  nop,      and_abx,  nop,
  /* 4 */ brk,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
               nop,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
  /* 5 */ brk,      nop,      nop,      nop,      nop,      nop,      nop,      nop,

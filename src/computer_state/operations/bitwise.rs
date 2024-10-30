@@ -14,47 +14,50 @@ fn and(state: &mut ComputerState, value: i8) {
 }
 
 /// AND (intermediate addressing mode)
-fn and_im(state: &mut ComputerState) {
+/// Opcode: 29
+pub fn and_im(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_intermediate());
     and(state, value);
 }
 /// AND (zero-page addressing mode)
-fn and_zp(state: &mut ComputerState) {
+/// Opcode: 25
+pub fn and_zp(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_zero_page());
     and(state, value);
 }
 /// AND (zero-page X addressing mode)
-fn and_zpx(state: &mut ComputerState) {
+/// Opcode: 35
+pub fn and_zpx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_zero_page_x());
     and(state, value);
 }
-/// AND (zero-page Y addressing mode)
-fn and_zpy(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_zero_page_y());
-    and(state, value);
-}
 /// AND (absolute addressing mode)
-fn and_ab(state: &mut ComputerState) {
+/// Opcode: 2D
+pub fn and_ab(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute());
     and(state, value);
 }
 /// AND (absolute X addressing mode)
-fn and_abx(state: &mut ComputerState) {
+/// Opcode: 3D
+pub fn and_abx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute_x());
     and(state, value);
 }
 /// AND (absolute Y addressing mode)
-fn and_aby(state: &mut ComputerState) {
+/// Opcode: 39
+pub fn and_aby(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute_y());
     and(state, value);
 }
 /// AND (indirect X addressing mode)
-fn and_inx(state: &mut ComputerState) {
+/// Opcode: 21
+pub fn and_inx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_indexed_indirect());
     and(state, value);
 }
 /// AND (indirect Y addressing mode)
-fn and_iny(state: &mut ComputerState) {
+/// Opcode: 31
+pub fn and_iny(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_indirect_indexed());
     and(state, value);
 }
