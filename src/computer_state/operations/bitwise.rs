@@ -1,3 +1,4 @@
+use std::ops::BitAnd;
 use crate::computer_state::{ComputerState, StatusFlags};
 use crate::computer_state::operations::u8_to_i8;
 
@@ -175,7 +176,32 @@ fn eor_iny(state: &mut ComputerState) {
 }
 
 
+/// ASL (arithmetic shift left)
+fn asl(state: &mut ComputerState) {
+    let (result, overflow) = state.regs.acc.overflowing_shl(1);
 
+    // REGISTERS
+    state.regs.acc = result;
+
+    // FLAGS
+    if overflow    { state.regs.sta.insert(StatusFlags::c); }
+    if result < 0  { state.regs.sta.insert(StatusFlags::n); }
+    if result == 0 { state.regs.sta.insert(StatusFlags::z); }
+}
+
+
+/// ASR (arithmetic shift right)
+fn asr(state: &mut ComputerState) {
+    let (result, overflow) = state.regs.acc.overflowing_shr(1);
+
+    // REGISTERS
+    state.regs.acc = result;
+
+    // FLAGS
+    if overflow    { state.regs.sta.insert(StatusFlags::c); }
+    if result < 0  { state.regs.sta.insert(StatusFlags::n); }
+    if result == 0 { state.regs.sta.insert(StatusFlags::z); }
+}
 
 
 #[cfg(test)]
