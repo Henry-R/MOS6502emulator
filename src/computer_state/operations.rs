@@ -44,7 +44,7 @@ pub const INSTRUCTION_TABLE: [fn (&mut ComputerState); 16 * 16] = [
  /* D */ brk,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
               nop,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
  /* E */ brk,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
-              nop,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
+              sub_inx,  nop,      sub_zp,   nop,      sub_im,   nop,      sub_ab,   nop,
  /* F */ brk,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
-              nop,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
+              sub_iny,  nop,      sub_zpx,  nop,      sub_aby,  nop,      sub_abx,  nop,
 ];

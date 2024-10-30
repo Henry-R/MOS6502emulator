@@ -90,46 +90,49 @@ fn sub(state: &mut ComputerState, value: i8) {
 }
 
 /// SBc (intermediate addressing mode)
+/// Opcode: E9
 pub fn sub_im(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_intermediate());
     sub(state, value);
 }
 /// SBc (zero-page addressing mode)
+/// Opcode: E5
 pub fn sub_zp(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_zero_page());
     sub(state, value);
 }
 /// SBc (zero-page X addressing mode)
+/// Opcode:F5
 pub fn sub_zpx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_zero_page_x());
     sub(state, value);
 }
-/// SBc (zero-page Y addressing mode)
-pub fn sub_zpy(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_zero_page_y());
-    sub(state, value);
-}
 /// SBc (absolute addressing mode)
+/// Opcode: ED
 pub fn sub_ab(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute());
     sub(state, value);
 }
 /// SBc (absolute X addressing mode)
+/// Opcode: FD
 pub fn sub_abx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute_x());
     sub(state, value);
 }
 /// SBc (absolute Y addressing mode)
+/// Opcode: F9
 pub fn sub_aby(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute_y());
     sub(state, value);
 }
 /// SBc (indirect X addressing mode)
+/// Opcode: E1
 pub fn sub_inx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_indexed_indirect());
     sub(state, value);
 }
 /// SBc (indirect Y addressing mode)
+/// Opcode: F1
 pub fn sub_iny(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_indirect_indexed());
     sub(state, value);
