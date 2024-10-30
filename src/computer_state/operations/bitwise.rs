@@ -1,3 +1,4 @@
+use std::ops::BitOr;
 use crate::computer_state::{ComputerState, StatusFlags};
 use crate::computer_state::operations::{i8_to_u8, u8_to_i8};
 
@@ -271,6 +272,28 @@ pub fn lsr_abx(state: &mut ComputerState) {
     let abx_addr = state.fetch_absolute_address_x();
     let abx_val = state.mem[abx_addr];
     state.mem[abx_addr] = lsr(state, abx_val);
+}
+
+
+/// BIT (Bit test)
+fn bit(state: &mut ComputerState, value: u8) {
+    if value & 0b0100_0000 { state.regs.sta.insert(StatusFlags::n); }
+    if value & 0b0010_0000 { state.regs.sta.insert(StatusFlags::v); }
+    if state.regs.sta.contains(StatusFlags::n | StatusFlags::v) {
+        state.regs.sta.insert(StatusFlags::z);
+    }
+}
+/// BIT (zero-page addressing mode)
+/// Opcode: 24
+pub fn bit_zp(state: &mut ComputerState) {
+    let zp_val = state.fetch_zero_page();
+    bit(state, zp_val)
+}
+/// BIT (absolute addressing mode)
+/// Opcode: 2C
+pub fn bit_ab(state: &mut ComputerState) {
+    let ab_val = state.fetch_absolute();
+    bit(state, ab_val)
 }
 
 
