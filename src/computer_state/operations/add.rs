@@ -24,7 +24,7 @@ fn add(state: &mut ComputerState, value: i8) {
 }
 
 /// ADc (intermediate addressing mode)
-fn add_imd(state: &mut ComputerState) {
+fn add_im(state: &mut ComputerState) {
     // Load value from operand
 
 }
