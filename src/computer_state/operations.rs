@@ -1,3 +1,4 @@
+use std::ops::BitOr;
 use crate::computer_state::ComputerState;
 use crate::computer_state::operations::arithmetic::*;
 use crate::computer_state::operations::bitwise::*;
@@ -8,9 +9,24 @@ mod interrupt;
 mod branch;
 mod bitwise;
 
-/// Helper function that converts an u8 byte to the i8 represented by its bits
-const fn u8_to_i8(n: u8) -> i8 {
-    (n as i16 - i8::MAX as i16) as i8
+/// Helper function that reinterprets an u8 to an i8
+fn u8_to_i8(n: u8) -> i8 {
+    (i16::from(n) - i16::from(i8::MAX)) as i8
+}
+/// Helper function that reinterprets an i8 to an u8
+fn i8_to_u8(n: i8) -> u8 {
+    (i16::from(n) + i16::from(i8::MAX)) as u8
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::computer_state::operations::{i8_to_u8, u8_to_i8};
+
+    #[test]
+    fn test_u8_to_i8() {
+        assert_eq!(i8_to_u8(u8_to_i8(64)), 64);
+        assert_eq!(i8_to_u8(u8_to_i8(0)), 0);
+    }
 }
 
 pub const INSTRUCTION_TABLE: [fn (&mut ComputerState); 16 * 16] = [
