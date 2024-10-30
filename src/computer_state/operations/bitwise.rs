@@ -1,6 +1,5 @@
-use std::ops::BitAnd;
 use crate::computer_state::{ComputerState, StatusFlags};
-use crate::computer_state::operations::u8_to_i8;
+use crate::computer_state::operations::{i8_to_u8, u8_to_i8};
 
 // AND
 /// AND (bitwise and)
@@ -186,30 +185,59 @@ pub fn eor_iny(state: &mut ComputerState) {
 
 
 /// ASL (arithmetic shift left)
-fn asl(state: &mut ComputerState) {
-    let (result, overflow) = state.regs.acc.overflowing_shl(1);
-
-    // REGISTERS
-    state.regs.acc = result;
+fn asl(state: &mut ComputerState, value: u8) -> u8 {
+    let (result, overflow) = value.overflowing_shl(1);
 
     // FLAGS
     if overflow    { state.regs.sta.insert(StatusFlags::c); }
     if result < 0  { state.regs.sta.insert(StatusFlags::n); }
     if result == 0 { state.regs.sta.insert(StatusFlags::z); }
+    result
+}
+/// ASL (accumulator addressing mode)
+/// Opcode: 0A
+pub fn asl_acc(state: &mut ComputerState) {
+    state.regs.acc = u8_to_i8(asl(state, i8_to_u8(state.regs.acc)));
+}
+/// ASL (zero_page addressing mode)
+/// Opcode: 06
+pub fn asl_zp(state: &mut ComputerState) {
+    let zp_addr = state.fetch_zero_page_address();
+    let zp_val = state.mem[zp_addr];
+    state.mem[zp_addr] = asl(state, zp_val);
+}
+/// ASL (zero_page X addressing mode)
+/// Opcode: 16
+pub fn asl_zpx(state: &mut ComputerState) {
+    let zpx_addr = state.fetch_zero_page_x_address();
+    let zpx_val = state.mem[zpx_addr];
+    state.mem[zpx_addr] = asl(state, zpx_val);
+}
+/// ASL (absolute addressing mode)
+/// Opcode: 0E
+pub fn asl_ab(state: &mut ComputerState) {
+    let ab_addr = state.fetch_absolute_address();
+    let ab_val = state.mem[ab_addr];
+    state.mem[ab_addr] = asl(state, ab_val);
+}
+/// ASL (absolute X addressing mode)
+/// Opcode: 1E
+pub fn asl_abx(state: &mut ComputerState) {
+    let abx_addr = state.fetch_absolute_address_x();
+    let abx_val = state.mem[abx_addr];
+    state.mem[abx_addr] = asl(state, abx_val);
 }
 
 
 /// ASR (arithmetic shift right)
-fn asr(state: &mut ComputerState) {
-    let (result, overflow) = state.regs.acc.overflowing_shr(1);
-
-    // REGISTERS
-    state.regs.acc = result;
+fn asr(state: &mut ComputerState, value: u8) -> u8 {
+    let (result, overflow) = value.overflowing_shr(1);
 
     // FLAGS
     if overflow    { state.regs.sta.insert(StatusFlags::c); }
     if result < 0  { state.regs.sta.insert(StatusFlags::n); }
     if result == 0 { state.regs.sta.insert(StatusFlags::z); }
+    result
 }
 
 

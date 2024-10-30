@@ -1,4 +1,3 @@
-use std::ops::BitOr;
 use crate::computer_state::ComputerState;
 use crate::computer_state::operations::arithmetic::*;
 use crate::computer_state::operations::bitwise::*;
@@ -32,9 +31,9 @@ mod tests {
 pub const INSTRUCTION_TABLE: [fn (&mut ComputerState); 16 * 16] = [
  //      0         2         4         6         8         A         C         E
  //           1         3         5         7         9         B         D         F
- /* 0 */ brk,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
+ /* 0 */ brk,      nop,      nop,      asl_zp,   nop,      asl_acc,  nop,      asl_ab,
               or_inx,   nop,      or_zp,    nop,      or_im,    nop,      or_ab,    nop,
- /* 1 */ brk,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
+ /* 1 */ brk,      nop,      nop,      asl_zpx,  nop,      nop,      nop,      asl_abx,
               or_iny,   nop,      or_zpx,   nop,      or_aby,   nop,      or_abx,   nop,
  /* 2 */ brk,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
               and_inx,  nop,      and_zp,   nop,      and_im,   nop,      and_ab,   nop,
