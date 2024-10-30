@@ -17,8 +17,11 @@ fn add(state: &mut ComputerState, value: i8) {
     state.regs.acc = rem as i8;
 
     // FLAGS
-    // Carry bit set
-    if quot > 0 { state.regs.sta.insert(StatusFlags::c); }
+    // Carry and overflow bits set TODO maybe subtle carry logic could create bugs
+    if quot > 0 {
+        state.regs.sta.insert(StatusFlags::c);
+        state.regs.sta.insert(StatusFlags::v);
+    }
     // Result was zero
     if rem == 0 { state.regs.sta.insert(StatusFlags::z) }
 }
@@ -50,7 +53,7 @@ fn add_iny(state: &mut ComputerState) { add(state, u8_to_i8(state.fetch_indirect
 #[cfg(test)]
 mod tests {
     use crate::computer_state::{ComputerState, StatusFlags};
-    use crate::computer_state::operations::add::add;
+    use crate::computer_state::operations::arithmetic::add;
 
     #[test]
     fn test_add() {
