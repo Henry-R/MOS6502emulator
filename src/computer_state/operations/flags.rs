@@ -13,7 +13,7 @@ pub fn cld(state: &mut ComputerState) {
     state.regs.sta.remove(StatusFlags::d);
 }
 
-/// CLD (Clear interrupt disable flag)
+/// CLD (Clear interrupt disable status)
 /// Opcode: 58
 pub fn cli(state: &mut ComputerState) {
     state.regs.sta.remove(StatusFlags::i);
@@ -23,4 +23,22 @@ pub fn cli(state: &mut ComputerState) {
 /// Opcode: B8
 pub fn clo(state: &mut ComputerState) {
     state.regs.sta.remove(StatusFlags::v);
+}
+
+/// SEC (Set carry flag)
+/// Opcode: 38
+pub fn sec(state: &mut ComputerState) {
+    state.regs.sta.insert(StatusFlags::c);
+}
+
+/// SED (Set decimal flag)
+/// Opcode: F8
+pub fn sed(state: &mut ComputerState) {
+    state.regs.sta.insert(StatusFlags::d);
+}
+
+/// SEI (Set interrupt disable status)
+/// Opcode: 78
+pub fn sei(state: &mut ComputerState) {
+    state.regs.sta.insert(StatusFlags::i);
 }
