@@ -1,5 +1,5 @@
 
-mod operations;
+pub(crate) mod operations;
 use bitflags::bitflags;
 
 bitflags! {
@@ -22,9 +22,9 @@ bitflags! {
 }
 
 
-struct Registers {
+pub struct Registers {
     // (A) Accumulator
-    pub acc: u8,
+    pub acc: i8,
     // (P) Status register
     pub sta: StatusFlags,
     // (PC) Program counter
@@ -55,11 +55,11 @@ pub struct ComputerState {
     // Last 6 bytes are reserved for interrupts ($FFFA-$FFFF)
     mem: [u8; MEMORY_SIZE],
 
-    regs: Registers,
+    pub regs: Registers,
 }
 
 impl ComputerState {
-    fn new() -> ComputerState {
+    pub fn new() -> ComputerState {
         ComputerState {
             mem: [0u8; MEMORY_SIZE],
             regs: Registers {
@@ -80,41 +80,41 @@ impl ComputerState {
     }
 
     /// Returns the byte at the top of the stack without mutating memory
-    pub fn stk_peek_byte(&self) -> u8 {
+    fn stk_peek_byte(&self) -> u8 {
         self.mem[self.stk_index()]
     }
 
     /// Points the stack pointer at the next stack byte
     /// Pushes the supplied byte onto this stack location
-    pub fn stk_push_byte(&mut self, byte: u8) {
+    fn stk_push_byte(&mut self, byte: u8) {
         self.regs.stk -= 1;
         self.mem[self.stk_index()] = byte;
     }
 
     /// Points the stack pointer at the next stack frame (two byte difference)
     /// Pushes the supplied stack frame onto this stack location
-    pub fn stk_push_frame(&mut self, frame: (u8, u8)) {
+    fn stk_push_frame(&mut self, frame: (u8, u8)) {
         self.stk_push_byte(frame.0);
         self.stk_push_byte(frame.1);
     }
 
     /// Points the stack pointer at the next stack frame (two byte difference)
     /// Pushes the supplied program counter onto this stack location
-    pub fn stk_push_pc(&mut self, pc: u16) {
+    fn stk_push_pc(&mut self, pc: u16) {
         let lo_byte: u8 = (pc & 0x00FF) as u8;
         let hi_byte: u8 = ((pc & 0xFF00) >> 8) as u8;
         self.stk_push_frame((lo_byte, hi_byte));
     }
 
     /// Returns the byte at the top of the stack and reduces the stack pointer by one
-    pub fn stk_pop_byte(&mut self) -> u8 {
+    fn stk_pop_byte(&mut self) -> u8 {
         let ret = self.stk_peek_byte();
         self.regs.stk += 1;
         ret
     }
 
     /// Returns the two bytes at the top of the stack and reduces the stack pointer by two
-    pub fn stk_pop_frame(&mut self) -> (u8, u8) {
+    fn stk_pop_frame(&mut self) -> (u8, u8) {
         let lo_byte = self.stk_pop_byte();
         let hi_byte = self.stk_pop_byte();
         (lo_byte, hi_byte)
@@ -122,7 +122,7 @@ impl ComputerState {
 
     /// Returns the top two bytes at the top of the stack and interprets them as one number
     /// Reduces the stack pointer by two.
-    pub fn stk_pop_pc(&mut self) -> u16 {
+    fn stk_pop_pc(&mut self) -> u16 {
         let frame = self.stk_pop_frame();
         frame.1 as u16 + ((frame.0 as u16) << 8)
     }
