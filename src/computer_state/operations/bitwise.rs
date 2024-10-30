@@ -273,6 +273,15 @@ pub fn lsr_abx(state: &mut ComputerState) {
 }
 
 
+/// ROL (Rotate left one bit)
+fn rol(n: u8, old_flags: StatusFlags) -> (u8, StatusFlags) {
+    let mut flags = StatusFlags::empty();
+    if n & 0b01000000 == 1 {flags.insert(StatusFlags::c)}
+    let result = n << 1 + if old_flags.contains(StatusFlags::c) {1} else {0};
+    (result, flags)
+}
+
+
 /// BIT (Bit test) TODO check correct bits are set
 fn bit(state: &mut ComputerState, value: u8) {
     if value & 0b0100_0000 != 0 { state.regs.sta.insert(StatusFlags::n); }
