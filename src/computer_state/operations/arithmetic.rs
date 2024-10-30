@@ -1,10 +1,5 @@
 use crate::computer_state::{ComputerState, StatusFlags};
 
-struct AddResult {
-    value: u8,
-    carry: bool
-}
-
 // ADDITION
 /// ADd with carry
 fn add(state: &mut ComputerState, value: i8) {
