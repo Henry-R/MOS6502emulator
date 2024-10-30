@@ -4,6 +4,8 @@ use bitwise::*;
 use flags::*;
 use interrupt::*;
 
+mod signed_arithmetic;
+
 mod arithmetic;
 mod interrupt;
 mod branch;
