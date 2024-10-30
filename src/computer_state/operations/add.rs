@@ -23,11 +23,29 @@ fn add(state: &mut ComputerState, value: i8) {
     if rem == 0 { state.regs.sta.insert(StatusFlags::z) }
 }
 
-/// ADc (intermediate addressing mode)
-fn add_im(state: &mut ComputerState) {
-    // Load value from operand
-
+/// Helper function that converts an u8 byte to the i8 represented by its bits
+const fn u8_to_i8(n: u8) -> i8 {
+    (n as i16 - i8::MAX as i16) as i8
 }
+
+/// ADc (intermediate addressing mode)
+fn add_im(state: &mut ComputerState) { add(state, u8_to_i8(state.fetch_intermediate())); }
+/// ADc (zero-page addressing mode)
+fn add_zp(state: &mut ComputerState) { add(state, u8_to_i8(state.fetch_zero_page())); }
+/// ADc (zero-page X addressing mode)
+fn add_zpx(state: &mut ComputerState) { add(state, u8_to_i8(state.fetch_zero_page_x())); }
+/// ADc (zero-page Y addressing mode)
+fn add_zpy(state: &mut ComputerState) { add(state, u8_to_i8(state.fetch_zero_page_y())); }
+/// ADc (absolute addressing mode)
+fn add_ab(state: &mut ComputerState) { add(state, u8_to_i8(state.fetch_absolute())); }
+/// ADc (absolute X addressing mode)
+fn add_abx(state: &mut ComputerState) { add(state, u8_to_i8(state.fetch_absolute_x())); }
+/// ADc (absolute Y addressing mode)
+fn add_aby(state: &mut ComputerState) { add(state, u8_to_i8(state.fetch_absolute_y())); }
+/// ADc (indirect X addressing mode)
+fn add_inx(state: &mut ComputerState) { add(state, u8_to_i8(state.fetch_indexed_indirect())); }
+/// ADc (indirect Y addressing mode)
+fn add_iny(state: &mut ComputerState) { add(state, u8_to_i8(state.fetch_indirect_indexed())); }
 
 #[cfg(test)]
 mod tests {
