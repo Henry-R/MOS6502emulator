@@ -21,46 +21,49 @@ fn add(state: &mut ComputerState, value: i8) {
 }
 
 /// ADc (intermediate addressing mode)
+/// Opcode: 69
 pub fn add_im(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_intermediate());
     add(state, value);
 }
 /// ADc (zero-page addressing mode)
+/// Opcode: 65
 pub fn add_zp(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_zero_page());
     add(state, value);
 }
 /// ADc (zero-page X addressing mode)
+/// Opcode: 75
 pub fn add_zpx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_zero_page_x());
     add(state, value);
 }
-/// ADc (zero-page Y addressing mode)
-pub fn add_zpy(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_zero_page_y());
-    add(state, value);
-}
 /// ADc (absolute addressing mode)
+/// Opcode: 6D
 pub fn add_ab(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute());
     add(state, value);
 }
 /// ADc (absolute X addressing mode)
+/// Opcode: 7D
 pub fn add_abx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute_x());
     add(state, value);
 }
 /// ADc (absolute Y addressing mode)
+/// Opcode: 79
 pub fn add_aby(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute_y());
     add(state, value);
 }
 /// ADc (indirect X addressing mode)
+/// Opcode: 61
 pub fn add_inx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_indexed_indirect());
     add(state, value);
 }
 /// ADc (indirect Y addressing mode)
+/// Opcode: 71
 pub fn add_iny(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_indirect_indexed());
     add(state, value);
