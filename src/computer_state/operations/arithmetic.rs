@@ -143,25 +143,44 @@ pub fn sub_iny(state: &mut ComputerState) {
 /// Returns tuple containing the new value to place in memory,
 /// and the status flags after the operation has completed
 fn dec(val: u8) -> (u8, StatusFlags) {
+    // No documentation says this function can wrap
     let result = val - 1;
     let mut flags = StatusFlags::empty();
 
-    if result == 0 { flags.insert(StatusFlags::z); }
-    if result < 0  { flags.insert(StatusFlags::n); }
+    if result == i8::MAX as u8 { flags.insert(StatusFlags::z); }
+    if result <  i8::MAX as u8 { flags.insert(StatusFlags::n); }
 
     (result, flags)
 }
 /// DEC (zero-page addressing mode)
+/// Opcode: C6
 pub fn dec_zp(state: &mut ComputerState) {
     let zp_addr = state.fetch_zero_page_address();
-    let zp_val = state.mem[zp_addr];
-    (state.mem[zp_addr], state.regs.sta) = dec(zp_val);
+    (state.mem[zp_addr], state.regs.sta) = dec(state.mem[zp_addr])
+}
+/// DEC (zero-page X addressing mode)
+/// Opcode: D6
+pub fn dec_zpx(state: &mut ComputerState) {
+    let zpx_addr = state.fetch_zero_page_x_address();
+    (state.mem[zpx_addr], state.regs.sta) = dec(state.mem[zpx_addr])
+}
+/// DEC (absolute addressing mode)
+/// Opcode: CE
+pub fn dec_ab(state: &mut ComputerState) {
+    let ab_addr = state.fetch_absolute_address();
+    (state.mem[ab_addr], state.regs.sta) = dec(state.mem[ab_addr])
+}
+/// DEC (absolute X addressing mode)
+/// Opcode: DE
+pub fn dec_abx(state: &mut ComputerState) {
+    let abx_addr = state.fetch_absolute_address_x();
+    (state.mem[abx_addr], state.regs.sta) = dec(state.mem[abx_addr])
 }
 
 #[cfg(test)]
 mod tests {
     use crate::computer_state::{ComputerState, StatusFlags};
-    use crate::computer_state::operations::arithmetic::{add, sub};
+    use crate::computer_state::operations::arithmetic::{add, dec, sub};
 
     #[test]
     fn test_add() {
@@ -194,5 +213,15 @@ mod tests {
         sub(&mut state, 56);
         assert_eq!(state.regs.acc, 0);
         assert!(state.regs.sta.contains(StatusFlags::z));
+    }
+
+    #[test]
+    fn test_dec() {
+        let (val, flags) = dec(128);
+        assert!(flags.contains(StatusFlags::z));
+        assert_eq!(127, val);
+        let (val, flags) = dec(127);
+        assert!(flags.contains(StatusFlags::n));
+        assert_eq!(126, val);
     }
 }
