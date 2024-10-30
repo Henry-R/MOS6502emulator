@@ -192,6 +192,21 @@ pub fn dec_abx(state: &mut ComputerState) {
     (state.mem[abx_addr], state.regs.sta) = dec(state.mem[abx_addr])
 }
 
+/// DEX (implied addressing mode)
+/// Opcode: CA
+pub fn dex(state: &mut ComputerState) {
+    let (result, flags) = dec(state.regs.x);
+    state.regs.x = result;
+    state.regs.sta |= flags
+}
+/// DEY (implied addressing mode)
+/// Opcode: 88
+pub fn dey(state: &mut ComputerState) {
+    let (result, flags) = dec(state.regs.y);
+    state.regs.y = result;
+    state.regs.sta |= flags
+}
+
 #[cfg(test)]
 mod tests {
     use crate::computer_state::StatusFlags;
