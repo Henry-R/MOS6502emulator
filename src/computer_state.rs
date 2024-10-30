@@ -25,7 +25,7 @@ bitflags! {
 
 pub struct Registers {
     // (A) Accumulator
-    pub acc: i8,
+    pub acc: u8,
     // (P) Status register
     pub sta: StatusFlags,
     // (PC) Program counter

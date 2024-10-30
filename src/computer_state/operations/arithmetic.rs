@@ -1,9 +1,9 @@
 use crate::computer_state::{ComputerState, StatusFlags};
-use crate::computer_state::operations::u8_to_i8;
+use super::u8_to_i8;
 
 // ADDITION
 /// ADd with carry
-fn add(state: &mut ComputerState, value: i8) {
+fn add(state: &mut ComputerState, value: u8) {
     // Addition with remainder
     let (sum, overflow) = state.regs.acc.overflowing_add(value);
 
@@ -16,63 +16,63 @@ fn add(state: &mut ComputerState, value: i8) {
         state.regs.sta.insert(StatusFlags::c);
         state.regs.sta.insert(StatusFlags::v);
     }
-    // Result was zero
     if sum == 0 { state.regs.sta.insert(StatusFlags::z) }
+    if sum < i8::MAX as u8 { state.regs.sta.insert(StatusFlags::n) };
 }
 
 /// ADc (intermediate addressing mode)
 /// Opcode: 69
 pub fn add_im(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_intermediate());
+    let value = state.fetch_intermediate();
     add(state, value);
 }
 /// ADc (zero-page addressing mode)
 /// Opcode: 65
 pub fn add_zp(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_zero_page());
+    let value = state.fetch_zero_page();
     add(state, value);
 }
 /// ADc (zero-page X addressing mode)
 /// Opcode: 75
 pub fn add_zpx(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_zero_page_x());
+    let value = state.fetch_zero_page_x();
     add(state, value);
 }
 /// ADc (absolute addressing mode)
 /// Opcode: 6D
 pub fn add_ab(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_absolute());
+    let value = state.fetch_absolute();
     add(state, value);
 }
 /// ADc (absolute X addressing mode)
 /// Opcode: 7D
 pub fn add_abx(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_absolute_x());
+    let value = state.fetch_absolute_x();
     add(state, value);
 }
 /// ADc (absolute Y addressing mode)
 /// Opcode: 79
 pub fn add_aby(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_absolute_y());
+    let value = state.fetch_absolute_y();
     add(state, value);
 }
 /// ADc (indirect X addressing mode)
 /// Opcode: 61
 pub fn add_inx(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_indexed_indirect());
+    let value = state.fetch_indexed_indirect();
     add(state, value);
 }
 /// ADc (indirect Y addressing mode)
 /// Opcode: 71
 pub fn add_iny(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_indirect_indexed());
+    let value = state.fetch_indirect_indexed();
     add(state, value);
 }
 
 
 // SUBTRACTION
 /// SBc (subtraction with carry)
-fn sub(state: &mut ComputerState, value: i8) {
+fn sub(state: &mut ComputerState, value: u8) {
     // Subtraction with remainder
     let (sum, overflow) = state.regs.acc.overflowing_sub(value);
 
@@ -87,57 +87,77 @@ fn sub(state: &mut ComputerState, value: i8) {
     }
     // Result was zero
     if sum == 0 { state.regs.sta.insert(StatusFlags::z) }
+    if sum < i8::MAX as u8 { state.regs.sta.insert(StatusFlags::n) };
 }
 
 /// SBc (intermediate addressing mode)
 /// Opcode: E9
 pub fn sub_im(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_intermediate());
+    let value = state.fetch_intermediate();
     sub(state, value);
 }
 /// SBc (zero-page addressing mode)
 /// Opcode: E5
 pub fn sub_zp(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_zero_page());
+    let value = state.fetch_zero_page();
     sub(state, value);
 }
 /// SBc (zero-page X addressing mode)
 /// Opcode:F5
 pub fn sub_zpx(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_zero_page_x());
+    let value = state.fetch_zero_page_x();
     sub(state, value);
 }
 /// SBc (absolute addressing mode)
 /// Opcode: ED
 pub fn sub_ab(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_absolute());
+    let value = state.fetch_absolute();
     sub(state, value);
 }
 /// SBc (absolute X addressing mode)
 /// Opcode: FD
 pub fn sub_abx(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_absolute_x());
+    let value = state.fetch_absolute_x();
     sub(state, value);
 }
 /// SBc (absolute Y addressing mode)
 /// Opcode: F9
 pub fn sub_aby(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_absolute_y());
+    let value = state.fetch_absolute_y();
     sub(state, value);
 }
 /// SBc (indirect X addressing mode)
 /// Opcode: E1
 pub fn sub_inx(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_indexed_indirect());
+    let value = state.fetch_indexed_indirect();
     sub(state, value);
 }
 /// SBc (indirect Y addressing mode)
 /// Opcode: F1
 pub fn sub_iny(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_indirect_indexed());
+    let value = state.fetch_indirect_indexed();
     sub(state, value);
 }
 
+
+/// DEC (Decrement memory by one)
+/// Returns tuple containing the new value to place in memory,
+/// and the status flags after the operation has completed
+fn dec(val: i8) -> (i8, StatusFlags) {
+    let result = val - 1;
+    let mut flags = StatusFlags::empty();
+
+    if result == 0 { flags.insert(StatusFlags::z); }
+    if result < 0  { flags.insert(StatusFlags::n); }
+
+    (result, flags)
+}
+/// DEC (zero-page addressing mode)
+/*pub fn dec_zp(state: &mut ComputerState) {
+    let zp_addr = state.fetch_zero_page_address();
+    let zp_val = state.mem[zp_addr];
+    (state.mem[zp_addr], state.regs.sta) = dec(zp_val);
+}*/
 
 #[cfg(test)]
 mod tests {
@@ -148,15 +168,16 @@ mod tests {
     fn test_add() {
         let mut state = ComputerState::new();
 
-        add(&mut state, 100);
-        assert_eq!(state.regs.acc, 100);
+        add(&mut state, 129);
+        assert_eq!(state.regs.acc, 129);
         assert!(state.regs.sta.is_empty());
 
-        add(&mut state, 100);
-        assert_eq!(state.regs.acc, -56);
+        add(&mut state, 128);
+        assert_eq!(state.regs.acc, 1);
         assert!(state.regs.sta.contains(StatusFlags::c));
+        assert!(state.regs.sta.contains(StatusFlags::n));
 
-        add(&mut state, 56);
+        add(&mut state, 255);
         assert_eq!(state.regs.acc, 0);
         assert!(state.regs.sta.contains(StatusFlags::z));
     }
@@ -165,12 +186,11 @@ mod tests {
         let mut state = ComputerState::new();
 
         sub(&mut state, 100);
-        assert_eq!(state.regs.acc, -100);
-        assert!(state.regs.sta.is_empty());
+        assert_eq!(state.regs.acc, 156);
+        assert!(state.regs.sta.contains(StatusFlags::c));
 
         sub(&mut state, 100);
-        assert_eq!(state.regs.acc, 56);
-        assert!(state.regs.sta.contains(StatusFlags::c));
+        assert!(state.regs.sta.contains(StatusFlags::n));
 
         sub(&mut state, 56);
         assert_eq!(state.regs.acc, 0);

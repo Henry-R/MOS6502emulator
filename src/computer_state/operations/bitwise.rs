@@ -1,10 +1,9 @@
-use std::ops::BitOr;
 use crate::computer_state::{ComputerState, StatusFlags};
 use crate::computer_state::operations::{i8_to_u8, u8_to_i8};
 
 // AND
 /// AND (bitwise and)
-fn and(state: &mut ComputerState, value: i8) {
+fn and(state: &mut ComputerState, value: u8) {
     // REGISTERS
     state.regs.acc &= value;
 
@@ -16,55 +15,55 @@ fn and(state: &mut ComputerState, value: i8) {
 /// AND (intermediate addressing mode)
 /// Opcode: 29
 pub fn and_im(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_intermediate());
+    let value = state.fetch_intermediate();
     and(state, value);
 }
 /// AND (zero-page addressing mode)
 /// Opcode: 25
 pub fn and_zp(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_zero_page());
+    let value = state.fetch_zero_page();
     and(state, value);
 }
 /// AND (zero-page X addressing mode)
 /// Opcode: 35
 pub fn and_zpx(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_zero_page_x());
+    let value = state.fetch_zero_page_x();
     and(state, value);
 }
 /// AND (absolute addressing mode)
 /// Opcode: 2D
 pub fn and_ab(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_absolute());
+    let value = state.fetch_absolute();
     and(state, value);
 }
 /// AND (absolute X addressing mode)
 /// Opcode: 3D
 pub fn and_abx(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_absolute_x());
+    let value = state.fetch_absolute_x();
     and(state, value);
 }
 /// AND (absolute Y addressing mode)
 /// Opcode: 39
 pub fn and_aby(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_absolute_y());
+    let value = state.fetch_absolute_y();
     and(state, value);
 }
 /// AND (indirect X addressing mode)
 /// Opcode: 21
 pub fn and_inx(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_indexed_indirect());
+    let value = state.fetch_indexed_indirect();
     and(state, value);
 }
 /// AND (indirect Y addressing mode)
 /// Opcode: 31
 pub fn and_iny(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_indirect_indexed());
+    let value = state.fetch_indirect_indexed();
     and(state, value);
 }
 
 
 /// OR (logical bitwise inclusive or)
-fn or(state: &mut ComputerState, value: i8) {
+fn or(state: &mut ComputerState, value: u8) {
     // REGISTERS
     state.regs.acc |= value;
 
@@ -77,55 +76,55 @@ fn or(state: &mut ComputerState, value: i8) {
 /// OR (intermediate addressing mode)
 /// Opcode: 09
 pub fn or_im(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_intermediate());
+    let value = state.fetch_intermediate();
     or(state, value);
 }
 /// OR (zero-page addressing mode)
 /// Opcode: 05
 pub fn or_zp(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_zero_page());
+    let value = state.fetch_zero_page();
     or(state, value);
 }
 /// OR (zero-page X addressing mode)
 /// Opcode: 15
 pub fn or_zpx(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_zero_page_x());
+    let value = state.fetch_zero_page_x();
     or(state, value);
 }
 /// OR (absolute addressing mode)
 /// Opcode: 0D
 pub fn or_ab(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_absolute());
+    let value = state.fetch_absolute();
     or(state, value);
 }
 /// OR (absolute X addressing mode)
 /// Opcode: 1D
 pub fn or_abx(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_absolute_x());
+    let value = state.fetch_absolute_x();
     or(state, value);
 }
 /// OR (absolute Y addressing mode)
 /// Opcode: 19
 pub fn or_aby(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_absolute_y());
+    let value = state.fetch_absolute_y();
     or(state, value);
 }
 /// OR (indirect X addressing mode)
 /// Opcode: 01
 pub fn or_inx(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_indexed_indirect());
+    let value = state.fetch_indexed_indirect();
     or(state, value);
 }
 /// OR (indirect Y addressing mode)
 /// Opcode: 11
 pub fn or_iny(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_indirect_indexed());
+    let value = state.fetch_indirect_indexed();
     or(state, value);
 }
 
 
 /// EOR (logical bitwise exclusive or)
-fn eor(state: &mut ComputerState, value: i8) {
+fn eor(state: &mut ComputerState, value: u8) {
     // REGISTERS
     state.regs.acc ^= value;
 
@@ -138,49 +137,49 @@ fn eor(state: &mut ComputerState, value: i8) {
 /// EOR (intermediate addressing mode)
 /// Opcode: 49
 pub fn eor_im(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_intermediate());
+    let value = state.fetch_intermediate();
     eor(state, value);
 }
 /// EOR (zero-page addressing mode)
 /// Opcode: 45
 pub fn eor_zp(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_zero_page());
+    let value = state.fetch_zero_page();
     eor(state, value);
 }
 /// EOR (zero-page X addressing mode)
 /// Opcode: 55
 pub fn eor_zpx(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_zero_page_x());
+    let value = state.fetch_zero_page_x();
     eor(state, value);
 }
 /// EOR (absolute addressing mode)
 /// Opcode: 4D
 pub fn eor_ab(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_absolute());
+    let value = state.fetch_absolute();
     eor(state, value);
 }
 /// EOR (absolute X addressing mode)
 /// Opcode: 5D
 pub fn eor_abx(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_absolute_x());
+    let value = state.fetch_absolute_x();
     eor(state, value);
 }
 /// EOR (absolute Y addressing mode)
 /// Opcode: 59
 pub fn eor_aby(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_absolute_y());
+    let value = state.fetch_absolute_y();
     eor(state, value);
 }
 /// EOR (indirect X addressing mode)
 /// Opcode: 41
 pub fn eor_inx(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_indexed_indirect());
+    let value = state.fetch_indexed_indirect();
     eor(state, value);
 }
 /// EOR (indirect Y addressing mode)
 /// Opcode: 51
 pub fn eor_iny(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_indirect_indexed());
+    let value = state.fetch_indirect_indexed();
     eor(state, value);
 }
 
@@ -198,7 +197,7 @@ fn asl(state: &mut ComputerState, value: u8) -> u8 {
 /// ASL (accumulator addressing mode)
 /// Opcode: 0A
 pub fn asl_acc(state: &mut ComputerState) {
-    state.regs.acc = u8_to_i8(asl(state, i8_to_u8(state.regs.acc)));
+    state.regs.acc = asl(state, state.regs.acc);
 }
 /// ASL (zero_page addressing mode)
 /// Opcode: 06
@@ -243,7 +242,7 @@ fn lsr(state: &mut ComputerState, value: u8) -> u8 {
 /// LSR (accumulator addressing mode)
 /// Opcode: 4A
 pub fn lsr_acc(state: &mut ComputerState) {
-    state.regs.acc = u8_to_i8(lsr(state, i8_to_u8(state.regs.acc)));
+    state.regs.acc = lsr(state, state.regs.acc);
 }
 /// LSR (zero_page addressing mode)
 /// Opcode: 46
@@ -275,10 +274,10 @@ pub fn lsr_abx(state: &mut ComputerState) {
 }
 
 
-/// BIT (Bit test)
+/// BIT (Bit test) TODO check correct bits are set
 fn bit(state: &mut ComputerState, value: u8) {
-    if value & 0b0100_0000 { state.regs.sta.insert(StatusFlags::n); }
-    if value & 0b0010_0000 { state.regs.sta.insert(StatusFlags::v); }
+    if value & 0b0100_0000 != 0 { state.regs.sta.insert(StatusFlags::n); }
+    if value & 0b0010_0000 != 0 { state.regs.sta.insert(StatusFlags::v); }
     if state.regs.sta.contains(StatusFlags::n | StatusFlags::v) {
         state.regs.sta.insert(StatusFlags::z);
     }

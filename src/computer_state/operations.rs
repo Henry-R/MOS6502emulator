@@ -1,8 +1,8 @@
-use crate::computer_state::ComputerState;
-use crate::computer_state::operations::arithmetic::*;
-use crate::computer_state::operations::bitwise::*;
-use crate::computer_state::operations::flags::*;
-use crate::computer_state::operations::interrupt::*;
+use super::ComputerState;
+use arithmetic::*;
+use bitwise::*;
+use flags::*;
+use interrupt::*;
 
 mod arithmetic;
 mod interrupt;
