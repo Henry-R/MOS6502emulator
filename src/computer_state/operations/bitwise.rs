@@ -75,47 +75,50 @@ fn or(state: &mut ComputerState, value: i8) {
 
 
 /// OR (intermediate addressing mode)
-fn or_im(state: &mut ComputerState) {
+/// Opcode: 09
+pub fn or_im(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_intermediate());
     or(state, value);
 }
 /// OR (zero-page addressing mode)
-fn or_zp(state: &mut ComputerState) {
+/// Opcode: 05
+pub fn or_zp(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_zero_page());
     or(state, value);
 }
 /// OR (zero-page X addressing mode)
-fn or_zpx(state: &mut ComputerState) {
+/// Opcode: 15
+pub fn or_zpx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_zero_page_x());
     or(state, value);
 }
-/// OR (zero-page Y addressing mode)
-fn or_zpy(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_zero_page_y());
-    or(state, value);
-}
 /// OR (absolute addressing mode)
-fn or_ab(state: &mut ComputerState) {
+/// Opcode: 0D
+pub fn or_ab(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute());
     or(state, value);
 }
 /// OR (absolute X addressing mode)
-fn or_abx(state: &mut ComputerState) {
+/// Opcode: 1D
+pub fn or_abx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute_x());
     or(state, value);
 }
 /// OR (absolute Y addressing mode)
-fn or_aby(state: &mut ComputerState) {
+/// Opcode: 19
+pub fn or_aby(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute_y());
     or(state, value);
 }
 /// OR (indirect X addressing mode)
-fn or_inx(state: &mut ComputerState) {
+/// Opcode: 01
+pub fn or_inx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_indexed_indirect());
     or(state, value);
 }
 /// OR (indirect Y addressing mode)
-fn or_iny(state: &mut ComputerState) {
+/// Opcode: 11
+pub fn or_iny(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_indirect_indexed());
     or(state, value);
 }
@@ -133,47 +136,50 @@ fn eor(state: &mut ComputerState, value: i8) {
 
 
 /// EOR (intermediate addressing mode)
-fn eor_im(state: &mut ComputerState) {
+/// Opcode: 49
+pub fn eor_im(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_intermediate());
     eor(state, value);
 }
 /// EOR (zero-page addressing mode)
-fn eor_zp(state: &mut ComputerState) {
+/// Opcode: 45
+pub fn eor_zp(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_zero_page());
     eor(state, value);
 }
 /// EOR (zero-page X addressing mode)
-fn eor_zpx(state: &mut ComputerState) {
+/// Opcode: 55
+pub fn eor_zpx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_zero_page_x());
     eor(state, value);
 }
-/// EOR (zero-page Y addressing mode)
-fn eor_zpy(state: &mut ComputerState) {
-    let value = u8_to_i8(state.fetch_zero_page_y());
-    eor(state, value);
-}
 /// EOR (absolute addressing mode)
-fn eor_ab(state: &mut ComputerState) {
+/// Opcode: 4D
+pub fn eor_ab(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute());
     eor(state, value);
 }
 /// EOR (absolute X addressing mode)
-fn eor_abx(state: &mut ComputerState) {
+/// Opcode: 5D
+pub fn eor_abx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute_x());
     eor(state, value);
 }
 /// EOR (absolute Y addressing mode)
-fn eor_aby(state: &mut ComputerState) {
+/// Opcode: 59
+pub fn eor_aby(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute_y());
     eor(state, value);
 }
 /// EOR (indirect X addressing mode)
-fn eor_inx(state: &mut ComputerState) {
+/// Opcode: 41
+pub fn eor_inx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_indexed_indirect());
     eor(state, value);
 }
 /// EOR (indirect Y addressing mode)
-fn eor_iny(state: &mut ComputerState) {
+/// Opcode: 51
+pub fn eor_iny(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_indirect_indexed());
     eor(state, value);
 }
