@@ -229,8 +229,8 @@ pub fn asl_abx(state: &mut ComputerState) {
 }
 
 
-/// ASR (arithmetic shift right)
-fn asr(state: &mut ComputerState, value: u8) -> u8 {
+/// LSR (logical shift right)
+fn lsr(state: &mut ComputerState, value: u8) -> u8 {
     let (result, overflow) = value.overflowing_shr(1);
 
     // FLAGS
@@ -238,6 +238,39 @@ fn asr(state: &mut ComputerState, value: u8) -> u8 {
     if result < 0  { state.regs.sta.insert(StatusFlags::n); }
     if result == 0 { state.regs.sta.insert(StatusFlags::z); }
     result
+}
+/// LSR (accumulator addressing mode)
+/// Opcode: 4A
+pub fn lsr_acc(state: &mut ComputerState) {
+    state.regs.acc = u8_to_i8(lsr(state, i8_to_u8(state.regs.acc)));
+}
+/// LSR (zero_page addressing mode)
+/// Opcode: 46
+pub fn lsr_zp(state: &mut ComputerState) {
+    let zp_addr = state.fetch_zero_page_address();
+    let zp_val = state.mem[zp_addr];
+    state.mem[zp_addr] = lsr(state, zp_val);
+}
+/// LSR (zero_page X addressing mode)
+/// Opcode: 56
+pub fn lsr_zpx(state: &mut ComputerState) {
+    let zpx_addr = state.fetch_zero_page_x_address();
+    let zpx_val = state.mem[zpx_addr];
+    state.mem[zpx_addr] = lsr(state, zpx_val);
+}
+/// LSR (absolute addressing mode)
+/// Opcode: 4E
+pub fn lsr_ab(state: &mut ComputerState) {
+    let ab_addr = state.fetch_absolute_address();
+    let ab_val = state.mem[ab_addr];
+    state.mem[ab_addr] = lsr(state, ab_val);
+}
+/// LSR (absolute X addressing mode)
+/// Opcode: 5E
+pub fn lsr_abx(state: &mut ComputerState) {
+    let abx_addr = state.fetch_absolute_address_x();
+    let abx_val = state.mem[abx_addr];
+    state.mem[abx_addr] = lsr(state, abx_val);
 }
 
 
