@@ -2,70 +2,78 @@ use crate::computer_state::{ComputerState, StatusFlags};
 
 // ADDITION
 /// ADd with carry
-fn add(state: &mut ComputerState, value: u8) {
+/// Adds two integers and returns their sum. If an overflow occurs, the C and V flags will be set
+fn add(n: u8, m: u8) -> (u8, StatusFlags) {
     // Addition with remainder
-    let (sum, overflow) = state.regs.acc.overflowing_add(value);
-
-    // REGISTERS
-    state.regs.acc = sum;
+    let (sum, overflow) = n.overflowing_add(m);
 
     // FLAGS
-    // Carry and overflow bits set TODO maybe subtle carry logic could create bugs
+    let mut flags = StatusFlags::empty();
     if overflow {
-        state.regs.sta.insert(StatusFlags::c);
-        state.regs.sta.insert(StatusFlags::v);
+        flags.insert(StatusFlags::c);
+        flags.insert(StatusFlags::v);
     }
-    if sum == 0 { state.regs.sta.insert(StatusFlags::z) }
-    if sum < i8::MAX as u8 { state.regs.sta.insert(StatusFlags::n) };
+    if sum == i8::MAX as u8 { flags.insert(StatusFlags::z) }
+    if sum < i8::MAX as u8 { flags.insert(StatusFlags::n) }
+
+    (sum, flags)
 }
 
 /// ADc (intermediate addressing mode)
 /// Opcode: 69
 pub fn add_im(state: &mut ComputerState) {
-    let value = state.fetch_intermediate();
-    add(state, value);
+    let (val, flags) = add(state.regs.acc, state.fetch_intermediate());
+    state.regs.acc = val;
+    state.regs.sta |= flags
 }
 /// ADc (zero-page addressing mode)
 /// Opcode: 65
 pub fn add_zp(state: &mut ComputerState) {
-    let value = state.fetch_zero_page();
-    add(state, value);
+    let (val, flags) = add(state.regs.acc, state.fetch_zero_page());
+    state.regs.acc = val;
+    state.regs.sta |= flags
 }
 /// ADc (zero-page X addressing mode)
 /// Opcode: 75
 pub fn add_zpx(state: &mut ComputerState) {
-    let value = state.fetch_zero_page_x();
-    add(state, value);
+    let (val, flags) = add(state.regs.acc, state.fetch_zero_page_x());
+    state.regs.acc = val;
+    state.regs.sta |= flags
 }
 /// ADc (absolute addressing mode)
 /// Opcode: 6D
 pub fn add_ab(state: &mut ComputerState) {
-    let value = state.fetch_absolute();
-    add(state, value);
+    let (val, flags) = add(state.regs.acc, state.fetch_absolute());
+    state.regs.acc = val;
+    state.regs.sta |= flags
 }
 /// ADc (absolute X addressing mode)
 /// Opcode: 7D
 pub fn add_abx(state: &mut ComputerState) {
-    let value = state.fetch_absolute_x();
-    add(state, value);
+    let (val, flags) = add(state.regs.acc, state.fetch_absolute_x());
+    state.regs.acc = val;
+    state.regs.sta |= flags
 }
 /// ADc (absolute Y addressing mode)
 /// Opcode: 79
 pub fn add_aby(state: &mut ComputerState) {
-    let value = state.fetch_absolute_y();
-    add(state, value);
+    let (val, flags) = add(state.regs.acc, state.fetch_absolute_y());
+    state.regs.acc = val;
+    state.regs.sta |= flags
 }
 /// ADc (indirect X addressing mode)
 /// Opcode: 61
 pub fn add_inx(state: &mut ComputerState) {
-    let value = state.fetch_indexed_indirect();
-    add(state, value);
+    let (val, flags) = add(state.regs.acc, state.fetch_indexed_indirect());
+    state.regs.acc = val;
+    state.regs.sta |= flags
 }
 /// ADc (indirect Y addressing mode)
 /// Opcode: 71
 pub fn add_iny(state: &mut ComputerState) {
-    let value = state.fetch_indirect_indexed();
-    add(state, value);
+    let (val, flags) = add(state.regs.acc, state.fetch_indirect_indexed());
+    state.regs.acc = val;
+    state.regs.sta |= flags
 }
 
 
@@ -184,20 +192,18 @@ mod tests {
 
     #[test]
     fn test_add() {
-        let mut state = ComputerState::new();
+        let (result, flags) = add(0, 129);
+        assert_eq!(result, 129);
+        assert!(flags.is_empty());
 
-        add(&mut state, 129);
-        assert_eq!(state.regs.acc, 129);
-        assert!(state.regs.sta.is_empty());
+        let (result, flags) = add(result, 128);
+        assert_eq!(result, 1);
+        assert!(flags.contains(StatusFlags::c));
+        assert!(flags.contains(StatusFlags::n));
 
-        add(&mut state, 128);
-        assert_eq!(state.regs.acc, 1);
-        assert!(state.regs.sta.contains(StatusFlags::c));
-        assert!(state.regs.sta.contains(StatusFlags::n));
-
-        add(&mut state, 255);
-        assert_eq!(state.regs.acc, 0);
-        assert!(state.regs.sta.contains(StatusFlags::z));
+        let (result, flags) = add(result, 126);
+        assert_eq!(result, i8::MAX as u8);
+        assert!(flags.contains(StatusFlags::z));
     }
     #[test]
     fn test_sub() {
