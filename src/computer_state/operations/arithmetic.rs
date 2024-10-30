@@ -1,7 +1,7 @@
 use crate::computer_state::{ComputerState, StatusFlags};
 
 // ADDITION
-/// ADd with carry
+/// ADC with carry
 /// Adds two integers and returns their sum. If an overflow occurs, the C and V flags will be set
 fn add(n: u8, m: u8) -> (u8, StatusFlags) {
     // Addition with remainder
@@ -19,56 +19,56 @@ fn add(n: u8, m: u8) -> (u8, StatusFlags) {
     (sum, flags)
 }
 
-/// ADc (intermediate addressing mode)
+/// ADC (intermediate addressing mode)
 /// Opcode: 69
 pub fn add_im(state: &mut ComputerState) {
     let (val, flags) = add(state.regs.acc, state.fetch_intermediate());
     state.regs.acc = val;
     state.regs.sta |= flags
 }
-/// ADc (zero-page addressing mode)
+/// ADC (zero-page addressing mode)
 /// Opcode: 65
 pub fn add_zp(state: &mut ComputerState) {
     let (val, flags) = add(state.regs.acc, state.fetch_zero_page());
     state.regs.acc = val;
     state.regs.sta |= flags
 }
-/// ADc (zero-page X addressing mode)
+/// ADC (zero-page X addressing mode)
 /// Opcode: 75
 pub fn add_zpx(state: &mut ComputerState) {
     let (val, flags) = add(state.regs.acc, state.fetch_zero_page_x());
     state.regs.acc = val;
     state.regs.sta |= flags
 }
-/// ADc (absolute addressing mode)
+/// ADC (absolute addressing mode)
 /// Opcode: 6D
 pub fn add_ab(state: &mut ComputerState) {
     let (val, flags) = add(state.regs.acc, state.fetch_absolute());
     state.regs.acc = val;
     state.regs.sta |= flags
 }
-/// ADc (absolute X addressing mode)
+/// ADC (absolute X addressing mode)
 /// Opcode: 7D
 pub fn add_abx(state: &mut ComputerState) {
     let (val, flags) = add(state.regs.acc, state.fetch_absolute_x());
     state.regs.acc = val;
     state.regs.sta |= flags
 }
-/// ADc (absolute Y addressing mode)
+/// ADC (absolute Y addressing mode)
 /// Opcode: 79
 pub fn add_aby(state: &mut ComputerState) {
     let (val, flags) = add(state.regs.acc, state.fetch_absolute_y());
     state.regs.acc = val;
     state.regs.sta |= flags
 }
-/// ADc (indirect X addressing mode)
+/// ADC (indirect X addressing mode)
 /// Opcode: 61
 pub fn add_inx(state: &mut ComputerState) {
     let (val, flags) = add(state.regs.acc, state.fetch_indexed_indirect());
     state.regs.acc = val;
     state.regs.sta |= flags
 }
-/// ADc (indirect Y addressing mode)
+/// ADC (indirect Y addressing mode)
 /// Opcode: 71
 pub fn add_iny(state: &mut ComputerState) {
     let (val, flags) = add(state.regs.acc, state.fetch_indirect_indexed());
