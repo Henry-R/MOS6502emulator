@@ -1,5 +1,7 @@
 
 pub(crate) mod operations;
+
+use std::mem;
 use bitflags::bitflags;
 
 bitflags! {
@@ -73,7 +75,92 @@ impl ComputerState {
         }
     }
 
+    // FETCH INSTRUCTIONS
+    // These instructions help the emulator fetch memory according to addressing modes
+    /// Moves the PC up by one and fetches that constant from memory
+    fn fetch_next_byte(&mut self) -> u8 {
+        self.regs.pc += 1;
+        self.mem[self.regs.pc as usize]
+    }
+
+    /// Moves the PC up by one and fetches that constant from memory
+    /// Wrapper around fetch_next_byte to make its use clearer
+    fn fetch_intermediate(&mut self) -> u8 {
+        self.fetch_next_byte()
+    }
+
+    /// Fetches the byte of memory located at the zero-page address
+    fn fetch_zero_page(&mut self) -> u8 {
+        let zp_index = self.fetch_next_byte();
+        self.mem[zp_index as usize]
+    }
+
+    /// Fetches the byte of memory located at the zero-page address and adds the X index register to it
+    /// The result of this addition wraps
+    fn fetch_zero_page_x(&mut self) -> u8 {
+        let zp_index = self.fetch_next_byte();
+        let zpx_index = u8::wrapping_add(zp_index, self.regs.x);
+        self.mem[zpx_index as usize]
+    }
+
+    /// Fetches the byte of memory located at the zero-page address and adds the Y index register to it
+    /// The result of this addition wraps
+    /// Exactly the same as fetch_zero_page_x(), but for the Y index register. Used by fewer operations
+    fn fetch_zero_page_y(&mut self) -> u8 {
+        let zp_index = self.fetch_next_byte();
+        let zpy_index = u8::wrapping_add(zp_index, self.regs.y);
+        self.mem[zpy_index as usize]
+    }
+
+    /// Fetches the target address of an absolute address mode instruction
+    fn fetch_absolute_address(&mut self) -> u16 {
+        let lo_byte = self.fetch_next_byte();
+        let hi_byte = self.fetch_next_byte();
+        lo_byte as u16 + (hi_byte as u16 >> 8)
+    }
+
+    /// Fetches the memory at the target location of an absolute address mode instruction
+    fn fetch_absolute(&mut self) -> u8 {
+        let abs_addr = self.fetch_absolute_address();
+        self.mem[abs_addr as usize]
+    }
+
+    /// Fetches the X index register to the absolute address, then fetches the memory from that
+    /// address with the offset
+    fn fetch_absolute_x(&mut self) -> u8 {
+        let abs_addr = self.fetch_absolute_address();
+        let abs_addr_x = abs_addr + self.regs.x as u16;
+        self.mem[abs_addr_x as usize]
+    }
+
+    /// Fetches the Y index register to the absolute address, then fetches the memory from that
+    /// address with the offset
+    fn fetch_absolute_y(&mut self) -> u8 {
+        let abs_addr = self.fetch_absolute_address();
+        let abs_addr_y = abs_addr + self.regs.y as u16;
+        self.mem[abs_addr_y as usize]
+    }
+
+    /// Fetches the memory held by the address given by the absolute address plus the X index
+    fn fetch_indexed_indirect(&mut self) -> u8 {
+        let indirect_addr = self.fetch_absolute_x();
+        self.mem[indirect_addr as usize]
+    }
+
+    /// Fetches the memory held at the address pointed to by the given address plus the Y index
+    fn fetch_indirect_indexed(&mut self) -> u8 {
+        // Get zero-page index of 16-bit address
+        let zp_index = self.fetch_next_byte();
+        let lo_byte = self.mem[zp_index as usize];
+        let hi_byte = self.mem[(zp_index + 1) as usize];
+        // Add Y index offset
+        let indirect_addr = lo_byte as u16 + (hi_byte as u16 >> 8);
+        self.mem[(indirect_addr + self.regs.y as u16) as usize]
+    }
+
+
     // STACK INSTRUCTIONS
+    // These are instructions which help the emulator use the hardware stack
     /// Returns the stack pointer's index in memory
     const fn stk_index(&self) -> usize {
         STACK_PAGE + self.regs.stk as usize
