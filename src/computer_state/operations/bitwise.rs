@@ -59,7 +59,6 @@ fn and_iny(state: &mut ComputerState) {
 }
 
 
-// OR
 /// OR (logical bitwise inclusive or)
 fn or(state: &mut ComputerState, value: i8) {
     // REGISTERS
@@ -71,57 +70,118 @@ fn or(state: &mut ComputerState, value: i8) {
 }
 
 
-/// AND (intermediate addressing mode)
+/// OR (intermediate addressing mode)
 fn or_im(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_intermediate());
     or(state, value);
 }
-/// AND (zero-page addressing mode)
+/// OR (zero-page addressing mode)
 fn or_zp(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_zero_page());
     or(state, value);
 }
-/// AND (zero-page X addressing mode)
+/// OR (zero-page X addressing mode)
 fn or_zpx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_zero_page_x());
     or(state, value);
 }
-/// AND (zero-page Y addressing mode)
+/// OR (zero-page Y addressing mode)
 fn or_zpy(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_zero_page_y());
     or(state, value);
 }
-/// AND (absolute addressing mode)
+/// OR (absolute addressing mode)
 fn or_ab(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute());
     or(state, value);
 }
-/// AND (absolute X addressing mode)
+/// OR (absolute X addressing mode)
 fn or_abx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute_x());
     or(state, value);
 }
-/// AND (absolute Y addressing mode)
+/// OR (absolute Y addressing mode)
 fn or_aby(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_absolute_y());
     or(state, value);
 }
-/// AND (indirect X addressing mode)
+/// OR (indirect X addressing mode)
 fn or_inx(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_indexed_indirect());
     or(state, value);
 }
-/// AND (indirect Y addressing mode)
+/// OR (indirect Y addressing mode)
 fn or_iny(state: &mut ComputerState) {
     let value = u8_to_i8(state.fetch_indirect_indexed());
     or(state, value);
 }
 
 
+/// EOR (logical bitwise exclusive or)
+fn eor(state: &mut ComputerState, value: i8) {
+    // REGISTERS
+    state.regs.acc ^= value;
+
+    // FLAGS
+    if state.regs.acc == 0 { state.regs.sta.insert(StatusFlags::z); }
+    if state.regs.acc < 0 { state.regs.sta.insert(StatusFlags::n); }
+}
+
+
+/// EOR (intermediate addressing mode)
+fn eor_im(state: &mut ComputerState) {
+    let value = u8_to_i8(state.fetch_intermediate());
+    eor(state, value);
+}
+/// EOR (zero-page addressing mode)
+fn eor_zp(state: &mut ComputerState) {
+    let value = u8_to_i8(state.fetch_zero_page());
+    eor(state, value);
+}
+/// EOR (zero-page X addressing mode)
+fn eor_zpx(state: &mut ComputerState) {
+    let value = u8_to_i8(state.fetch_zero_page_x());
+    eor(state, value);
+}
+/// EOR (zero-page Y addressing mode)
+fn eor_zpy(state: &mut ComputerState) {
+    let value = u8_to_i8(state.fetch_zero_page_y());
+    eor(state, value);
+}
+/// EOR (absolute addressing mode)
+fn eor_ab(state: &mut ComputerState) {
+    let value = u8_to_i8(state.fetch_absolute());
+    eor(state, value);
+}
+/// EOR (absolute X addressing mode)
+fn eor_abx(state: &mut ComputerState) {
+    let value = u8_to_i8(state.fetch_absolute_x());
+    eor(state, value);
+}
+/// EOR (absolute Y addressing mode)
+fn eor_aby(state: &mut ComputerState) {
+    let value = u8_to_i8(state.fetch_absolute_y());
+    eor(state, value);
+}
+/// EOR (indirect X addressing mode)
+fn eor_inx(state: &mut ComputerState) {
+    let value = u8_to_i8(state.fetch_indexed_indirect());
+    eor(state, value);
+}
+/// EOR (indirect Y addressing mode)
+fn eor_iny(state: &mut ComputerState) {
+    let value = u8_to_i8(state.fetch_indirect_indexed());
+    eor(state, value);
+}
+
+
+
+
+
 #[cfg(test)]
 mod tests {
     use crate::computer_state::ComputerState;
-    use crate::computer_state::operations::bitwise::{and, or};
+    use crate::computer_state::operations::bitwise::{and, eor, or};
 
     #[test]
     fn test_and() {
@@ -129,7 +189,6 @@ mod tests {
 
         and(&mut state, 0b0000_0000);
         assert_eq!(state.regs.acc, 0);
-
         state.regs.acc = 0b0101_0101;
         and(&mut state, 0b0000_1111);
         assert_eq!(state.regs.acc, 0b0000_0101);
@@ -143,10 +202,19 @@ mod tests {
 
         or(&mut state, 0b0101_0101);
         assert_eq!(state.regs.acc, 0b0101_0101);
-
         or(&mut state, 0b0000_1111);
         assert_eq!(state.regs.acc, 0b0101_1111);
         or(&mut state, 0b0010_0000);
         assert_eq!(state.regs.acc, 0b0111_1111);
+    }
+
+    #[test]
+    fn test_eor() {
+        let mut state = ComputerState::new();
+
+        eor(&mut state, 0b0101_0101);
+        assert_eq!(state.regs.acc, 0b0101_0101);
+        eor(&mut state, 0b0101_1010);
+        assert_eq!(state.regs.acc, 0b0000_1111);
     }
 }
