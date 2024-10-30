@@ -1,5 +1,4 @@
 use crate::computer_state::{ComputerState, StatusFlags};
-use super::u8_to_i8;
 
 // ADDITION
 /// ADd with carry
@@ -143,7 +142,7 @@ pub fn sub_iny(state: &mut ComputerState) {
 /// DEC (Decrement memory by one)
 /// Returns tuple containing the new value to place in memory,
 /// and the status flags after the operation has completed
-fn dec(val: i8) -> (i8, StatusFlags) {
+fn dec(val: u8) -> (u8, StatusFlags) {
     let result = val - 1;
     let mut flags = StatusFlags::empty();
 
@@ -153,11 +152,11 @@ fn dec(val: i8) -> (i8, StatusFlags) {
     (result, flags)
 }
 /// DEC (zero-page addressing mode)
-/*pub fn dec_zp(state: &mut ComputerState) {
+pub fn dec_zp(state: &mut ComputerState) {
     let zp_addr = state.fetch_zero_page_address();
     let zp_val = state.mem[zp_addr];
     (state.mem[zp_addr], state.regs.sta) = dec(zp_val);
-}*/
+}
 
 #[cfg(test)]
 mod tests {

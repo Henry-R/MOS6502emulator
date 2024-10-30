@@ -1,5 +1,4 @@
 use crate::computer_state::{ComputerState, StatusFlags};
-use crate::computer_state::operations::{i8_to_u8, u8_to_i8};
 
 // AND
 /// AND (bitwise and)
