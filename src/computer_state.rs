@@ -1,34 +1,13 @@
+use crate::computer_state::status_register::StatusRegister;
 
 mod status_register;
 pub(crate) mod operations;
-
-use bitflags::bitflags;
-
-bitflags! {
-    pub struct StatusFlags: u8 {
-        // (n) Negative
-        const n = 0b0000_0001;
-        // (v) Overflow
-        const v = 0b0000_0010;
-        // (b) Break
-        const b = 0b0000_0100;
-        // (d) Decimal
-        const d = 0b0000_1000;
-        // (i) Interrupt disable
-        const i = 0b0001_0000;
-        // (z) Zero
-        const z = 0b0010_0000;
-        // (c) Carry
-        const c = 0b0100_0000;
-    }
-}
-
 
 pub struct Registers {
     // (A) Accumulator
     pub acc: u8,
     // (P) Status register
-    pub sta: StatusFlags,
+    pub sta: StatusRegister,
     // (PC) Program counter
     pub pc: u16,
     // (S) Stack pointer
@@ -66,7 +45,7 @@ impl ComputerState {
             mem: [0u8; MEMORY_SIZE],
             regs: Registers {
                 acc: 0,
-                sta: StatusFlags::empty(),
+                sta: StatusRegister::new(),
                 pc: 0,
                 stk: 0xFF,  // Stack grows downwards, so initialise stack to top of memory
                 x: 0,

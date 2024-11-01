@@ -1,20 +1,15 @@
-use crate::computer_state::{ComputerState, StatusFlags};
+use crate::computer_state::{ComputerState, StatusRegister};
+use crate::computer_state::status_register::{get_cond_flag, get_zero_neg_flags};
 
 // ADDITION
 /// ADC with carry
 /// Adds two integers and returns their sum. If an overflow occurs, the C and V flags will be set
-fn add(n: u8, m: u8) -> (u8, StatusFlags) {
-    // Addition with remainder
-    let (sum, overflow) = n.overflowing_add(m);
+fn add(n: u8, m: u8) -> (u8, StatusRegister) {
+    let (sum, overflowed) = n.overflowing_add(m);
 
-    // FLAGS
-    let mut flags = StatusFlags::empty();
-    if overflow {
-        flags.insert(StatusFlags::c);
-        flags.insert(StatusFlags::v);
-    }
-    if sum == i8::MAX as u8 { flags.insert(StatusFlags::z) }
-    if sum < i8::MAX as u8 { flags.insert(StatusFlags::n) }
+    let flags =
+        get_cond_flag(StatusRegister::C | StatusRegister::V, overflowed) |
+        get_zero_neg_flags(sum);
 
     (sum, flags)
 }
@@ -79,20 +74,19 @@ pub fn add_iny(state: &mut ComputerState) {
 
 // SUBTRACTION
 /// SBC (subtraction with carry)
-fn sub(n: u8, m: u8) -> (u8, StatusFlags) {
+fn sub(n: u8, m: u8) -> (u8, StatusRegister) {
     // Subtraction with remainder
     let (result, overflow) = n.overflowing_sub(m);
 
     // FLAGS
-    let mut flags = StatusFlags::empty();
+    let mut flags = StatusRegister::new();
     // Carry and overflow bits set TODO maybe subtle carry logic could create bugs
     if overflow {
-        flags.insert(StatusFlags::c);
-        flags.insert(StatusFlags::v);
+        flags = flags | StatusRegister::C | StatusRegister::V;
     }
     // Result was zero
-    if result == 0 { flags.insert(StatusFlags::z) }
-    if result < i8::MAX as u8 { flags.insert(StatusFlags::n) };
+    if result == 0 { flags = flags | StatusRegister::Z }
+    if result < i8::MAX as u8 { flags = flags | StatusRegister::N };
     (result, flags)
 }
 
@@ -157,13 +151,13 @@ pub fn sub_iny(state: &mut ComputerState) {
 /// DEC (Decrement memory by one)
 /// Returns tuple containing the new value to place in memory,
 /// and the status flags after the operation has completed
-fn dec(val: u8) -> (u8, StatusFlags) {
+fn dec(val: u8) -> (u8, StatusRegister) {
     // No documentation says this function can wrap
     let result = val - 1;
-    let mut flags = StatusFlags::empty();
+    let mut flags = StatusRegister::new();
 
-    if result == i8::MAX as u8 { flags.insert(StatusFlags::z); }
-    if result <  i8::MAX as u8 { flags.insert(StatusFlags::n); }
+    if result == i8::MAX as u8 { flags = flags | StatusRegister::Z }
+    if result <  i8::MAX as u8 { flags = flags | StatusRegister::N }
 
     (result, flags)
 }
@@ -211,13 +205,13 @@ pub fn dey(state: &mut ComputerState) {
 /// INC (Increment memory by one)
 /// Returns tuple containing the new value to place in memory,
 /// and the status flags after the operation has completed
-fn inc(val: u8) -> (u8, StatusFlags) {
+fn inc(val: u8) -> (u8, StatusRegister) {
     // No documentation says this function can wrap
     let result = val + 1;
-    let mut flags = StatusFlags::empty();
+    let mut flags = StatusRegister::new();
 
-    if result == i8::MAX as u8 { flags.insert(StatusFlags::z); }
-    if result <  i8::MAX as u8 { flags.insert(StatusFlags::n); }
+    if result == i8::MAX as u8 { flags = flags | StatusRegister::Z }
+    if result <  i8::MAX as u8 { flags = flags | StatusRegister::N }
 
     (result, flags)
 }
@@ -263,7 +257,7 @@ pub fn iny(state: &mut ComputerState) {
 
 #[cfg(test)]
 mod tests {
-    use crate::computer_state::StatusFlags;
+    use crate::computer_state::StatusRegister;
     use crate::computer_state::operations::arithmetic::{add, dec, sub};
 
     #[test]
@@ -274,34 +268,34 @@ mod tests {
 
         let (result, flags) = add(result, 128);
         assert_eq!(result, 1);
-        assert!(flags.contains(StatusFlags::c));
-        assert!(flags.contains(StatusFlags::n));
+        assert!(flags.contains(StatusRegister::C));
+        assert!(flags.contains(StatusRegister::N));
 
         let (result, flags) = add(result, 126);
         assert_eq!(result, i8::MAX as u8);
-        assert!(flags.contains(StatusFlags::z));
+        assert!(flags.contains(StatusRegister::Z));
     }
     #[test]
     fn test_sub() {
         let (result, flags) = sub(0, 100);
         assert_eq!(result, 156);
-        assert!(flags.contains(StatusFlags::c));
+        assert!(flags.contains(StatusRegister::C));
 
         let (result, flags) = sub(result, 100);
-        assert!(flags.contains(StatusFlags::n));
+        assert!(flags.contains(StatusRegister::N));
 
         let (result, flags) = sub(result, 56);
         assert_eq!(result, 0);
-        assert!(flags.contains(StatusFlags::z));
+        assert!(flags.contains(StatusRegister::Z));
     }
 
     #[test]
     fn test_dec() {
         let (val, flags) = dec(128);
-        assert!(flags.contains(StatusFlags::z));
+        assert!(flags.contains(StatusRegister::Z));
         assert_eq!(127, val);
         let (val, flags) = dec(127);
-        assert!(flags.contains(StatusFlags::n));
+        assert!(flags.contains(StatusRegister::N));
         assert_eq!(126, val);
     }
 }

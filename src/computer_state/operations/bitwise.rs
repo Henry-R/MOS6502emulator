@@ -1,14 +1,11 @@
-use crate::computer_state::{ComputerState, StatusFlags};
+use crate::computer_state::{ComputerState, StatusRegister};
+use crate::computer_state::status_register::{get_cond_flag, get_zero_neg_flags};
 
 // AND
 /// AND (bitwise and)
 fn and(state: &mut ComputerState, value: u8) {
-    // REGISTERS
     state.regs.acc &= value;
-
-    // FLAGS
-    if state.regs.acc == 0 { state.regs.sta.insert(StatusFlags::z); }
-    if state.regs.acc < 0 { state.regs.sta.insert(StatusFlags::n); }
+    state.regs.sta = get_zero_neg_flags(state.regs.acc);
 }
 
 /// AND (intermediate addressing mode)
@@ -63,12 +60,8 @@ pub fn and_iny(state: &mut ComputerState) {
 
 /// OR (logical bitwise inclusive or)
 fn or(state: &mut ComputerState, value: u8) {
-    // REGISTERS
     state.regs.acc |= value;
-
-    // FLAGS
-    if state.regs.acc == 0 { state.regs.sta.insert(StatusFlags::z); }
-    if state.regs.acc < 0 { state.regs.sta.insert(StatusFlags::n); }
+    state.regs.sta = get_zero_neg_flags(state.regs.acc);
 }
 
 
@@ -124,12 +117,8 @@ pub fn or_iny(state: &mut ComputerState) {
 
 /// EOR (logical bitwise exclusive or)
 fn eor(state: &mut ComputerState, value: u8) {
-    // REGISTERS
     state.regs.acc ^= value;
-
-    // FLAGS
-    if state.regs.acc == 0 { state.regs.sta.insert(StatusFlags::z); }
-    if state.regs.acc < 0 { state.regs.sta.insert(StatusFlags::n); }
+    state.regs.sta = get_zero_neg_flags(state.regs.acc);
 }
 
 
@@ -188,9 +177,10 @@ fn asl(state: &mut ComputerState, value: u8) -> u8 {
     let (result, overflow) = value.overflowing_shl(1);
 
     // FLAGS
-    if overflow    { state.regs.sta.insert(StatusFlags::c); }
-    if result < 0  { state.regs.sta.insert(StatusFlags::n); }
-    if result == 0 { state.regs.sta.insert(StatusFlags::z); }
+    state.regs.sta =
+        get_cond_flag(StatusRegister::C, overflow) |
+        get_zero_neg_flags(result);
+
     result
 }
 /// ASL (accumulator addressing mode)
@@ -233,9 +223,10 @@ fn lsr(state: &mut ComputerState, value: u8) -> u8 {
     let (result, overflow) = value.overflowing_shr(1);
 
     // FLAGS
-    if overflow    { state.regs.sta.insert(StatusFlags::c); }
-    if result < 0  { state.regs.sta.insert(StatusFlags::n); }
-    if result == 0 { state.regs.sta.insert(StatusFlags::z); }
+    state.regs.sta =
+        get_cond_flag(StatusRegister::C, overflow) |
+        get_zero_neg_flags(result);
+
     result
 }
 /// LSR (accumulator addressing mode)
@@ -274,21 +265,15 @@ pub fn lsr_abx(state: &mut ComputerState) {
 
 
 /// ROL (Rotate left one bit)
-fn rol(n: u8, old_flags: StatusFlags) -> (u8, StatusFlags) {
-    let mut flags = StatusFlags::empty();
-    if n & 0b01000000 == 1 {flags.insert(StatusFlags::c)}
-    let result = n << 1 + if old_flags.contains(StatusFlags::c) {1} else {0};
-    (result, flags)
+fn rol(n: u8, old_flags: StatusRegister) -> (u8, StatusRegister) {
+    // TODO()
+    (0, StatusRegister::new())
 }
 
 
-/// BIT (Bit test) TODO check correct bits are set
+/// BIT (Bit test)
 fn bit(state: &mut ComputerState, value: u8) {
-    if value & 0b0100_0000 != 0 { state.regs.sta.insert(StatusFlags::n); }
-    if value & 0b0010_0000 != 0 { state.regs.sta.insert(StatusFlags::v); }
-    if state.regs.sta.contains(StatusFlags::n | StatusFlags::v) {
-        state.regs.sta.insert(StatusFlags::z);
-    }
+    // TODO()
 }
 /// BIT (zero-page addressing mode)
 /// Opcode: 24
