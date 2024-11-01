@@ -3,7 +3,7 @@ use crate::computer_state::status_register::{get_zero_neg_flags};
 
 // ADDITION
 /// ADC (addition with carry)
-const fn add(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
+const fn adc(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
     // Could overflow during regular addition or carry
     let (sum, overflow_n) = acc.overflowing_add(n);
     let (result, overflow_c) = sum.overflowing_add(carry);
@@ -22,8 +22,8 @@ const fn add(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
 
 /// Mutates the state of the computer according to the result of addition
 /// Acts as an adapter between the implementation of add and the computer
-fn add_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
-    let (result, flags) = add(state.regs.acc, addr_fn(state), state.get_carry());
+fn adc_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
+    let (result, flags) = adc(state.regs.acc, addr_fn(state), state.get_carry());
 
     state.regs.acc = result;
     state.regs.sta |= flags;
@@ -31,52 +31,52 @@ fn add_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8)
 
 /// ADC (intermediate addressing mode)
 /// Opcode: 69
-pub fn add_im(state: &mut ComputerState)
-{ add_adapter(state, ComputerState::fetch_intermediate); }
+pub fn adc_im(state: &mut ComputerState)
+{ adc_adapter(state, ComputerState::fetch_intermediate); }
 /// ADC (zero-page addressing mode)
 /// Opcode: 65
-pub fn add_zp(state: &mut ComputerState)
-{ add_adapter(state, ComputerState::fetch_zero_page); }
+pub fn adc_zp(state: &mut ComputerState)
+{ adc_adapter(state, ComputerState::fetch_zero_page); }
 /// ADC (zero-page X addressing mode)
 /// Opcode: 75
-pub fn add_zpx(state: &mut ComputerState)
-{ add_adapter(state, ComputerState::fetch_zero_page_x); }
+pub fn adc_zpx(state: &mut ComputerState)
+{ adc_adapter(state, ComputerState::fetch_zero_page_x); }
 /// ADC (absolute addressing mode)
 /// Opcode: 6D
-pub fn add_ab(state: &mut ComputerState)
-{ add_adapter(state, ComputerState::fetch_absolute); }
+pub fn adc_ab(state: &mut ComputerState)
+{ adc_adapter(state, ComputerState::fetch_absolute); }
 /// ADC (absolute X addressing mode)
 /// Opcode: 7D
-pub fn add_abx(state: &mut ComputerState)
-{ add_adapter(state, ComputerState::fetch_absolute_x); }
+pub fn adc_abx(state: &mut ComputerState)
+{ adc_adapter(state, ComputerState::fetch_absolute_x); }
 /// ADC (absolute Y addressing mode)
 /// Opcode: 79
-pub fn add_aby(state: &mut ComputerState)
-{ add_adapter(state, ComputerState::fetch_absolute_y); }
+pub fn adc_aby(state: &mut ComputerState)
+{ adc_adapter(state, ComputerState::fetch_absolute_y); }
 /// ADC (indirect X addressing mode)
 /// Opcode: 61
-pub fn add_inx(state: &mut ComputerState)
-{ add_adapter(state, ComputerState::fetch_indirect_x);}
+pub fn adc_inx(state: &mut ComputerState)
+{ adc_adapter(state, ComputerState::fetch_indirect_x);}
 /// ADC (indirect Y addressing mode)
 /// Opcode: 71
-pub fn add_iny(state: &mut ComputerState)
-{ add_adapter(state, ComputerState::fetch_indirect_y); }
+pub fn adc_iny(state: &mut ComputerState)
+{ adc_adapter(state, ComputerState::fetch_indirect_y); }
 
 
 // SUBTRACTION
 /// SBC (subtraction with carry)
-const fn sub(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
+const fn sbc(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
     // Use a - b is equivalent to a + (-b)
     let negative_n = 0xFF ^ n;
     // Inversion of carry is used to indicate a borrow
     let negative_carry = if carry == 1 { 0 } else { 1 };
-    add(acc, negative_n, negative_carry)
+    adc(acc, negative_n, negative_carry)
 }
 
 /// Mutates the state of the computer according to the result of subtraction
 /// Acts as an adapter between the implementation of sub and the computer
-fn sub_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
-    let (result, flags) = sub(state.regs.acc, addr_fn(state), state.get_carry());
+fn sbc_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
+    let (result, flags) = sbc(state.regs.acc, addr_fn(state), state.get_carry());
 
     state.regs.acc = result;
     state.regs.sta |= flags;
@@ -84,36 +84,36 @@ fn sub_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8)
 
 /// SBC (intermediate addressing mode)
 /// Opcode: E9
-pub fn sub_im(state: &mut ComputerState)
-{ sub_adapter(state, ComputerState::fetch_intermediate); }
+pub fn sbc_im(state: &mut ComputerState)
+{ sbc_adapter(state, ComputerState::fetch_intermediate); }
 /// SBC (zero-page addressing mode)
 /// Opcode: E5
-pub fn sub_zp(state: &mut ComputerState)
-{ sub_adapter(state, ComputerState::fetch_zero_page); }
+pub fn sbc_zp(state: &mut ComputerState)
+{ sbc_adapter(state, ComputerState::fetch_zero_page); }
 /// SBC (zero-page X addressing mode)
 /// Opcode:F5
-pub fn sub_zpx(state: &mut ComputerState)
-{ sub_adapter(state, ComputerState::fetch_zero_page_x); }
+pub fn sbc_zpx(state: &mut ComputerState)
+{ sbc_adapter(state, ComputerState::fetch_zero_page_x); }
 /// SBC (absolute addressing mode)
 /// Opcode: ED
-pub fn sub_ab(state: &mut ComputerState)
-{ sub_adapter(state, ComputerState::fetch_absolute); }
+pub fn sbc_ab(state: &mut ComputerState)
+{ sbc_adapter(state, ComputerState::fetch_absolute); }
 /// SBC (absolute X addressing mode)
 /// Opcode: FD
-pub fn sub_abx(state: &mut ComputerState)
-{ sub_adapter(state, ComputerState::fetch_absolute_x); }
+pub fn sbc_abx(state: &mut ComputerState)
+{ sbc_adapter(state, ComputerState::fetch_absolute_x); }
 /// SBC (absolute Y addressing mode)
 /// Opcode: F9
-pub fn sub_aby(state: &mut ComputerState)
-{ sub_adapter(state, ComputerState::fetch_absolute_y); }
+pub fn sbc_aby(state: &mut ComputerState)
+{ sbc_adapter(state, ComputerState::fetch_absolute_y); }
 /// SBC (indirect X addressing mode)
 /// Opcode: E1
-pub fn sub_inx(state: &mut ComputerState)
-{ sub_adapter(state, ComputerState::fetch_indirect_x); }
+pub fn sbc_inx(state: &mut ComputerState)
+{ sbc_adapter(state, ComputerState::fetch_indirect_x); }
 /// SBC (indirect Y addressing mode)
 /// Opcode: F1
-pub fn sub_iny(state: &mut ComputerState)
-{ sub_adapter(state, ComputerState::fetch_indirect_y); }
+pub fn sbc_iny(state: &mut ComputerState)
+{ sbc_adapter(state, ComputerState::fetch_indirect_y); }
 
 
 /// DEC (Decrement memory by one)

@@ -10,7 +10,7 @@ mod tests {
         state.regs.acc = 36;
         state.set_addr(36, usize::from(state.regs.pc) + 1);
 
-        add_im(&mut state);
+        adc_im(&mut state);
 
         assert_eq!(72, state.regs.acc);
         assert!(state.regs.sta.is_empty());
