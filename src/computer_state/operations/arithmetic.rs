@@ -251,6 +251,11 @@ mod tests {
         let (result, flags) = add(144, 208, 0);
         assert_eq!(result, 96);
         assert!(flags.contains_only(StatusRegister::C | StatusRegister::V));
+
+        // Using carry flag
+        let (result, flags) = add(0, 10, 1);
+        assert_eq!(result, 11);
+        assert!(flags.is_empty());
     }
     #[test]
     fn test_sub() {
@@ -272,8 +277,12 @@ mod tests {
         // Zero
         let (result, flags) = sub(50, 50, 0);
         assert_eq!(result, 0);
-        assert!(flags.contains(StatusRegister::Z));
-        assert!(flags.contains(StatusRegister::C));
+        assert!(flags.contains_only(StatusRegister::Z | StatusRegister::C));
+
+        // Using carry flag
+        let (result, flags) = sub(11, 10, 1);
+        assert_eq!(result, 0);
+        assert!(flags.contains_only(StatusRegister::Z | StatusRegister::C));
     }
 
     #[test]
