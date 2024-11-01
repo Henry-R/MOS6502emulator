@@ -54,6 +54,11 @@ impl ComputerState {
         }
     }
 
+    // REGISTER INSTRUCTIONS
+    pub const fn get_carry(&self) -> u8 {
+        if self.regs.sta.contains(StatusRegister::C) { 1 } else { 0 }
+    }
+
     // FETCH INSTRUCTIONS
     // These instructions help the emulator fetch memory according to addressing modes
     /// Moves the PC up by one and fetches that constant from memory
