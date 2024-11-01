@@ -121,6 +121,8 @@ const fn dec(val: u8) -> (u8, StatusRegister) {
     (result, get_zero_neg_flags(result))
 }
 
+/// Mutates the state of the computer according to the result of taking the decrement
+/// Acts as an adapter between the implementation of dec and the computer
 fn dec_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usize) {
     let addr = addr_fn(state);
     let (result, flags) = dec(state.get_addr(addr));
@@ -164,40 +166,36 @@ pub fn dey(state: &mut ComputerState) {
 /// INC (Increment memory by one)
 /// Returns tuple containing the new value to place in memory,
 /// and the status flags after the operation has completed
-fn inc(val: u8) -> (u8, StatusRegister) {
-    // No documentation says this function can wrap
+const fn inc(val: u8) -> (u8, StatusRegister) {
     let result = val + 1;
-    let mut flags = StatusRegister::new();
-
-    if result == i8::MAX as u8 { flags = flags | StatusRegister::Z }
-    if result <  i8::MAX as u8 { flags = flags | StatusRegister::N }
-
-    (result, flags)
+    (result, get_zero_neg_flags(result))
 }
+
+/// Mutates the state of the computer according to the result of taking the increment
+/// Acts as an adapter between the implementation of inc and the computer
+fn inc_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usize) {
+    let addr = addr_fn(state);
+    let (result, flags) = inc(state.get_addr(addr));
+    state.set_addr(result, addr);
+    state.regs.sta |= flags;
+}
+
 /// INC (zero-page addressing mode)
 /// Opcode: E6
-pub fn inc_zp(state: &mut ComputerState) {
-    let zp_addr = state.fetch_zero_page_address();
-    (state.mem[zp_addr], state.regs.sta) = inc(state.mem[zp_addr])
-}
+pub fn inc_zp(state: &mut ComputerState)
+{ inc_adapter(state, ComputerState::fetch_zero_page_address) }
 /// INC (zero-page X addressing mode)
 /// Opcode: F6
-pub fn inc_zpx(state: &mut ComputerState) {
-    let zpx_addr = state.fetch_zero_page_x_address();
-    (state.mem[zpx_addr], state.regs.sta) = inc(state.mem[zpx_addr])
-}
+pub fn inc_zpx(state: &mut ComputerState)
+{ inc_adapter(state, ComputerState::fetch_zero_page_x_address) }
 /// INC (absolute addressing mode)
 /// Opcode: EE
-pub fn inc_ab(state: &mut ComputerState) {
-    let ab_addr = state.fetch_absolute_address();
-    (state.mem[ab_addr], state.regs.sta) = inc(state.mem[ab_addr])
-}
+pub fn inc_ab(state: &mut ComputerState)
+{ inc_adapter(state, ComputerState::fetch_absolute_address) }
 /// INC (absolute X addressing mode)
 /// Opcode: FE
-pub fn inc_abx(state: &mut ComputerState) {
-    let abx_addr = state.fetch_absolute_address_x();
-    (state.mem[abx_addr], state.regs.sta) = inc(state.mem[abx_addr])
-}
+pub fn inc_abx(state: &mut ComputerState)
+{ inc_adapter(state, ComputerState::fetch_absolute_address_x) }
 
 /// INX (implied addressing mode)
 /// Opcode: E8
