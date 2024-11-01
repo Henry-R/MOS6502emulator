@@ -134,7 +134,8 @@ impl ComputerState {
     fn fetch_absolute_address(&mut self) -> usize {
         let lo_byte = self.fetch_next_byte();
         let hi_byte = self.fetch_next_byte();
-        lo_byte as usize + (hi_byte as usize >> 8)
+        // hi byte first because system is little endian
+        (usize::from(hi_byte) << 8) + usize::from(lo_byte)
     }
 
     /// Fetches the operand as an absolute address and adds the X index to that address
