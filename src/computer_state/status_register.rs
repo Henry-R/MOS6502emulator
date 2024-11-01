@@ -49,6 +49,10 @@ impl StatusRegister {
     /// True if this status contains the given flag
     pub const fn contains(&self, flag: StatusRegister) -> bool { !self.intersect(flag).is_empty() }
 
+    pub const fn contains_only(&self, flag: StatusRegister) -> bool {
+        self.difference(flag).is_empty()
+    }
+
     /// Get Conditional Flag
     /// Returns these flags if the condition is true, else empty flags
     pub const fn get_cond(self, cond: bool) -> StatusRegister {
