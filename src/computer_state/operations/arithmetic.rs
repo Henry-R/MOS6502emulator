@@ -52,10 +52,10 @@ pub fn add_abx(state: &mut ComputerState) { add_adapter(state, ComputerState::fe
 pub fn add_aby(state: &mut ComputerState) { add_adapter(state, ComputerState::fetch_absolute_y); }
 /// ADC (indirect X addressing mode)
 /// Opcode: 61
-pub fn add_inx(state: &mut ComputerState) { add_adapter(state, ComputerState::fetch_indexed_indirect);}
+pub fn add_inx(state: &mut ComputerState) { add_adapter(state, ComputerState::fetch_indirect_x);}
 /// ADC (indirect Y addressing mode)
 /// Opcode: 71
-pub fn add_iny(state: &mut ComputerState) { add_adapter(state, ComputerState::fetch_indirect_indexed); }
+pub fn add_iny(state: &mut ComputerState) { add_adapter(state, ComputerState::fetch_indirect_y); }
 
 
 // SUBTRACTION
@@ -99,10 +99,10 @@ pub fn sub_abx(state: &mut ComputerState) { sub_adapter(state, ComputerState::fe
 pub fn sub_aby(state: &mut ComputerState) { sub_adapter(state, ComputerState::fetch_absolute_y); }
 /// SBC (indirect X addressing mode)
 /// Opcode: E1
-pub fn sub_inx(state: &mut ComputerState) { sub_adapter(state, ComputerState::fetch_indexed_indirect); }
+pub fn sub_inx(state: &mut ComputerState) { sub_adapter(state, ComputerState::fetch_indirect_x); }
 /// SBC (indirect Y addressing mode)
 /// Opcode: F1
-pub fn sub_iny(state: &mut ComputerState) { sub_adapter(state, ComputerState::fetch_indirect_indexed); }
+pub fn sub_iny(state: &mut ComputerState) { sub_adapter(state, ComputerState::fetch_indirect_y); }
 
 
 /// DEC (Decrement memory by one)

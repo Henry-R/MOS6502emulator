@@ -47,13 +47,13 @@ pub fn and_aby(state: &mut ComputerState) {
 /// AND (indirect X addressing mode)
 /// Opcode: 21
 pub fn and_inx(state: &mut ComputerState) {
-    let value = state.fetch_indexed_indirect();
+    let value = state.fetch_indirect_x();
     and(state, value);
 }
 /// AND (indirect Y addressing mode)
 /// Opcode: 31
 pub fn and_iny(state: &mut ComputerState) {
-    let value = state.fetch_indirect_indexed();
+    let value = state.fetch_indirect_y();
     and(state, value);
 }
 
@@ -104,13 +104,13 @@ pub fn or_aby(state: &mut ComputerState) {
 /// OR (indirect X addressing mode)
 /// Opcode: 01
 pub fn or_inx(state: &mut ComputerState) {
-    let value = state.fetch_indexed_indirect();
+    let value = state.fetch_indirect_x();
     or(state, value);
 }
 /// OR (indirect Y addressing mode)
 /// Opcode: 11
 pub fn or_iny(state: &mut ComputerState) {
-    let value = state.fetch_indirect_indexed();
+    let value = state.fetch_indirect_y();
     or(state, value);
 }
 
@@ -161,13 +161,13 @@ pub fn eor_aby(state: &mut ComputerState) {
 /// EOR (indirect X addressing mode)
 /// Opcode: 41
 pub fn eor_inx(state: &mut ComputerState) {
-    let value = state.fetch_indexed_indirect();
+    let value = state.fetch_indirect_x();
     eor(state, value);
 }
 /// EOR (indirect Y addressing mode)
 /// Opcode: 51
 pub fn eor_iny(state: &mut ComputerState) {
-    let value = state.fetch_indirect_indexed();
+    let value = state.fetch_indirect_y();
     eor(state, value);
 }
 

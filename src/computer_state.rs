@@ -140,12 +140,12 @@ impl ComputerState {
     }
 
     /// Fetches the memory held by the address given by the absolute address plus the X index
-    fn fetch_indexed_indirect(&mut self) -> u8 {
+    fn fetch_indirect_x(&mut self) -> u8 {
         self.mem[self.fetch_absolute_x() as usize]
     }
 
     /// Fetches the memory held at the address pointed to by the given address plus the Y index
-    fn fetch_indirect_indexed(&mut self) -> u8 {
+    fn fetch_indirect_y(&mut self) -> u8 {
         // Get zero-page index of 16-bit address
         let zp_index = self.fetch_next_byte();
         let lo_byte = self.mem[zp_index as usize];
