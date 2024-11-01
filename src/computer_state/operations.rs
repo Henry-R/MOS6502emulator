@@ -10,7 +10,7 @@ mod branch;
 mod bitwise;
 mod flags;
 
-pub const INSTRUCTION_TABLE: [fn (&mut ComputerState); 256] = [
+const INSTRUCTION_TABLE: [fn (&mut ComputerState); 256] = [
  //      0         2         4         6         8         A         C         E
  //           1         3         5         7         9         B         D         F
  /* 0 */ brk,      nop,      nop,      asl_zp,   nop,      asl_acc,  nop,      asl_ab,
@@ -46,3 +46,7 @@ pub const INSTRUCTION_TABLE: [fn (&mut ComputerState); 256] = [
  /* F */ brk,      nop,      nop,      inc_zpx,  sed,      nop,      nop,      inc_abx,
     sbc_iny,  nop, sbc_zpx,  nop, sbc_aby,  nop, sbc_abx,  nop,
 ];
+
+pub const fn decode(opcode: u8) -> fn (&mut ComputerState) {
+    INSTRUCTION_TABLE[usize::from(opcode)]
+}
