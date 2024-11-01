@@ -113,9 +113,9 @@ impl ComputerState {
         result
     }
 
-    fn fetch_nibble(&self, addr: usize) -> usize {
-        let lo_byte = usize::from(self.get_addr(addr));
-        let hi_byte = usize::from(self.get_addr(addr + 1));
+    fn fetch_nibble(&self, addr: usize) -> u16 {
+        let lo_byte = u16::from(self.get_addr(addr));
+        let hi_byte = u16::from(self.get_addr(addr + 1));
         (hi_byte << 8) + lo_byte
     }
 
@@ -157,14 +157,14 @@ impl ComputerState {
         let indirect_addr = usize::from(self.fetch_next_byte());
         let x = usize::from(self.regs.x);
 
-        self.fetch_nibble(indirect_addr + x)
+        usize::from(self.fetch_nibble(indirect_addr + x))
     }
 
     fn fetch_indirect_y_address(&mut self) -> usize {
         let indirect_addr = usize::from(self.fetch_next_byte());
-        let y = usize::from(self.regs.y);
+        let y = u16::from(self.regs.y);
 
-        self.fetch_nibble(indirect_addr) + y
+        usize::from(self.fetch_nibble(indirect_addr) + y)
     }
 
     /// Moves the PC up by one and fetches that constant from memory

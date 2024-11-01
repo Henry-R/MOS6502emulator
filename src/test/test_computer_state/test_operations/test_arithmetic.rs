@@ -255,8 +255,8 @@ mod tests {
             opcode_from_operation(adc_iny),
             0x41
         ]);
-        state.set_addr(0x31, 0x41);
-        state.set_addr(0x32, 0x42);
+        state.set_addr(0x34, 0x41);
+        state.set_addr(0x12, 0x42);
         state.set_addr(20, 0x1256);
 
         state.execute_next();
