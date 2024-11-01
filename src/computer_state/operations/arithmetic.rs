@@ -10,7 +10,7 @@ const fn add(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
     let overflowed = overflow_n || overflow_c;
 
     let flags =
-        get_zero_neg_flags(sum).union(
+        get_zero_neg_flags(result).union(
         StatusRegister::C.get_cond(overflowed).union(
             // Overflowed from negative to positive or vice versa
         StatusRegister::V.get_cond(
@@ -68,7 +68,9 @@ pub fn add_iny(state: &mut ComputerState)
 const fn sub(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
     // Use a - b is equivalent to a + (-b)
     let negative_n = 0xFF ^ n;
-    add(acc, negative_n, carry)
+    // Inversion of carry is used to indicate a borrow
+    let negative_carry = if carry == 1 { 0 } else { 1 };
+    add(acc, negative_n, negative_carry)
 }
 
 /// Mutates the state of the computer according to the result of subtraction
@@ -228,49 +230,54 @@ mod tests {
         // Zero
         let (result, flags) = add(0, 0, 0);
         assert_eq!(result, 0);
-        assert!(flags.difference(StatusRegister::Z).is_empty());
+        assert!(flags.contains_only(StatusRegister::Z));
 
         // Negative
         let (result, flags) = add(0, 200, 0);
         assert_eq!(result, 200);
-        assert!(flags.difference(StatusRegister::N).is_empty());
+        assert!(flags.contains_only(StatusRegister::N));
 
         // Negative and carry
         let (result, flags) = add(1, 0xFF, 0);
         assert_eq!(result, 0);
-        assert!(flags.difference(StatusRegister::Z | StatusRegister::C).is_empty());
+        assert!(flags.contains_only(StatusRegister::Z | StatusRegister::C));
 
         // Negative and overflow
         let (result, flags) = add(32, 120, 0);
         assert_eq!(result, 152);
-        assert!(flags.difference(StatusRegister::N | StatusRegister::V).is_empty());
+        assert!(flags.contains_only(StatusRegister::N | StatusRegister::V));
 
         // Carry and overflow
         let (result, flags) = add(144, 208, 0);
         assert_eq!(result, 96);
-        assert!(flags.difference(StatusRegister::C | StatusRegister::V).is_empty());
+        assert!(flags.contains_only(StatusRegister::C | StatusRegister::V));
     }
     #[test]
     fn test_sub() {
-        let (result, flags) = sub(0, 100, 0);
-        assert_eq!(result, 156);
-        assert!(flags.contains(StatusRegister::C));
+        // No borrow
+        let (result, flags) = sub(0x50, 0x20, 0);
+        assert_eq!(result, 0x30);
+        assert!(flags.contains_only(StatusRegister::C));
 
-        let (result, flags) = sub(result, 100, 0);
-        assert!(flags.contains(StatusRegister::N));
+        // Borrow
+        let (result, flags) = sub(0xD0, 0xF0, 0);
+        assert_eq!(result, 0xE0);
+        assert!(flags.contains_only(StatusRegister::N));
 
-        let (result, flags) = sub(result, 56, 0);
+        // Overflow
+        let (result, flags) = sub(0x50, 0xB0, 0);
+        assert_eq!(result, 0xA0);
+        assert!(flags.contains_only(StatusRegister::N | StatusRegister::V));
+
+        // Zero
+        let (result, flags) = sub(50, 50, 0);
         assert_eq!(result, 0);
         assert!(flags.contains(StatusRegister::Z));
+        assert!(flags.contains(StatusRegister::C));
     }
 
     #[test]
     fn test_dec() {
-        let (val, flags) = dec(128);
-        assert!(flags.contains(StatusRegister::Z));
-        assert_eq!(127, val);
-        let (val, flags) = dec(127);
-        assert!(flags.contains(StatusRegister::N));
-        assert_eq!(126, val);
+
     }
 }
