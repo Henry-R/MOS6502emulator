@@ -1,5 +1,5 @@
 use crate::computer_state::{ComputerState, StatusRegister};
-use crate::computer_state::status_register::{get_cond_flag, get_zero_neg_flags};
+use crate::computer_state::status_register::{get_zero_neg_flags};
 
 // ADDITION
 /// ADC with carry
@@ -7,8 +7,7 @@ use crate::computer_state::status_register::{get_cond_flag, get_zero_neg_flags};
 fn add(n: u8, m: u8) -> (u8, StatusRegister) {
     let (sum, overflowed) = n.overflowing_add(m);
 
-    let flags =
-        get_cond_flag(StatusRegister::C | StatusRegister::V, overflowed) |
+    let flags = (StatusRegister::C | StatusRegister::V).get_cond(overflowed) |
         get_zero_neg_flags(sum);
 
     (sum, flags)

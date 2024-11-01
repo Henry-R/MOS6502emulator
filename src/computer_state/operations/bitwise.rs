@@ -1,5 +1,5 @@
 use crate::computer_state::{ComputerState, StatusRegister};
-use crate::computer_state::status_register::{get_cond_flag, get_zero_neg_flags};
+use crate::computer_state::status_register::{get_zero_neg_flags};
 
 // AND
 /// AND (bitwise and)
@@ -178,7 +178,7 @@ fn asl(state: &mut ComputerState, value: u8) -> u8 {
 
     // FLAGS
     state.regs.sta =
-        get_cond_flag(StatusRegister::C, overflow) |
+        StatusRegister::C.get_cond(overflow) |
         get_zero_neg_flags(result);
 
     result
@@ -224,7 +224,7 @@ fn lsr(state: &mut ComputerState, value: u8) -> u8 {
 
     // FLAGS
     state.regs.sta =
-        get_cond_flag(StatusRegister::C, overflow) |
+        StatusRegister::C.get_cond(overflow) |
         get_zero_neg_flags(result);
 
     result

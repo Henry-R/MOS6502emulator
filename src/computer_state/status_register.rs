@@ -48,6 +48,12 @@ impl StatusRegister {
 
     /// True if this status contains the given flag
     pub const fn contains(&self, flag: StatusRegister) -> bool { !self.intersect(flag).is_empty() }
+
+    /// Get Conditional Flag
+    /// Returns these flags if the condition is true, else empty flags
+    pub const fn get_cond(self, cond: bool) -> StatusRegister {
+        if cond { self } else { StatusRegister::EMPTY }
+    }
 }
 
 // Operators
@@ -55,25 +61,19 @@ impl std::ops::BitOr for StatusRegister {
     type Output = Self;
 
     fn bitor(self, rhs: Self) -> Self::Output {
-        Self::from_flags(self.data | rhs.data)
+        self.union(rhs)
     }
 }
 impl BitOrAssign for StatusRegister {
     fn bitor_assign(&mut self, rhs: Self) {
-        self.data |= rhs.data
+        self.data = self.data | rhs.data
     }
 }
 
 // Utils
-/// Get Conditional Flag
-/// Returns the given flag if the condition is true, else an empty flag
-pub const fn get_cond_flag(flag: StatusRegister, cond: bool) -> StatusRegister {
-        if cond { flag } else { StatusRegister::EMPTY }
-}
-
 pub const fn get_zero_neg_flags(n: u8) -> StatusRegister {
     const MOST_SIG_BIT: u8 = 0x80;
 
-    get_cond_flag(StatusRegister::Z, n == 0).union(
-    get_cond_flag(StatusRegister::N, (n & MOST_SIG_BIT) == MOST_SIG_BIT))
+    StatusRegister::Z.get_cond(n == 0).union(
+    StatusRegister::N.get_cond((n & MOST_SIG_BIT) == MOST_SIG_BIT))
 }
