@@ -10,7 +10,9 @@ mod branch;
 mod bitwise;
 mod flags;
 
-const INSTRUCTION_TABLE: [fn (&mut ComputerState); u8::MAX as usize] = [
+type MosOp = fn (&mut ComputerState);
+
+const INSTRUCTION_TABLE: [MosOp; 256] = [
  //      0         2         4         6         8         A         C         E
  //           1         3         5         7         9         B         D         F
  /* 0 */ brk,      nop,      nop,      asl_zp,   nop,      asl_acc,  nop,      asl_ab,
@@ -47,11 +49,11 @@ const INSTRUCTION_TABLE: [fn (&mut ComputerState); u8::MAX as usize] = [
          sbc_iny,       nop,      sbc_zpx,  nop,      sbc_aby,  nop,      sbc_abx,  nop,
 ];
 
-pub const fn decode(opcode: u8) -> fn (&mut ComputerState) {
+pub const fn decode(opcode: u8) -> MosOp {
     INSTRUCTION_TABLE[opcode as usize]
 }
 
-pub fn opcode_from_operation(op: fn (&mut ComputerState)) -> u8 {
+pub fn opcode_from_operation(op: MosOp) -> u8 {
     let op_index = INSTRUCTION_TABLE.iter().position(|&f| f == op);
     // If given a correct function, this will always give a result,
     // and the index will fit inside an u8
