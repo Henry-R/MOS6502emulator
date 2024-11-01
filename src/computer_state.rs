@@ -56,6 +56,7 @@ impl ComputerState {
     }
 
     // EXECUTION
+    /// Executes the instruction at the program counter
     pub fn execute_next(&mut self) {
         // Fetch
         let opcode = self.fetch_next_byte();
@@ -66,18 +67,23 @@ impl ComputerState {
     }
 
     // MEMORY ACCESS
+    /// Sets the memory at the given address equal to the given value
     pub fn set_addr(&mut self, value: u8, index: usize) {
         self.mem[index] = value;
     }
+
+    /// Gets the value at the given address
     pub fn get_addr(&self, index: usize) -> u8 {
         self.mem[index]
     }
 
+    /// Inserts the given value at the position pointed to by the PC; increments the PC
     pub fn insert_at_pc(&mut self, value: u8) {
         self.set_addr(value, usize::from(self.regs.pc));
         self.regs.pc += 1;
     }
 
+    /// Inserts the given instruction at the position pointed to by the PC; increments the PC
     pub fn insert_operation_at_pc(&mut self, op: operations::MosOp) {
         let opcode = opcode_from_operation(op);
         self.insert_at_pc(opcode);
