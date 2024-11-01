@@ -48,5 +48,12 @@ const INSTRUCTION_TABLE: [fn (&mut ComputerState); 256] = [
 ];
 
 pub const fn decode(opcode: u8) -> fn (&mut ComputerState) {
-    INSTRUCTION_TABLE[usize::from(opcode)]
+    INSTRUCTION_TABLE[opcode as usize]
+}
+
+pub fn opcode_from_operation(op: fn (&mut ComputerState)) -> u8 {
+    let op_index = INSTRUCTION_TABLE.iter().position(|&f| f == op);
+    // If given a correct function, this will always give a result,
+    // and the index will fit inside an u8
+    op_index.unwrap() as u8
 }
