@@ -2,9 +2,9 @@ use crate::computer_state::{ComputerState, StatusRegister};
 use crate::computer_state::status_register::{get_zero_neg_flags};
 
 // ADDITION
-/// ADC with carry
-/// Adds two integers and returns their sum. If an overflow occurs, the C and V flags will be set
+/// ADC (addition with carry)
 const fn add(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
+    // Could overflow during regular addition or carry
     let (sum, overflow_n) = acc.overflowing_add(n);
     let (result, overflow_c) = sum.overflowing_add(carry);
     let overflowed = overflow_n || overflow_c;
@@ -12,6 +12,7 @@ const fn add(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
     let flags =
         get_zero_neg_flags(sum).union(
         StatusRegister::C.get_cond(overflowed).union(
+            // Overflowed from negative to positive or vice versa
         StatusRegister::V.get_cond(
             (n < 0x7F && acc < 0x7F && result > 0x7F) ||
             (n > 0x7F && acc > 0x7F && result < 0x7F))));
