@@ -1,4 +1,5 @@
 
+mod status_register;
 pub(crate) mod operations;
 
 use bitflags::bitflags;
