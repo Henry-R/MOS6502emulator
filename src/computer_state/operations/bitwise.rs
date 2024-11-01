@@ -265,14 +265,14 @@ pub fn lsr_abx(state: &mut ComputerState) {
 
 
 /// ROL (Rotate left one bit)
-fn rol(n: u8, old_flags: StatusRegister) -> (u8, StatusRegister) {
+fn rol(_n: u8, _old_flags: StatusRegister) -> (u8, StatusRegister) {
     // TODO()
     (0, StatusRegister::new())
 }
 
 
 /// BIT (Bit test)
-fn bit(state: &mut ComputerState, value: u8) {
+fn bit(_state: &mut ComputerState, _value: u8) {
     // TODO()
 }
 /// BIT (zero-page addressing mode)
