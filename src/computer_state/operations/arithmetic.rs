@@ -21,8 +21,8 @@ const fn add(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
 
 /// Mutates the state of the computer according to the result of addition
 /// Acts as an adapter between the implementation of add and the computer
-fn add_adapter(state: &mut ComputerState, addressing_mode: fn(&mut ComputerState) -> u8) {
-    let (result, flags) = add(state.regs.acc, addressing_mode(state), state.get_carry());
+fn add_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
+    let (result, flags) = add(state.regs.acc, addr_fn(state), state.get_carry());
 
     state.regs.acc = result;
     state.regs.sta |= flags;
@@ -64,8 +64,8 @@ const fn sub(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
 
 /// Mutates the state of the computer according to the result of subtraction
 /// Acts as an adapter between the implementation of sub and the computer
-fn sub_adapter(state: &mut ComputerState, addressing_mode: fn(&mut ComputerState) -> u8) {
-    let (result, flags) = sub(state.regs.acc, addressing_mode(state), state.get_carry());
+fn sub_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
+    let (result, flags) = sub(state.regs.acc, addr_fn(state), state.get_carry());
 
     state.regs.acc = result;
     state.regs.sta |= flags;
