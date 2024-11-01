@@ -1,3 +1,4 @@
+use crate::computer_state::operations::opcode_from_operation;
 use crate::computer_state::status_register::StatusRegister;
 
 pub(crate) mod status_register;
@@ -54,6 +55,16 @@ impl ComputerState {
         }
     }
 
+    // EXECUTION
+    pub fn execute_next(&mut self) {
+        // Fetch
+        let opcode = self.fetch_next_byte();
+        // Decode
+        let operation = operations::decode(opcode);
+        // Execute instruction
+        operation(self);
+    }
+
     // MEMORY ACCESS
     pub fn set_addr(&mut self, value: u8, index: usize) {
         self.mem[index] = value;
@@ -61,6 +72,18 @@ impl ComputerState {
     pub fn get_addr(&self, index: usize) -> u8 {
         self.mem[index]
     }
+
+    pub fn insert_at_pc(&mut self, value: u8) {
+        self.set_addr(value, usize::from(self.regs.pc));
+        self.regs.pc += 1;
+    }
+
+    pub fn insert_operation_at_pc(&mut self, op: operations::MosOp) {
+        let opcode = opcode_from_operation(op);
+        self.insert_at_pc(opcode);
+    }
+
+
 
     // REGISTER INSTRUCTIONS
     pub const fn get_carry(&self) -> u8 {
@@ -71,8 +94,9 @@ impl ComputerState {
     // These instructions help the emulator fetch memory according to addressing modes
     /// Moves the PC up by one and fetches that constant from memory
     fn fetch_next_byte(&mut self) -> u8 {
+        let result = self.mem[self.regs.pc as usize];
         self.regs.pc += 1;
-        self.mem[self.regs.pc as usize]
+        result
     }
 
     /// Fetches the operand as a zero-page address

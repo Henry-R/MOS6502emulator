@@ -10,7 +10,7 @@ mod branch;
 mod bitwise;
 mod flags;
 
-type MosOp = fn (&mut ComputerState);
+pub type MosOp = fn (&mut ComputerState);
 
 const INSTRUCTION_TABLE: [MosOp; 256] = [
  //      0         2         4         6         8         A         C         E
