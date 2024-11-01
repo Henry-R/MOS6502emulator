@@ -60,78 +60,49 @@ pub fn add_iny(state: &mut ComputerState) { add_adapter(state, ComputerState::fe
 
 // SUBTRACTION
 /// SBC (subtraction with carry)
-fn sub(n: u8, m: u8) -> (u8, StatusRegister) {
-    // Subtraction with remainder
-    let (result, overflow) = n.overflowing_sub(m);
+const fn sub(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
+    // Use a - b is equivalent to a + (-b)
+    let negative_n = 0xFF ^ n;
+    add(acc, negative_n, carry)
+}
 
-    // FLAGS
-    let mut flags = StatusRegister::new();
-    // Carry and overflow bits set TODO maybe subtle carry logic could create bugs
-    if overflow {
-        flags = flags | StatusRegister::C | StatusRegister::V;
-    }
-    // Result was zero
-    if result == 0 { flags = flags | StatusRegister::Z }
-    if result < i8::MAX as u8 { flags = flags | StatusRegister::N };
-    (result, flags)
+/// Mutates the state of the computer according to the result of subtraction
+/// Acts as an adapter between the implementation of sub and the computer
+fn sub_adapter(state: &mut ComputerState, addressing_mode: fn(&mut ComputerState) -> u8) {
+    let acc = state.regs.acc;
+    let carry = if state.regs.sta.contains(StatusRegister::C) { 1 } else { 0 };
+    let val = addressing_mode(state);
+
+    let (result, flags) = sub(acc, val, carry);
+
+    state.regs.acc = result;
+    state.regs.sta |= flags;
 }
 
 /// SBC (intermediate addressing mode)
 /// Opcode: E9
-pub fn sub_im(state: &mut ComputerState) {
-    let (val, flags) = sub(state.regs.acc, state.fetch_intermediate());
-    state.regs.acc = val;
-    state.regs.sta |= flags
-}
+pub fn sub_im(state: &mut ComputerState) { sub_adapter(state, ComputerState::fetch_intermediate); }
 /// SBC (zero-page addressing mode)
 /// Opcode: E5
-pub fn sub_zp(state: &mut ComputerState) {
-    let (val, flags) = sub(state.regs.acc, state.fetch_zero_page());
-    state.regs.acc = val;
-    state.regs.sta |= flags
-}
+pub fn sub_zp(state: &mut ComputerState) { sub_adapter(state, ComputerState::fetch_zero_page); }
 /// SBC (zero-page X addressing mode)
 /// Opcode:F5
-pub fn sub_zpx(state: &mut ComputerState) {
-    let (val, flags) = sub(state.regs.acc, state.fetch_zero_page_x());
-    state.regs.acc = val;
-    state.regs.sta |= flags
-}
+pub fn sub_zpx(state: &mut ComputerState) { sub_adapter(state, ComputerState::fetch_zero_page_x); }
 /// SBC (absolute addressing mode)
 /// Opcode: ED
-pub fn sub_ab(state: &mut ComputerState) {
-    let (val, flags) = sub(state.regs.acc, state.fetch_absolute());
-    state.regs.acc = val;
-    state.regs.sta |= flags
-}
+pub fn sub_ab(state: &mut ComputerState) { sub_adapter(state, ComputerState::fetch_absolute); }
 /// SBC (absolute X addressing mode)
 /// Opcode: FD
-pub fn sub_abx(state: &mut ComputerState) {
-    let (val, flags) = sub(state.regs.acc, state.fetch_absolute_x());
-    state.regs.acc = val;
-    state.regs.sta |= flags
-}
+pub fn sub_abx(state: &mut ComputerState) { sub_adapter(state, ComputerState::fetch_absolute_x); }
 /// SBC (absolute Y addressing mode)
 /// Opcode: F9
-pub fn sub_aby(state: &mut ComputerState) {
-    let (val, flags) = sub(state.regs.acc, state.fetch_absolute_y());
-    state.regs.acc = val;
-    state.regs.sta |= flags
-}
+pub fn sub_aby(state: &mut ComputerState) { sub_adapter(state, ComputerState::fetch_absolute_y); }
 /// SBC (indirect X addressing mode)
 /// Opcode: E1
-pub fn sub_inx(state: &mut ComputerState) {
-    let (val, flags) = sub(state.regs.acc, state.fetch_indexed_indirect());
-    state.regs.acc = val;
-    state.regs.sta |= flags
-}
+pub fn sub_inx(state: &mut ComputerState) { sub_adapter(state, ComputerState::fetch_indexed_indirect); }
 /// SBC (indirect Y addressing mode)
 /// Opcode: F1
-pub fn sub_iny(state: &mut ComputerState) {
-    let (val, flags) = sub(state.regs.acc, state.fetch_indirect_indexed());
-    state.regs.acc = val;
-    state.regs.sta |= flags
-}
+pub fn sub_iny(state: &mut ComputerState) { sub_adapter(state, ComputerState::fetch_indirect_indexed); }
 
 
 /// DEC (Decrement memory by one)
@@ -280,14 +251,14 @@ mod tests {
     }
     #[test]
     fn test_sub() {
-        let (result, flags) = sub(0, 100);
+        let (result, flags) = sub(0, 100, 0);
         assert_eq!(result, 156);
         assert!(flags.contains(StatusRegister::C));
 
-        let (result, flags) = sub(result, 100);
+        let (result, flags) = sub(result, 100, 0);
         assert!(flags.contains(StatusRegister::N));
 
-        let (result, flags) = sub(result, 56);
+        let (result, flags) = sub(result, 56, 0);
         assert_eq!(result, 0);
         assert!(flags.contains(StatusRegister::Z));
     }
