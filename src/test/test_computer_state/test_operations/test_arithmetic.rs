@@ -243,4 +243,25 @@ mod tests {
         assert_eq!(56, state.regs.acc);
         assert!(state.regs.sta.is_empty());
     }
+
+    #[test]
+    fn test_adc_iny() {
+        let mut state: ComputerState = ComputerState::new();
+
+        // Initialise computer state
+        state.regs.acc = 36;
+        state.regs.y = 0x22;
+        state.set_up_state(vec![
+            opcode_from_operation(adc_iny),
+            0x41
+        ]);
+        state.set_addr(0x31, 0x41);
+        state.set_addr(0x32, 0x42);
+        state.set_addr(20, 0x1256);
+
+        state.execute_next();
+
+        assert_eq!(56, state.regs.acc);
+        assert!(state.regs.sta.is_empty());
+    }
 }

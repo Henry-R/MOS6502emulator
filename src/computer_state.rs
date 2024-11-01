@@ -10,7 +10,7 @@ pub struct Registers {
     // (P) Status register
     pub sta: StatusRegister,
     // (PC) Program counter
-    pub pc: u16,
+    pub pc: usize,
     // (S) Stack pointer
     pub stk: u8,
     // (X) Index register
@@ -79,7 +79,7 @@ impl ComputerState {
 
     /// Inserts the given value at the position pointed to by the PC; increments the PC
     pub fn insert_at_pc(&mut self, value: u8) {
-        self.set_addr(value, usize::from(self.regs.pc));
+        self.set_addr(value, self.regs.pc);
         self.regs.pc += 1;
     }
 
@@ -108,9 +108,15 @@ impl ComputerState {
     // These instructions help the emulator fetch memory according to addressing modes
     /// Moves the PC up by one and fetches that constant from memory
     fn fetch_next_byte(&mut self) -> u8 {
-        let result = self.mem[self.regs.pc as usize];
+        let result = self.get_addr(self.regs.pc);
         self.regs.pc += 1;
         result
+    }
+
+    fn fetch_nibble(&self, addr: usize) -> usize {
+        let lo_byte = usize::from(self.get_addr(addr));
+        let hi_byte = usize::from(self.get_addr(addr + 1));
+        (hi_byte << 8) + lo_byte
     }
 
     /// Fetches the operand as a zero-page address
@@ -121,33 +127,44 @@ impl ComputerState {
     /// Fetches the operand as a zero_page address and adds the X index to that address
     /// If this addition overflows, it will wrap around
     fn fetch_zero_page_x_address(&mut self) -> usize {
-        self.fetch_zero_page_address().wrapping_add(self.regs.x as usize)
+        self.fetch_zero_page_address().wrapping_add(usize::from(self.regs.x))
     }
 
     /// Fetches the operand as a zero_page address and adds the Y index to that address
     /// If this addition overflows, it will wrap around
     fn fetch_zero_page_y_address(&mut self) -> usize {
-        self.fetch_zero_page_address().wrapping_add(self.regs.y as usize)
+        self.fetch_zero_page_address().wrapping_add(usize::from(self.regs.y))
     }
 
     /// Fetches the operand as an address of an absolute address mode instruction
     fn fetch_absolute_address(&mut self) -> usize {
-        let lo_byte = self.fetch_next_byte();
-        let hi_byte = self.fetch_next_byte();
-        // hi byte first because system is little endian
-        (usize::from(hi_byte) << 8) + usize::from(lo_byte)
+        usize::from(self.fetch_nibble(self.regs.pc))
     }
 
     /// Fetches the operand as an absolute address and adds the X index to that address
     /// If this addition overflows, it will wrap around
     fn fetch_absolute_x_address(&mut self) -> usize {
-        self.fetch_absolute_address() + self.regs.x as usize
+        self.fetch_absolute_address() + usize::from(self.regs.x)
     }
 
     /// Fetches the operand as an absolute address and adds the Y index to that address
     /// If this addition overflows, it will wrap around
-    fn fetch_absolute_address_y(&mut self) -> usize {
-        self.fetch_absolute_address() + self.regs.y as usize
+    fn fetch_absolute_y_address(&mut self) -> usize {
+        self.fetch_absolute_address() + usize::from(self.regs.y)
+    }
+
+    fn fetch_indirect_x_address(&mut self) -> usize {
+        let indirect_addr = usize::from(self.fetch_next_byte());
+        let x = usize::from(self.regs.x);
+
+        self.fetch_nibble(indirect_addr + x)
+    }
+
+    fn fetch_indirect_y_address(&mut self) -> usize {
+        let indirect_addr = usize::from(self.fetch_next_byte());
+        let y = usize::from(self.regs.y);
+
+        self.fetch_nibble(indirect_addr) + y
     }
 
     /// Moves the PC up by one and fetches that constant from memory
@@ -175,47 +192,29 @@ impl ComputerState {
     }
 
     /// Fetches the memory at the target location of an absolute address mode instruction
-    fn fetch_absolute(&mut self) -> u8 {
-        self.mem[self.fetch_absolute_address()]
-    }
+    fn fetch_absolute(&mut self) -> u8 { self.mem[self.fetch_absolute_address()] }
 
     /// Fetches the X index register to the absolute address, then fetches the memory from that
     /// address with the offset
-    fn fetch_absolute_x(&mut self) -> u8 {
-        self.mem[self.fetch_absolute_x_address()]
-    }
+    fn fetch_absolute_x(&mut self) -> u8 { self.mem[self.fetch_absolute_x_address()] }
 
     /// Fetches the Y index register to the absolute address, then fetches the memory from that
     /// address with the offset
     fn fetch_absolute_y(&mut self) -> u8 {
-        self.mem[self.fetch_absolute_address_y()]
+        self.mem[self.fetch_absolute_y_address()]
     }
 
     /// Fetches the memory held by the address given by the absolute address plus the X index
-    fn fetch_indirect_x(&mut self) -> u8 {
-        let indirect_addr = self.fetch_absolute_x_address();
-        let lo_byte = usize::from(self.get_addr(indirect_addr));
-        let hi_byte = usize::from(self.get_addr(indirect_addr + 1));
-        let addr = (hi_byte << 8) + lo_byte;
-        self.get_addr(addr)
-    }
+    fn fetch_indirect_x(&mut self) -> u8 { self.mem[self.fetch_indirect_x_address()] }
 
     /// Fetches the memory held at the address pointed to by the given address plus the Y index
-    fn fetch_indirect_y(&mut self) -> u8 {
-        let indirect_addr = self.fetch_absolute_y_address();
-        let lo_byte = self.get_addr(indirect_addr) as usize;
-        let hi_byte = self.get_addr(indirect_addr + 1) as usize;
-        let addr = (hi_byte << 8) + lo_byte;
-        self.get_addr(addr)
-    }
+    fn fetch_indirect_y(&mut self) -> u8 { self.mem[self.fetch_indirect_y_address()] }
 
 
     // STACK INSTRUCTIONS
     // These are instructions which help the emulator use the hardware stack
     /// Returns the stack pointer's index in memory
-    const fn stk_index(&self) -> usize {
-        STACK_PAGE + self.regs.stk as usize
-    }
+    const fn stk_index(&self) -> usize { STACK_PAGE + self.regs.stk as usize }
 
     /// Returns the byte at the top of the stack without mutating memory
     fn stk_peek_byte(&self) -> u8 {
