@@ -58,21 +58,9 @@ impl std::ops::BitOr for StatusRegister {
         Self::from_flags(self.data | rhs.data)
     }
 }
-impl std::ops::BitOr<u8> for StatusRegister {
-    type Output = Self;
-
-    fn bitor(self, rhs: u8) -> Self::Output {
-        Self::from_flags(self.data | rhs)
-    }
-}
 impl BitOrAssign for StatusRegister {
     fn bitor_assign(&mut self, rhs: Self) {
         self.data |= rhs.data
-    }
-}
-impl BitOrAssign<u8> for StatusRegister {
-    fn bitor_assign(&mut self, rhs: u8) {
-        self.data |= rhs
     }
 }
 
