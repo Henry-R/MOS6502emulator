@@ -54,6 +54,14 @@ impl ComputerState {
         }
     }
 
+    // MEMORY ACCESS
+    pub fn set_addr(&mut self, value: u8, index: usize) {
+        self.mem[index] = value;
+    }
+    pub fn get_addr(&self, index: usize) -> u8 {
+        self.mem[index]
+    }
+
     // REGISTER INSTRUCTIONS
     pub const fn get_carry(&self) -> u8 {
         if self.regs.sta.contains(StatusRegister::C) { 1 } else { 0 }
