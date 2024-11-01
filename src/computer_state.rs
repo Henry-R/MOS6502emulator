@@ -101,7 +101,7 @@ impl ComputerState {
 
     /// Fetches the operand as an absolute address and adds the X index to that address
     /// If this addition overflows, it will wrap around
-    fn fetch_absolute_address_x(&mut self) -> usize {
+    fn fetch_absolute_x_address(&mut self) -> usize {
         self.fetch_absolute_address() + self.regs.x as usize
     }
 
@@ -143,7 +143,7 @@ impl ComputerState {
     /// Fetches the X index register to the absolute address, then fetches the memory from that
     /// address with the offset
     fn fetch_absolute_x(&mut self) -> u8 {
-        self.mem[self.fetch_absolute_address_x()]
+        self.mem[self.fetch_absolute_x_address()]
     }
 
     /// Fetches the Y index register to the absolute address, then fetches the memory from that

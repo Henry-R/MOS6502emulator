@@ -148,7 +148,7 @@ pub fn dec_ab(state: &mut ComputerState)
 /// DEC (absolute X addressing mode)
 /// Opcode: DE
 pub fn dec_abx(state: &mut ComputerState)
-{ dec_adapter(state, ComputerState::fetch_absolute_address_x) }
+{ dec_adapter(state, ComputerState::fetch_absolute_x_address) }
 
 /// DEX (implied addressing mode)
 /// Opcode: CA
@@ -198,7 +198,7 @@ pub fn inc_ab(state: &mut ComputerState)
 /// INC (absolute X addressing mode)
 /// Opcode: FE
 pub fn inc_abx(state: &mut ComputerState)
-{ inc_adapter(state, ComputerState::fetch_absolute_address_x) }
+{ inc_adapter(state, ComputerState::fetch_absolute_x_address) }
 
 /// INX (implied addressing mode)
 /// Opcode: E8

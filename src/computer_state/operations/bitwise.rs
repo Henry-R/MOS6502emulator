@@ -212,7 +212,7 @@ pub fn asl_ab(state: &mut ComputerState) {
 /// ASL (absolute X addressing mode)
 /// Opcode: 1E
 pub fn asl_abx(state: &mut ComputerState) {
-    let abx_addr = state.fetch_absolute_address_x();
+    let abx_addr = state.fetch_absolute_x_address();
     let abx_val = state.mem[abx_addr];
     state.mem[abx_addr] = asl(state, abx_val);
 }
@@ -258,7 +258,7 @@ pub fn lsr_ab(state: &mut ComputerState) {
 /// LSR (absolute X addressing mode)
 /// Opcode: 5E
 pub fn lsr_abx(state: &mut ComputerState) {
-    let abx_addr = state.fetch_absolute_address_x();
+    let abx_addr = state.fetch_absolute_x_address();
     let abx_val = state.mem[abx_addr];
     state.mem[abx_addr] = lsr(state, abx_val);
 }
