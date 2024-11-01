@@ -4,7 +4,7 @@ use bitwise::*;
 use flags::*;
 use interrupt::*;
 
-mod arithmetic;
+pub(crate) mod arithmetic;
 mod interrupt;
 mod branch;
 mod bitwise;

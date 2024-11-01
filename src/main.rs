@@ -1,6 +1,7 @@
 use crate::computer_state::ComputerState;
 
 mod computer_state;
+mod test;
 
 fn main() {
     use crate::computer_state::operations::*;

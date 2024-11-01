@@ -1,6 +1,6 @@
 use crate::computer_state::status_register::StatusRegister;
 
-mod status_register;
+pub(crate) mod status_register;
 pub(crate) mod operations;
 
 pub struct Registers {
