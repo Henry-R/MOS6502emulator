@@ -19,6 +19,8 @@ const fn add(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
     (result, flags)
 }
 
+/// Mutates the state of the computer according to the result of addition
+/// Acts as an adapter between the implementation of add and the computer
 fn add_adapter(state: &mut ComputerState, addressing_mode: fn(&mut ComputerState) -> u8) {
     let acc = state.regs.acc;
     let carry = if state.regs.sta.contains(StatusRegister::C) { 1 } else { 0 };
