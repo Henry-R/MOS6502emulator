@@ -4,71 +4,56 @@ use crate::computer_state::status_register::{get_zero_neg_flags};
 // ADDITION
 /// ADC with carry
 /// Adds two integers and returns their sum. If an overflow occurs, the C and V flags will be set
-fn add(n: u8, m: u8) -> (u8, StatusRegister) {
-    let (sum, overflowed) = n.overflowing_add(m);
+const fn add(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
+    let (sum, overflow_n) = acc.overflowing_add(n);
+    let (result, overflow_c) = sum.overflowing_add(carry);
+    let overflowed = overflow_n || overflow_c;
 
-    let flags = (StatusRegister::C | StatusRegister::V).get_cond(overflowed) |
-        get_zero_neg_flags(sum);
+    let flags =
+        get_zero_neg_flags(sum).union(
+        StatusRegister::C.get_cond(overflowed).union(
+        StatusRegister::V.get_cond(
+            (n < 0x7F && acc < 0x7F && result > 0x7F) ||
+            (n > 0x7F && acc > 0x7F && result < 0x7F))));
 
-    (sum, flags)
+    (result, flags)
+}
+
+fn add_adapter(state: &mut ComputerState, addressing_mode: fn(&mut ComputerState) -> u8) {
+    let acc = state.regs.acc;
+    let carry = if state.regs.sta.contains(StatusRegister::C) { 1 } else { 0 };
+    let val = addressing_mode(state);
+
+    let (result, flags) = add(acc, val, carry);
+
+    state.regs.acc = result;
+    state.regs.sta |= flags;
 }
 
 /// ADC (intermediate addressing mode)
 /// Opcode: 69
-pub fn add_im(state: &mut ComputerState) {
-    let (val, flags) = add(state.regs.acc, state.fetch_intermediate());
-    state.regs.acc = val;
-    state.regs.sta |= flags
-}
+pub fn add_im(state: &mut ComputerState) { add_adapter(state, ComputerState::fetch_intermediate); }
 /// ADC (zero-page addressing mode)
 /// Opcode: 65
-pub fn add_zp(state: &mut ComputerState) {
-    let (val, flags) = add(state.regs.acc, state.fetch_zero_page());
-    state.regs.acc = val;
-    state.regs.sta |= flags
-}
+pub fn add_zp(state: &mut ComputerState) { add_adapter(state, ComputerState::fetch_zero_page); }
 /// ADC (zero-page X addressing mode)
 /// Opcode: 75
-pub fn add_zpx(state: &mut ComputerState) {
-    let (val, flags) = add(state.regs.acc, state.fetch_zero_page_x());
-    state.regs.acc = val;
-    state.regs.sta |= flags
-}
+pub fn add_zpx(state: &mut ComputerState) { add_adapter(state, ComputerState::fetch_zero_page_x); }
 /// ADC (absolute addressing mode)
 /// Opcode: 6D
-pub fn add_ab(state: &mut ComputerState) {
-    let (val, flags) = add(state.regs.acc, state.fetch_absolute());
-    state.regs.acc = val;
-    state.regs.sta |= flags
-}
+pub fn add_ab(state: &mut ComputerState) { add_adapter(state, ComputerState::fetch_absolute); }
 /// ADC (absolute X addressing mode)
 /// Opcode: 7D
-pub fn add_abx(state: &mut ComputerState) {
-    let (val, flags) = add(state.regs.acc, state.fetch_absolute_x());
-    state.regs.acc = val;
-    state.regs.sta |= flags
-}
+pub fn add_abx(state: &mut ComputerState) { add_adapter(state, ComputerState::fetch_absolute_x); }
 /// ADC (absolute Y addressing mode)
 /// Opcode: 79
-pub fn add_aby(state: &mut ComputerState) {
-    let (val, flags) = add(state.regs.acc, state.fetch_absolute_y());
-    state.regs.acc = val;
-    state.regs.sta |= flags
-}
+pub fn add_aby(state: &mut ComputerState) { add_adapter(state, ComputerState::fetch_absolute_y); }
 /// ADC (indirect X addressing mode)
 /// Opcode: 61
-pub fn add_inx(state: &mut ComputerState) {
-    let (val, flags) = add(state.regs.acc, state.fetch_indexed_indirect());
-    state.regs.acc = val;
-    state.regs.sta |= flags
-}
+pub fn add_inx(state: &mut ComputerState) { add_adapter(state, ComputerState::fetch_indexed_indirect);}
 /// ADC (indirect Y addressing mode)
 /// Opcode: 71
-pub fn add_iny(state: &mut ComputerState) {
-    let (val, flags) = add(state.regs.acc, state.fetch_indirect_indexed());
-    state.regs.acc = val;
-    state.regs.sta |= flags
-}
+pub fn add_iny(state: &mut ComputerState) { add_adapter(state, ComputerState::fetch_indirect_indexed); }
 
 
 // SUBTRACTION
@@ -261,18 +246,35 @@ mod tests {
 
     #[test]
     fn test_add() {
-        let (result, flags) = add(0, 129);
-        assert_eq!(result, 129);
+        // Normal add
+        let (result, flags) = add(0, 10, 0);
+        assert_eq!(result, 10);
         assert!(flags.is_empty());
 
-        let (result, flags) = add(result, 128);
-        assert_eq!(result, 1);
-        assert!(flags.contains(StatusRegister::C));
-        assert!(flags.contains(StatusRegister::N));
+        // Zero
+        let (result, flags) = add(0, 0, 0);
+        assert_eq!(result, 0);
+        assert!(flags.difference(StatusRegister::Z).is_empty());
 
-        let (result, flags) = add(result, 126);
-        assert_eq!(result, i8::MAX as u8);
-        assert!(flags.contains(StatusRegister::Z));
+        // Negative
+        let (result, flags) = add(0, 200, 0);
+        assert_eq!(result, 200);
+        assert!(flags.difference(StatusRegister::N).is_empty());
+
+        // Negative and carry
+        let (result, flags) = add(1, 0xFF, 0);
+        assert_eq!(result, 0);
+        assert!(flags.difference(StatusRegister::Z | StatusRegister::C).is_empty());
+
+        // Negative and overflow
+        let (result, flags) = add(32, 120, 0);
+        assert_eq!(result, 152);
+        assert!(flags.difference(StatusRegister::N | StatusRegister::V).is_empty());
+
+        // Carry and overflow
+        let (result, flags) = add(144, 208, 0);
+        assert_eq!(result, 96);
+        assert!(flags.difference(StatusRegister::C | StatusRegister::V).is_empty());
     }
     #[test]
     fn test_sub() {
