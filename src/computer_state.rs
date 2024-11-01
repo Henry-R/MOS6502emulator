@@ -113,6 +113,7 @@ impl ComputerState {
         result
     }
 
+    /// Returns the nibble of data at the given address in little endian byte-order
     fn fetch_nibble(&self, addr: usize) -> u16 {
         let lo_byte = u16::from(self.get_addr(addr));
         let hi_byte = u16::from(self.get_addr(addr + 1));
@@ -153,11 +154,10 @@ impl ComputerState {
         self.fetch_absolute_address() + usize::from(self.regs.y)
     }
 
+    /// TODO finish this documentation when I have more sleep
     fn fetch_indirect_x_address(&mut self) -> usize {
-        let indirect_addr = usize::from(self.fetch_next_byte());
-        let x = usize::from(self.regs.x);
-
-        usize::from(self.fetch_nibble(indirect_addr + x))
+        let indirect_addr = self.fetch_zero_page_x_address();
+        usize::from(self.fetch_nibble(indirect_addr))
     }
 
     fn fetch_indirect_y_address(&mut self) -> usize {
