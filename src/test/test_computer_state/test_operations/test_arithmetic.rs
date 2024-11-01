@@ -164,7 +164,6 @@ mod tests {
         assert!(state.regs.sta.is_empty());
     }
 
-    #[ignore]
     #[test]
     fn test_adc_ab() {
         let mut state: ComputerState = ComputerState::new();
@@ -177,6 +176,67 @@ mod tests {
             0x36
         ]);
         state.set_addr(20, 0x36F1);
+
+        state.execute_next();
+
+        assert_eq!(56, state.regs.acc);
+        assert!(state.regs.sta.is_empty());
+    }
+
+    #[test]
+    fn test_adc_abx() {
+        let mut state: ComputerState = ComputerState::new();
+
+        // Initialise computer state
+        state.regs.acc = 36;
+        state.regs.x = 8;
+        state.set_up_state(vec![
+            opcode_from_operation(adc_abx),
+            0xF1,
+            0x36
+        ]);
+        state.set_addr(20, 0x36F9);
+
+        state.execute_next();
+
+        assert_eq!(56, state.regs.acc);
+        assert!(state.regs.sta.is_empty());
+    }
+
+    #[test]
+    fn test_adc_aby() {
+        let mut state: ComputerState = ComputerState::new();
+
+        // Initialise computer state
+        state.regs.acc = 36;
+        state.regs.y = 8;
+        state.set_up_state(vec![
+            opcode_from_operation(adc_aby),
+            0xF1,
+            0x36
+        ]);
+        state.set_addr(20, 0x36F9);
+
+        state.execute_next();
+
+        assert_eq!(56, state.regs.acc);
+        assert!(state.regs.sta.is_empty());
+    }
+
+    #[test]
+    fn test_adc_inx() {
+        let mut state: ComputerState = ComputerState::new();
+
+        // Initialise computer state
+        state.regs.acc = 36;
+        state.regs.x = 0x22;
+        state.set_up_state(vec![
+            opcode_from_operation(adc_inx),
+            0x41
+        ]);
+        state.set_addr(0x34, 0x63);
+        state.set_addr(0x12, 0x64);
+        state.set_addr(20, 0x1234);
 
         state.execute_next();
 
