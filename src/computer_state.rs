@@ -89,6 +89,14 @@ impl ComputerState {
         self.insert_at_pc(opcode);
     }
 
+    pub fn set_up_state(&mut self, bytes: Vec<u8>) {
+        let old_pc = self.regs.pc;
+        for byte in bytes {
+            self.insert_at_pc(byte);
+        }
+        self.regs.pc = old_pc;
+    }
+
 
 
     // REGISTER INSTRUCTIONS
