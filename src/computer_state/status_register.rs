@@ -1,5 +1,5 @@
 
-struct StatusRegister {
+pub struct StatusRegister {
     data: u8
 }
 
@@ -19,29 +19,24 @@ impl StatusRegister {
     /// Carry flag
     pub const C: u8 = 1 << 6;
 
-    pub const fn new() -> Self {
-        Self {data: 0}
-    }
+    /// Constructs a status register with every flag set to 0
+    pub const fn new() -> Self { Self {data: 0} }
 
+    /// Returns the raw u8 representing the flags
     pub const fn get_flags_data(&self) -> u8 { self.data }
 
-    pub const fn from_flags(flags: u8) -> Self {
-        Self {data:flags}
-    }
+    /// Constructs a status register from a raw u8
+    pub const fn from_flags(flags: u8) -> Self { Self {data: flags} }
 
-    pub const fn insert(&self, flag: u8) -> Self {
-        Self::from_flags(flag | self.data)
-    }
+    /// Adds the given flag to the status
+    pub const fn insert(&self, flag: u8) -> Self { Self::from_flags(flag | self.data) }
 
-    pub const fn remove(&self, flag: u8) -> Self {
-        Self::from_flags((!flag) & self.data)
-    }
+    /// Removes the given flag from the status
+    pub const fn remove(&self, flag: u8) -> Self { Self::from_flags((!flag) & self.data) }
 
-    pub const fn contains(&self, flag: u8) -> bool {
-        (flag & self.data) != 0
-    }
+    /// True if this status contains the given flag
+    pub const fn contains(&self, flag: u8) -> bool { (flag & self.data) != 0 }
 
-    pub const fn is_empty(&self) -> bool {
-        self.data == 0
-    }
+    /// True if this status contains no flags
+    pub const fn is_empty(&self) -> bool { self.data == 0 }
 }
