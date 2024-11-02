@@ -8,6 +8,8 @@ const fn and(acc: u8, value: u8) -> (u8, StatusRegister) {
     (result, get_zero_neg_flags(result))
 }
 
+/// Mutates the state of the computer according to the result of logical and
+/// Acts as an adapter between the implementation of 'AND' and the computer
 fn and_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
     let (result, flags) = and(state.regs.acc, addr_fn(state));
     state.regs.acc = result;
@@ -54,6 +56,8 @@ const fn or(acc: u8, value: u8) -> (u8, StatusRegister) {
     (result, get_zero_neg_flags(result))
 }
 
+/// Mutates the state of the computer according to the result of logical or
+/// Acts as an adapter between the implementation of 'OR' and the computer
 fn or_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
     let (result, flags) = or(state.regs.acc, addr_fn(state));
     state.regs.acc = result;
@@ -100,6 +104,8 @@ fn eor(acc: u8, value: u8) -> (u8, StatusRegister) {
     (result, get_zero_neg_flags(result))
 }
 
+/// Mutates the state of the computer according to the result of logical exclusive or
+/// Acts as an adapter between the implementation of 'XOR' and the computer
 fn eor_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
     let (result, flags) = eor(state.regs.acc, addr_fn(state));
     state.regs.acc = result;
@@ -147,6 +153,8 @@ const fn bit(acc: u8, value: u8) -> StatusRegister {
     StatusRegister::V.get_cond((value & 0x40) == 0x40)))
 }
 
+/// Mutates the state of the computer according to the result of the bit test
+/// Acts as an adapter between the implementation of 'BIT' and the computer
 fn bit_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
     let flags = bit(state.regs.acc, addr_fn(state));
     state.regs.sta |= flags;
@@ -175,6 +183,8 @@ const fn asl(value: u8) -> (u8, StatusRegister) {
     (result, flags)
 }
 
+/// Mutates the state of the computer according to the result of an arithmetic shift left
+/// Acts as an adapter between the implementation of 'ASL' and the computer
 fn asl_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usize) {
     let zp_addr = addr_fn(state);
     let zp_val = state.fetch_byte_from_addr(zp_addr);
@@ -221,6 +231,8 @@ const fn lsr(value: u8) -> (u8, StatusRegister) {
     (result, flags)
 }
 
+/// Mutates the state of the computer according to the result of a logical shift right
+/// Acts as an adapter between the implementation of 'LSR' and the computer
 fn lsr_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usize) {
     let zp_addr = addr_fn(state);
     let zp_val = state.fetch_byte_from_addr(zp_addr);
@@ -263,6 +275,8 @@ const fn rol(value: u8, carry: u8) -> (u8, StatusRegister) {
     (result, flags)
 }
 
+/// Mutates the state of the computer according to the result of a left rotation
+/// Acts as an adapter between the implementation of 'ROL' and the computer
 fn rol_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usize) {
     let carry = state.get_carry();
     let zp_addr = addr_fn(state);
@@ -311,6 +325,8 @@ const fn ror(value: u8, carry: u8) -> (u8, StatusRegister) {
     (result, flags)
 }
 
+/// Mutates the state of the computer according to the result of a right rotation
+/// Acts as an adapter between the implementation of 'ROR' and the computer
 fn ror_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usize) {
     let carry = state.get_carry();
     let zp_addr = addr_fn(state);
