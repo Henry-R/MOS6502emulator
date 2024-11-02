@@ -95,60 +95,49 @@ pub fn or_iny(state: &mut ComputerState)
 
 
 /// EOR (logical bitwise exclusive or)
-fn eor(state: &mut ComputerState, value: u8) {
-    state.regs.acc ^= value;
-    state.regs.sta = get_zero_neg_flags(state.regs.acc);
+fn eor(acc: u8, value: u8) -> (u8, StatusRegister) {
+    let result = acc ^ value;
+    (result, get_zero_neg_flags(result))
 }
 
+fn eor_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
+    let (result, flags) = eor(state.regs.acc, addr_fn(state));
+    state.regs.acc = result;
+    state.regs.sta |= flags;
+}
 
 /// EOR (intermediate addressing mode)
 /// Opcode: 49
-pub fn eor_im(state: &mut ComputerState) {
-    let value = state.fetch_intermediate();
-    eor(state, value);
-}
+pub fn eor_im(state: &mut ComputerState)
+{ eor_adapter(state, ComputerState::fetch_intermediate) }
 /// EOR (zero-page addressing mode)
 /// Opcode: 45
-pub fn eor_zp(state: &mut ComputerState) {
-    let value = state.fetch_zero_page();
-    eor(state, value);
-}
+pub fn eor_zp(state: &mut ComputerState)
+{ eor_adapter(state, ComputerState::fetch_zero_page) }
 /// EOR (zero-page X addressing mode)
 /// Opcode: 55
-pub fn eor_zpx(state: &mut ComputerState) {
-    let value = state.fetch_zero_page_x();
-    eor(state, value);
-}
+pub fn eor_zpx(state: &mut ComputerState)
+{ eor_adapter(state, ComputerState::fetch_zero_page_x) }
 /// EOR (absolute addressing mode)
 /// Opcode: 4D
-pub fn eor_ab(state: &mut ComputerState) {
-    let value = state.fetch_absolute();
-    eor(state, value);
-}
+pub fn eor_ab(state: &mut ComputerState)
+{ eor_adapter(state, ComputerState::fetch_absolute) }
 /// EOR (absolute X addressing mode)
 /// Opcode: 5D
-pub fn eor_abx(state: &mut ComputerState) {
-    let value = state.fetch_absolute_x();
-    eor(state, value);
-}
+pub fn eor_abx(state: &mut ComputerState)
+{ eor_adapter(state, ComputerState::fetch_absolute_x) }
 /// EOR (absolute Y addressing mode)
 /// Opcode: 59
-pub fn eor_aby(state: &mut ComputerState) {
-    let value = state.fetch_absolute_y();
-    eor(state, value);
-}
+pub fn eor_aby(state: &mut ComputerState)
+{ eor_adapter(state, ComputerState::fetch_absolute_y) }
 /// EOR (indirect X addressing mode)
 /// Opcode: 41
-pub fn eor_inx(state: &mut ComputerState) {
-    let value = state.fetch_indirect_x();
-    eor(state, value);
-}
+pub fn eor_inx(state: &mut ComputerState)
+{ eor_adapter(state, ComputerState::fetch_indirect_x) }
 /// EOR (indirect Y addressing mode)
 /// Opcode: 51
-pub fn eor_iny(state: &mut ComputerState) {
-    let value = state.fetch_indirect_y();
-    eor(state, value);
-}
+pub fn eor_iny(state: &mut ComputerState)
+{ eor_adapter(state, ComputerState::fetch_indirect_y) }
 
 
 /// ASL (arithmetic shift left)
