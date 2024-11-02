@@ -315,7 +315,7 @@ fn ror_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usi
     let carry = state.get_carry();
     let zp_addr = addr_fn(state);
     let zp_val = state.fetch_byte_from_addr(zp_addr);
-    let (result, flags) = rol(zp_val, carry);
+    let (result, flags) = ror(zp_val, carry);
 
     state.set_byte_at_addr(zp_addr, result);
     state.regs.sta = state.regs.sta.difference(StatusRegister::C);
