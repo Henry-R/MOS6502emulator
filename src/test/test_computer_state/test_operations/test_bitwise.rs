@@ -291,18 +291,17 @@ fn test_or_aby() {
 #[test]
 fn test_or_inx() {
     let mut state: ComputerState = ComputerState::new();
-    state.regs.acc = 0x18;
+    state.regs.acc = 1;
     state.regs.x = 0x22;
     state.set_up_state(vec![
         opcode_from_operation(or_inx),
-        0x30,
-        0x05
+        0x55
     ]);
     state.set_nibble_at_addr(0x77, 0x1234);
-    state.set_byte_at_addr(0x1234, 0x18);
+    state.set_byte_at_addr(0x1234, 3);
     state.execute_next();
 
-    assert_eq!(0x18, state.regs.acc);
+    assert_eq!(3, state.regs.acc);
     assert!(state.regs.sta.is_empty());
 }
 
@@ -325,4 +324,162 @@ fn test_or_iny() {
 
 
 // TEST EOR
+#[test]
+fn test_eor_im() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x13;
+    state.set_up_state(vec![
+        opcode_from_operation(eor_im),
+        0x30
+    ]);
+    state.execute_next();
 
+    assert_eq!(0x23, state.regs.acc);
+    assert!(state.regs.sta.is_empty());
+}
+
+#[test]
+fn test_eor_im_zero_flag() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x11;
+    state.set_up_state(vec![
+        opcode_from_operation(eor_im),
+        0x11
+    ]);
+    state.execute_next();
+
+    assert_eq!(0x00, state.regs.acc);
+    assert!(state.regs.sta.contains_only(StatusRegister::Z));
+}
+
+#[test]
+fn test_eor_im_negative_flag() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x05;
+    state.set_up_state(vec![
+        opcode_from_operation(eor_im),
+        0xF0
+    ]);
+    state.execute_next();
+
+    assert_eq!(0xF5, state.regs.acc);
+    assert!(state.regs.sta.contains_only(StatusRegister::N));
+}
+
+#[test]
+fn test_eor_zp() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x25;
+    state.set_up_state(vec![
+        opcode_from_operation(eor_zp),
+        0xF5
+    ]);
+    state.set_byte_at_addr(0xF5, 0x31);
+    state.execute_next();
+
+    assert_eq!(0x14, state.regs.acc);
+    assert!(state.regs.sta.is_empty());
+}
+
+#[test]
+fn test_eor_zpx() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x23;
+    state.regs.x = 0x50;
+    state.set_up_state(vec![
+        opcode_from_operation(eor_zpx),
+        0x30
+    ]);
+    state.set_byte_at_addr(0x80, 0x31);
+    state.execute_next();
+
+    assert_eq!(0x12, state.regs.acc);
+    assert!(state.regs.sta.is_empty());
+}
+
+#[test]
+fn test_eor_ab() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x41;
+    state.set_up_state(vec![
+        opcode_from_operation(eor_ab),
+        0x30,
+        0x05
+    ]);
+    state.set_byte_at_addr(0x0530, 0x55);
+    state.execute_next();
+
+    assert_eq!(0x14, state.regs.acc);
+    assert!(state.regs.sta.is_empty());
+}
+
+#[test]
+fn test_eor_abx() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x53;
+    state.regs.x = 0x0A;
+    state.set_up_state(vec![
+        opcode_from_operation(eor_abx),
+        0x30,
+        0x05
+    ]);
+    state.set_byte_at_addr(0x053A, 0x40);
+    state.execute_next();
+
+    assert_eq!(0x13, state.regs.acc);
+    assert!(state.regs.sta.is_empty());
+}
+
+#[test]
+fn test_eor_aby() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x02;
+    state.regs.y = 0x0A;
+    state.set_up_state(vec![
+        opcode_from_operation(eor_aby),
+        0x30,
+        0x05
+    ]);
+    state.set_byte_at_addr(0x053A, 0x20);
+    state.execute_next();
+
+    assert_eq!(0x22, state.regs.acc);
+    assert!(state.regs.sta.is_empty());
+}
+
+#[test]
+fn test_eor_inx() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x19;
+    state.regs.x = 0x22;
+    state.set_up_state(vec![
+        opcode_from_operation(eor_inx),
+        0x55
+    ]);
+    state.set_nibble_at_addr(0x77, 0x1234);
+    state.set_byte_at_addr(0x1234, 0x28);
+    state.execute_next();
+
+    assert_eq!(0x31, state.regs.acc);
+    assert!(state.regs.sta.is_empty());
+}
+
+#[test]
+fn test_eor_iny() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x35;
+    state.regs.y = 0x22;
+    state.set_up_state(vec![
+        opcode_from_operation(eor_iny),
+        0x41
+    ]);
+    state.set_nibble_at_addr(0x41, 0x1234);
+    state.set_byte_at_addr(0x1256, 0x23);
+    state.execute_next();
+
+    assert_eq!(0x16, state.regs.acc);
+    assert!(state.regs.sta.is_empty());
+}
+
+
+// TEST BIT
