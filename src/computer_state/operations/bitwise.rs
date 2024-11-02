@@ -49,60 +49,49 @@ pub fn and_iny(state: &mut ComputerState)
 
 
 /// OR (logical bitwise inclusive or)
-fn or(state: &mut ComputerState, value: u8) {
-    state.regs.acc |= value;
-    state.regs.sta = get_zero_neg_flags(state.regs.acc);
+const fn or(acc: u8, value: u8) -> (u8, StatusRegister) {
+    let result = acc | value;
+    (result, get_zero_neg_flags(result))
 }
 
+fn or_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
+    let (result, flags) = or(state.regs.acc, addr_fn(state));
+    state.regs.acc = result;
+    state.regs.sta |= flags;
+}
 
 /// OR (intermediate addressing mode)
 /// Opcode: 09
-pub fn or_im(state: &mut ComputerState) {
-    let value = state.fetch_intermediate();
-    or(state, value);
-}
+pub fn or_im(state: &mut ComputerState)
+{ or_adapter(state, ComputerState::fetch_intermediate) }
 /// OR (zero-page addressing mode)
 /// Opcode: 05
-pub fn or_zp(state: &mut ComputerState) {
-    let value = state.fetch_zero_page();
-    or(state, value);
-}
+pub fn or_zp(state: &mut ComputerState)
+{ or_adapter(state, ComputerState::fetch_zero_page) }
 /// OR (zero-page X addressing mode)
 /// Opcode: 15
-pub fn or_zpx(state: &mut ComputerState) {
-    let value = state.fetch_zero_page_x();
-    or(state, value);
-}
+pub fn or_zpx(state: &mut ComputerState)
+{ or_adapter(state, ComputerState::fetch_zero_page_x) }
 /// OR (absolute addressing mode)
 /// Opcode: 0D
-pub fn or_ab(state: &mut ComputerState) {
-    let value = state.fetch_absolute();
-    or(state, value);
-}
+pub fn or_ab(state: &mut ComputerState)
+{ or_adapter(state, ComputerState::fetch_absolute) }
 /// OR (absolute X addressing mode)
 /// Opcode: 1D
-pub fn or_abx(state: &mut ComputerState) {
-    let value = state.fetch_absolute_x();
-    or(state, value);
-}
+pub fn or_abx(state: &mut ComputerState)
+{ or_adapter(state, ComputerState::fetch_absolute_x) }
 /// OR (absolute Y addressing mode)
 /// Opcode: 19
-pub fn or_aby(state: &mut ComputerState) {
-    let value = state.fetch_absolute_y();
-    or(state, value);
-}
+pub fn or_aby(state: &mut ComputerState)
+{ or_adapter(state, ComputerState::fetch_absolute_y) }
 /// OR (indirect X addressing mode)
 /// Opcode: 01
-pub fn or_inx(state: &mut ComputerState) {
-    let value = state.fetch_indirect_x();
-    or(state, value);
-}
+pub fn or_inx(state: &mut ComputerState)
+{ or_adapter(state, ComputerState::fetch_indirect_x) }
 /// OR (indirect Y addressing mode)
 /// Opcode: 11
-pub fn or_iny(state: &mut ComputerState) {
-    let value = state.fetch_indirect_y();
-    or(state, value);
-}
+pub fn or_iny(state: &mut ComputerState)
+{ or_adapter(state, ComputerState::fetch_indirect_y) }
 
 
 /// EOR (logical bitwise exclusive or)
