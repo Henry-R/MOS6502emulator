@@ -255,8 +255,42 @@ pub fn lsr_abx(state: &mut ComputerState)
 
 
 /// ROL (Rotate left one bit)
-fn rol(_n: u8, _old_flags: StatusRegister) -> (u8, StatusRegister) {
-    // TODO()
-    (0, StatusRegister::new())
+const fn rol(value: u8) -> (u8, StatusRegister) {
+    let result = value.rotate_left(1);
+    let flags = get_zero_neg_flags(result).union(
+        StatusRegister::C.get_cond((value & 0x80) != 0));
+
+    (result, flags)
 }
 
+fn rol_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usize) {
+    let zp_addr = addr_fn(state);
+    let zp_val = state.fetch_byte_from_addr(zp_addr);
+    let (result, flags) = rol(zp_val);
+    state.set_byte_at_addr(zp_addr, result);
+    state.regs.sta |= flags;
+}
+
+/// ROL (accumulator addressing mode)
+/// Opcode: 2A
+fn rol_acc(state: &mut ComputerState) {
+    let (result, flags) = rol(state.regs.acc);
+    state.regs.acc = result;
+    state.regs.sta |= flags;
+}
+/// ROL (zero_page addressing mode)
+/// Opcode: 26
+fn rol_zp(state: &mut ComputerState)
+{ rol_adapter(state, ComputerState::fetch_zero_page_address) }
+/// ROL (zero_page X addressing mode)
+/// Opcode: 36
+fn rol_zpx(state: &mut ComputerState)
+{ rol_adapter(state, ComputerState::fetch_zero_page_x_address) }
+/// ROL (absolute addressing mode)
+/// Opcode: 2E
+fn rol_ab(state: &mut ComputerState)
+{ rol_adapter(state, ComputerState::fetch_absolute_address) }
+/// ROL (absolute X addressing mode)
+/// Opcode: 3E
+fn rol_abx(state: &mut ComputerState)
+{ rol_adapter(state, ComputerState::fetch_absolute_x_address) }
