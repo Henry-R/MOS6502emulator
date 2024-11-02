@@ -163,49 +163,44 @@ pub fn bit_ab(state: &mut ComputerState)
 
 
 /// ASL (arithmetic shift left)
-fn asl(state: &mut ComputerState, value: u8) -> u8 {
+const fn asl(value: u8) -> (u8, StatusRegister) {
     let (result, overflow) = value.overflowing_shl(1);
+    let flags =
+        StatusRegister::C.get_cond(overflow).union(
+        get_zero_neg_flags(result));
 
-    // FLAGS
-    state.regs.sta =
-        StatusRegister::C.get_cond(overflow) |
-        get_zero_neg_flags(result);
-
-    result
+    (result, flags)
 }
+
+fn asl_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usize) {
+    let zp_addr = addr_fn(state);
+    let zp_val = state.fetch_byte_from_addr(zp_addr);
+    state.set_byte_at_addr(zp_addr, zp_val);
+}
+
 /// ASL (accumulator addressing mode)
 /// Opcode: 0A
 pub fn asl_acc(state: &mut ComputerState) {
-    state.regs.acc = asl(state, state.regs.acc);
+    let (result, flags) = asl(state.regs.acc);
+    state.regs.acc = result;
+    state.regs.sta |= flags;
 }
 /// ASL (zero_page addressing mode)
 /// Opcode: 06
-pub fn asl_zp(state: &mut ComputerState) {
-    let zp_addr = state.fetch_zero_page_address();
-    let zp_val = state.mem[zp_addr];
-    state.mem[zp_addr] = asl(state, zp_val);
-}
+pub fn asl_zp(state: &mut ComputerState)
+{ asl_adapter(state, ComputerState::fetch_zero_page_address) }
 /// ASL (zero_page X addressing mode)
 /// Opcode: 16
-pub fn asl_zpx(state: &mut ComputerState) {
-    let zpx_addr = state.fetch_zero_page_x_address();
-    let zpx_val = state.mem[zpx_addr];
-    state.mem[zpx_addr] = asl(state, zpx_val);
-}
+pub fn asl_zpx(state: &mut ComputerState)
+{ asl_adapter(state, ComputerState::fetch_zero_page_x_address) }
 /// ASL (absolute addressing mode)
 /// Opcode: 0E
-pub fn asl_ab(state: &mut ComputerState) {
-    let ab_addr = state.fetch_absolute_address();
-    let ab_val = state.mem[ab_addr];
-    state.mem[ab_addr] = asl(state, ab_val);
-}
+pub fn asl_ab(state: &mut ComputerState)
+{ asl_adapter(state, ComputerState::fetch_absolute_address) }
 /// ASL (absolute X addressing mode)
 /// Opcode: 1E
-pub fn asl_abx(state: &mut ComputerState) {
-    let abx_addr = state.fetch_absolute_x_address();
-    let abx_val = state.mem[abx_addr];
-    state.mem[abx_addr] = asl(state, abx_val);
-}
+pub fn asl_abx(state: &mut ComputerState)
+{ asl_adapter(state, ComputerState::fetch_absolute_x_address) }
 
 
 /// LSR (logical shift right)
