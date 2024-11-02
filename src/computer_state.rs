@@ -106,18 +106,33 @@ impl ComputerState {
 
     // FETCH INSTRUCTIONS
     // These instructions help the emulator fetch memory according to addressing modes
-    /// Moves the PC up by one and fetches that constant from memory
-    fn fetch_next_byte(&mut self) -> u8 {
-        let result = self.get_addr(self.regs.pc);
-        self.regs.pc += 1;
-        result
+    /// Returns the byte of data at the given address
+    fn fetch_byte_from_addr(&self, addr: usize) -> u8 {
+        self.mem[addr]
     }
 
-    /// Returns the nibble of data at the given address in little endian byte-order
-    fn fetch_nibble(&self, addr: usize) -> u16 {
-        let lo_byte = u16::from(self.get_addr(addr));
-        let hi_byte = u16::from(self.get_addr(addr + 1));
+    /// Returns 16-bits of data at the given address in little endian byte-order
+    fn fetch_nibble_from_addr(&self, addr: usize) -> u16 {
+        let lo_byte = u16::from(self.fetch_byte_from_addr(addr));
+        let hi_byte = u16::from(self.fetch_byte_from_addr(addr + 1));
         (hi_byte << 8) + lo_byte
+    }
+
+    /// Returns the 8-bit address at the given address
+    fn fetch_zp_addr_from_addr(&self, addr: usize) -> usize {
+        usize::from(self.fetch_byte_from_addr(addr))
+    }
+
+    /// Returns the 16-bit address the given address in little endian byte-order
+    fn fetch_ab_addr_from_addr(&self, addr: usize) -> usize {
+        usize::from(self.fetch_nibble_from_addr(addr))
+    }
+
+    /// Moves the PC up by one and fetches that constant from memory
+    fn fetch_next_byte(&mut self) -> u8 {
+        let result = self.fetch_byte_from_addr(self.regs.pc);
+        self.regs.pc += 1;
+        result
     }
 
     /// Fetches the operand as a zero-page address
@@ -139,7 +154,7 @@ impl ComputerState {
 
     /// Fetches the operand as an address of an absolute address mode instruction
     fn fetch_absolute_address(&mut self) -> usize {
-        usize::from(self.fetch_nibble(self.regs.pc))
+        usize::from(self.fetch_nibble_from_addr(self.regs.pc))
     }
 
     /// Fetches the operand as an absolute address and adds the X index to that address
@@ -157,14 +172,14 @@ impl ComputerState {
     /// TODO finish this documentation when I have more sleep
     fn fetch_indirect_x_address(&mut self) -> usize {
         let indirect_addr = self.fetch_zero_page_x_address();
-        usize::from(self.fetch_nibble(indirect_addr))
+        usize::from(self.fetch_nibble_from_addr(indirect_addr))
     }
 
     fn fetch_indirect_y_address(&mut self) -> usize {
         let indirect_addr = usize::from(self.fetch_next_byte());
         let y = u16::from(self.regs.y);
 
-        usize::from(self.fetch_nibble(indirect_addr) + y)
+        usize::from(self.fetch_nibble_from_addr(indirect_addr) + y)
     }
 
     /// Moves the PC up by one and fetches that constant from memory
