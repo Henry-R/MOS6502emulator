@@ -129,7 +129,7 @@ const fn dec(val: u8) -> (u8, StatusRegister) {
 fn dec_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usize) {
     let addr = addr_fn(state);
     let (result, flags) = dec(state.fetch_byte_from_addr(addr));
-    state.set_addr(result, addr);
+    state.set_byte_at_addr(addr, result);
     state.regs.sta |= flags;
 }
 
@@ -179,7 +179,7 @@ const fn inc(val: u8) -> (u8, StatusRegister) {
 fn inc_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usize) {
     let addr = addr_fn(state);
     let (result, flags) = inc(state.fetch_byte_from_addr(addr));
-    state.set_addr(result, addr);
+    state.set_byte_at_addr(addr, result);
     state.regs.sta |= flags;
 }
 

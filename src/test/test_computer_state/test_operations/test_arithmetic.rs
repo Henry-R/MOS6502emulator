@@ -114,7 +114,7 @@ mod tests {
             opcode_from_operation(adc_zp),
             0xF1
         ]);
-        state.set_addr(20, 0xF1);
+        state.set_byte_at_addr(0xF1, 20);
         state.execute_next();
 
         assert_eq!(56, state.regs.acc);
@@ -130,7 +130,7 @@ mod tests {
             opcode_from_operation(adc_zpx),
             0xF1
         ]);
-        state.set_addr(20, 0xF6);
+        state.set_byte_at_addr(0xF6, 20);
         state.execute_next();
 
         assert_eq!(56, state.regs.acc);
@@ -146,7 +146,7 @@ mod tests {
             0xF1,
             0x36
         ]);
-        state.set_addr(20, 0x36F1);
+        state.set_byte_at_addr(0x36F1, 20);
         state.execute_next();
 
         assert_eq!(56, state.regs.acc);
@@ -163,7 +163,7 @@ mod tests {
             0xF1,
             0x36
         ]);
-        state.set_addr(20, 0x36F9);
+        state.set_byte_at_addr(0x36F9, 20);
         state.execute_next();
 
         assert_eq!(56, state.regs.acc);
@@ -180,7 +180,7 @@ mod tests {
             0xF1,
             0x36
         ]);
-        state.set_addr(20, 0x36F9);
+        state.set_byte_at_addr(0x36F9, 20);
         state.execute_next();
 
         assert_eq!(56, state.regs.acc);
@@ -196,9 +196,8 @@ mod tests {
             opcode_from_operation(adc_inx),
             0x41
         ]);
-        state.set_addr(0x34, 0x63);
-        state.set_addr(0x12, 0x64);
-        state.set_addr(20, 0x1234);
+        state.set_nibble_at_addr(0x63, 0x1234);
+        state.set_byte_at_addr(0x1234, 20);
         state.execute_next();
 
         assert_eq!(56, state.regs.acc);
@@ -214,9 +213,8 @@ mod tests {
             opcode_from_operation(adc_iny),
             0x41
         ]);
-        state.set_addr(0x34, 0x41);
-        state.set_addr(0x12, 0x42);
-        state.set_addr(20, 0x1256);
+        state.set_nibble_at_addr(0x41, 0x1234);
+        state.set_byte_at_addr(0x1256, 20);
         state.execute_next();
 
         assert_eq!(56, state.regs.acc);

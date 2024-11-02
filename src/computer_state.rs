@@ -67,14 +67,9 @@ impl ComputerState {
     }
 
     // MEMORY ACCESS
-    /// Sets the memory at the given address equal to the given value
-    pub fn set_addr(&mut self, value: u8, index: usize) {
-        self.mem[index] = value;
-    }
-
     /// Inserts the given value at the position pointed to by the PC; increments the PC
     pub fn insert_at_pc(&mut self, value: u8) {
-        self.set_addr(value, self.regs.pc);
+        self.set_byte_at_addr(self.regs.pc, value);
         self.regs.pc += 1;
     }
 
@@ -97,6 +92,18 @@ impl ComputerState {
     // REGISTER INSTRUCTIONS
     pub const fn get_carry(&self) -> u8 {
         if self.regs.sta.contains(StatusRegister::C) { 1 } else { 0 }
+    }
+
+    // SET INSTRUCTIONS
+    pub fn set_byte_at_addr(&mut self, addr: usize, value: u8) {
+        self.mem[addr] = value;
+    }
+
+    pub fn set_nibble_at_addr(&mut self, addr: usize, value: u16) {
+        let hi_byte = ((value & 0xFF00) >> 8) as u8;
+        let lo_byte =  (value & 0x00FF) as u8;
+        self.set_byte_at_addr(addr, lo_byte);
+        self.set_byte_at_addr(addr + 1, hi_byte);
     }
 
     // FETCH INSTRUCTIONS
