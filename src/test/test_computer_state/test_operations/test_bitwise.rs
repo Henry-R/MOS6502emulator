@@ -572,3 +572,114 @@ fn test_bit_ab() {
 
 
 // ASL TESTS
+#[test]
+fn test_asl_acc() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x09;
+    state.set_up_state(vec![
+        opcode_from_operation(asl_acc),
+    ]);
+    state.execute_next();
+
+    assert_eq!(0x12, state.regs.acc);
+    assert!(state.regs.sta.is_empty());
+}
+
+#[test]
+fn test_asl_acc_carry_flag() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x99;
+    state.set_up_state(vec![
+        opcode_from_operation(asl_acc),
+    ]);
+    state.execute_next();
+
+    assert_eq!(0x32, state.regs.acc);
+    assert!(state.regs.sta.contains_only(StatusRegister::C));
+}
+
+#[test]
+fn test_asl_acc_zero_flag() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x80;
+    state.set_up_state(vec![
+        opcode_from_operation(asl_acc),
+    ]);
+    state.execute_next();
+
+    assert_eq!(0x0, state.regs.acc);
+    assert!(state.regs.sta.contains_only(StatusRegister::C | StatusRegister::Z));
+}
+
+#[test]
+fn test_asl_acc_negative_flag() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0xC0;
+    state.set_up_state(vec![
+        opcode_from_operation(asl_acc),
+    ]);
+    state.execute_next();
+
+    assert_eq!(0x80, state.regs.acc);
+    assert!(state.regs.sta.contains_only(StatusRegister::C | StatusRegister::N));
+}
+
+#[test]
+fn test_asl_zp() {
+    let mut state: ComputerState = ComputerState::new();
+    state.set_up_state(vec![
+        opcode_from_operation(asl_zp),
+        0x10
+    ]);
+    state.set_byte_at_addr(0x10, 0x09);
+    state.execute_next();
+
+    assert_eq!(0x12, state.fetch_byte_from_addr(0x10));
+    assert!(state.regs.sta.is_empty());
+}
+
+#[test]
+fn test_asl_zpx() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.x = 0x05;
+    state.set_up_state(vec![
+        opcode_from_operation(asl_zpx),
+        0x10
+    ]);
+    state.set_byte_at_addr(0x15, 0x09);
+    state.execute_next();
+
+    assert_eq!(0x12, state.fetch_byte_from_addr(0x15));
+    assert!(state.regs.sta.is_empty());
+}
+
+#[test]
+fn test_asl_ab() {
+    let mut state: ComputerState = ComputerState::new();
+    state.set_up_state(vec![
+        opcode_from_operation(asl_ab),
+        0x10,
+        0x85
+    ]);
+    state.set_byte_at_addr(0x8510, 0x09);
+    state.execute_next();
+
+    assert_eq!(0x12, state.fetch_byte_from_addr(0x8510));
+    assert!(state.regs.sta.is_empty());
+}
+
+#[test]
+fn test_asl_abx() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.x = 0x05;
+    state.set_up_state(vec![
+        opcode_from_operation(asl_abx),
+        0x10,
+        0x85
+    ]);
+    state.set_byte_at_addr(0x8515, 0x09);
+    state.execute_next();
+
+    assert_eq!(0x12, state.fetch_byte_from_addr(0x8515));
+    assert!(state.regs.sta.is_empty());
+}

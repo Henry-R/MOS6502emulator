@@ -164,7 +164,10 @@ pub fn bit_ab(state: &mut ComputerState)
 
 /// ASL (arithmetic shift left)
 const fn asl(value: u8) -> (u8, StatusRegister) {
-    let (result, overflow) = value.overflowing_shl(1);
+    let bits = value.count_ones();
+    let result = value << 1;
+    let overflow = bits != result.count_ones();
+
     let flags =
         StatusRegister::C.get_cond(overflow).union(
         get_zero_neg_flags(result));
@@ -175,7 +178,9 @@ const fn asl(value: u8) -> (u8, StatusRegister) {
 fn asl_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usize) {
     let zp_addr = addr_fn(state);
     let zp_val = state.fetch_byte_from_addr(zp_addr);
-    state.set_byte_at_addr(zp_addr, zp_val);
+    let (result, flags) = asl(zp_val);
+    state.set_byte_at_addr(zp_addr, result);
+    state.regs.sta |= flags;
 }
 
 /// ASL (accumulator addressing mode)
