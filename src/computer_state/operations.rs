@@ -7,7 +7,7 @@ use interrupt::*;
 pub(crate) mod arithmetic;
 mod interrupt;
 mod branch;
-mod bitwise;
+pub(crate) mod bitwise;
 mod flags;
 
 pub type MosOp = fn (&mut ComputerState);
