@@ -120,7 +120,7 @@ pub fn sbc_iny(state: &mut ComputerState)
 /// Returns tuple containing the new value to place in memory,
 /// and the status flags after the operation has completed
 const fn dec(val: u8) -> (u8, StatusRegister) {
-    let result = val - 1;
+    let result = val.wrapping_sub(1);
     (result, get_zero_neg_flags(result))
 }
 
@@ -170,7 +170,7 @@ pub fn dey(state: &mut ComputerState) {
 /// Returns tuple containing the new value to place in memory,
 /// and the status flags after the operation has completed
 const fn inc(val: u8) -> (u8, StatusRegister) {
-    let result = val + 1;
+    let result = val.wrapping_add(1);
     (result, get_zero_neg_flags(result))
 }
 
