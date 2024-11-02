@@ -164,7 +164,7 @@ fn test_and_iny() {
 }
 
 
-// TEST OR
+// OR TESTS
 #[test]
 fn test_or_im() {
     let mut state: ComputerState = ComputerState::new();
@@ -323,7 +323,7 @@ fn test_or_iny() {
 }
 
 
-// TEST EOR
+// EOR TESTS
 #[test]
 fn test_eor_im() {
     let mut state: ComputerState = ComputerState::new();
@@ -482,4 +482,93 @@ fn test_eor_iny() {
 }
 
 
-// TEST BIT
+// BIT TESTS
+#[test]
+fn test_bit_zp() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x23;
+    state.set_up_state(vec![
+        opcode_from_operation(bit_zp),
+        0x41
+    ]);
+    state.set_byte_at_addr(0x41, 0x35);
+    state.execute_next();
+
+    assert_eq!(0x23, state.regs.acc);
+    assert_eq!(0x35, state.fetch_byte_from_addr(0x41));
+    assert!(state.regs.sta.is_empty());
+}
+
+#[test]
+fn test_bit_zp_zero_flag() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x11;
+    state.set_up_state(vec![
+        opcode_from_operation(bit_zp),
+        0x41
+    ]);
+    state.set_byte_at_addr(0x41, 0x22);
+    state.execute_next();
+
+    assert!(state.regs.sta.contains_only(StatusRegister::Z));
+}
+
+#[test]
+fn test_bit_zp_negative_flag() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x23;
+    state.set_up_state(vec![
+        opcode_from_operation(bit_zp),
+        0x41
+    ]);
+    state.set_byte_at_addr(0x41, 0xA5);
+    state.execute_next();
+
+    assert!(state.regs.sta.contains_only(StatusRegister::N));
+}
+
+#[test]
+fn test_bit_zp_overflow_flag() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x23;
+    state.set_up_state(vec![
+        opcode_from_operation(bit_zp),
+        0x41
+    ]);
+    state.set_byte_at_addr(0x41, 0x45);
+    state.execute_next();
+
+    assert!(state.regs.sta.contains_only(StatusRegister::V));
+}
+
+#[test]
+fn test_bit_zp_zero_negative_overflow_flag() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x02;
+    state.set_up_state(vec![
+        opcode_from_operation(bit_zp),
+        0x41
+    ]);
+    state.set_byte_at_addr(0x41, 0xC5);
+    state.execute_next();
+
+    assert!(state.regs.sta.contains_only(StatusRegister::Z | StatusRegister::N | StatusRegister::V));
+}
+
+#[test]
+fn test_bit_ab() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 0x23;
+    state.set_up_state(vec![
+        opcode_from_operation(bit_ab),
+        0x41,
+        0x90
+    ]);
+    state.set_byte_at_addr(0x9041, 0x35);
+    state.execute_next();
+
+    assert!(state.regs.sta.is_empty());
+}
+
+
+// ASL TESTS
