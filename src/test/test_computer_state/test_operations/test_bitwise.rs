@@ -683,3 +683,104 @@ fn test_asl_abx() {
     assert_eq!(0x12, state.fetch_byte_from_addr(0x8515));
     assert!(state.regs.sta.is_empty());
 }
+
+
+// LSR TESTS
+#[test]
+fn test_lsr_acc() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 8;
+    state.set_up_state(vec![
+        opcode_from_operation(lsr_acc),
+    ]);
+    state.execute_next();
+
+    assert_eq!(4, state.regs.acc);
+    assert!(state.regs.sta.is_empty());
+}
+
+#[test]
+fn test_lsr_acc_carry_flag() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 9;
+    state.set_up_state(vec![
+        opcode_from_operation(lsr_acc),
+    ]);
+    state.execute_next();
+
+    assert_eq!(4, state.regs.acc);
+    assert!(state.regs.sta.contains_only(StatusRegister::C));
+}
+
+#[test]
+fn test_lsr_acc_zero_flag() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.acc = 1;
+    state.set_up_state(vec![
+        opcode_from_operation(lsr_acc),
+    ]);
+    state.execute_next();
+
+    assert_eq!(0, state.regs.acc);
+    assert!(state.regs.sta.contains_only(StatusRegister::C | StatusRegister::Z));
+}
+
+#[test]
+fn test_lsr_zp() {
+    let mut state: ComputerState = ComputerState::new();
+    state.set_up_state(vec![
+        opcode_from_operation(lsr_zp),
+        0x05
+    ]);
+    state.set_byte_at_addr(0x05, 8);
+    state.execute_next();
+
+    assert_eq!(4, state.fetch_byte_from_addr(0x05));
+    assert!(state.regs.sta.is_empty());
+}
+
+#[test]
+fn test_lsr_zpx() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.x = 0x05;
+    state.set_up_state(vec![
+        opcode_from_operation(lsr_zpx),
+        0x05
+    ]);
+    state.set_byte_at_addr(0x0A, 8);
+    state.execute_next();
+
+    assert_eq!(4, state.fetch_byte_from_addr(0x0A));
+    assert!(state.regs.sta.is_empty());
+}
+
+#[test]
+fn test_lsr_ab() {
+    let mut state: ComputerState = ComputerState::new();
+    state.set_up_state(vec![
+        opcode_from_operation(lsr_ab),
+        0x05,
+        0x08
+    ]);
+    state.set_byte_at_addr(0x0805, 8);
+    state.execute_next();
+
+    assert_eq!(4, state.fetch_byte_from_addr(0x0805));
+    assert!(state.regs.sta.is_empty());
+}
+
+#[test]
+fn test_lsr_abx() {
+    let mut state: ComputerState = ComputerState::new();
+    state.regs.x = 0x05;
+    state.set_up_state(vec![
+        opcode_from_operation(lsr_abx),
+        0x05,
+        0x08
+    ]);
+    state.set_byte_at_addr(0x080A, 8);
+    state.execute_next();
+
+    assert_eq!(4, state.fetch_byte_from_addr(0x080A));
+    assert!(state.regs.sta.is_empty());
+}
