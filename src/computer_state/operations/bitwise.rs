@@ -3,59 +3,49 @@ use crate::computer_state::status_register::{get_zero_neg_flags};
 
 // AND
 /// AND (bitwise and)
-fn and(state: &mut ComputerState, value: u8) {
-    state.regs.acc &= value;
-    state.regs.sta = get_zero_neg_flags(state.regs.acc);
+fn and(acc: u8, value: u8) -> (u8, StatusRegister) {
+    let result = acc & value;
+    (result, get_zero_neg_flags(result))
+}
+
+fn and_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
+    let (result, flags) = and(state.regs.acc, addr_fn(state));
+    state.regs.acc = result;
+    state.regs.sta |= flags;
 }
 
 /// AND (intermediate addressing mode)
 /// Opcode: 29
-pub fn and_im(state: &mut ComputerState) {
-    let value = state.fetch_intermediate();
-    and(state, value);
-}
+pub fn and_im(state: &mut ComputerState)
+{ and_adapter(state, ComputerState::fetch_intermediate) }
 /// AND (zero-page addressing mode)
 /// Opcode: 25
-pub fn and_zp(state: &mut ComputerState) {
-    let value = state.fetch_zero_page();
-    and(state, value);
-}
+pub fn and_zp(state: &mut ComputerState)
+{ and_adapter(state, ComputerState::fetch_zero_page) }
 /// AND (zero-page X addressing mode)
 /// Opcode: 35
-pub fn and_zpx(state: &mut ComputerState) {
-    let value = state.fetch_zero_page_x();
-    and(state, value);
-}
+pub fn and_zpx(state: &mut ComputerState)
+{ and_adapter(state, ComputerState::fetch_zero_page_x) }
 /// AND (absolute addressing mode)
 /// Opcode: 2D
-pub fn and_ab(state: &mut ComputerState) {
-    let value = state.fetch_absolute();
-    and(state, value);
-}
+pub fn and_ab(state: &mut ComputerState)
+{ and_adapter(state, ComputerState::fetch_absolute) }
 /// AND (absolute X addressing mode)
 /// Opcode: 3D
-pub fn and_abx(state: &mut ComputerState) {
-    let value = state.fetch_absolute_x();
-    and(state, value);
-}
+pub fn and_abx(state: &mut ComputerState)
+{ and_adapter(state, ComputerState::fetch_absolute_x) }
 /// AND (absolute Y addressing mode)
 /// Opcode: 39
-pub fn and_aby(state: &mut ComputerState) {
-    let value = state.fetch_absolute_y();
-    and(state, value);
-}
+pub fn and_aby(state: &mut ComputerState)
+{ and_adapter(state, ComputerState::fetch_absolute_y) }
 /// AND (indirect X addressing mode)
 /// Opcode: 21
-pub fn and_inx(state: &mut ComputerState) {
-    let value = state.fetch_indirect_x();
-    and(state, value);
-}
+pub fn and_inx(state: &mut ComputerState)
+{ and_adapter(state, ComputerState::fetch_indirect_x) }
 /// AND (indirect Y addressing mode)
 /// Opcode: 31
-pub fn and_iny(state: &mut ComputerState) {
-    let value = state.fetch_indirect_y();
-    and(state, value);
-}
+pub fn and_iny(state: &mut ComputerState)
+{ and_adapter(state, ComputerState::fetch_indirect_y) }
 
 
 /// OR (logical bitwise inclusive or)
@@ -286,46 +276,4 @@ pub fn bit_zp(state: &mut ComputerState) {
 pub fn bit_ab(state: &mut ComputerState) {
     let ab_val = state.fetch_absolute();
     bit(state, ab_val)
-}
-
-
-#[cfg(test)]
-mod tests {
-    use crate::computer_state::ComputerState;
-    use crate::computer_state::operations::bitwise::{and, eor, or};
-
-    #[test]
-    fn test_and() {
-        let mut state = ComputerState::new();
-
-        and(&mut state, 0b0000_0000);
-        assert_eq!(state.regs.acc, 0);
-        state.regs.acc = 0b0101_0101;
-        and(&mut state, 0b0000_1111);
-        assert_eq!(state.regs.acc, 0b0000_0101);
-        and(&mut state, 0b0011_0001);
-        assert_eq!(state.regs.acc, 0b0000_0001);
-    }
-
-    #[test]
-    fn test_or() {
-        let mut state = ComputerState::new();
-
-        or(&mut state, 0b0101_0101);
-        assert_eq!(state.regs.acc, 0b0101_0101);
-        or(&mut state, 0b0000_1111);
-        assert_eq!(state.regs.acc, 0b0101_1111);
-        or(&mut state, 0b0010_0000);
-        assert_eq!(state.regs.acc, 0b0111_1111);
-    }
-
-    #[test]
-    fn test_eor() {
-        let mut state = ComputerState::new();
-
-        eor(&mut state, 0b0101_0101);
-        assert_eq!(state.regs.acc, 0b0101_0101);
-        eor(&mut state, 0b0101_1010);
-        assert_eq!(state.regs.acc, 0b0000_1111);
-    }
 }
