@@ -576,6 +576,166 @@ mod tests {
     }
 
 
-    // TEST INX
+    // TEST DEX
+    #[test]
+    fn test_dex() {
+        let mut state: ComputerState = ComputerState::new();
+        state.regs.x = 5;
+        state.set_up_state(vec![
+            opcode_from_operation(dex),
+        ]);
+        state.execute_next();
 
+        assert_eq!(4, state.regs.x);
+        assert!(state.regs.sta.is_empty());
+    }
+
+    #[test]
+    fn test_dex_zero_flag() {
+        let mut state: ComputerState = ComputerState::new();
+        state.regs.x = 1;
+        state.set_up_state(vec![
+            opcode_from_operation(dex),
+        ]);
+        state.execute_next();
+
+        assert_eq!(0, state.regs.x);
+        assert!(state.regs.sta.contains_only(StatusRegister::Z));
+    }
+
+    #[test]
+    fn test_dex_negative_flag() {
+        let mut state: ComputerState = ComputerState::new();
+        state.regs.x = 0;
+        state.set_up_state(vec![
+            opcode_from_operation(dex),
+        ]);
+        state.execute_next();
+
+        assert_eq!(0xFF, state.regs.x);
+        assert!(state.regs.sta.contains_only(StatusRegister::N));
+    }
+
+
+    // TEST DEY
+    #[test]
+    fn test_dey() {
+        let mut state: ComputerState = ComputerState::new();
+        state.regs.y = 5;
+        state.set_up_state(vec![
+            opcode_from_operation(dey),
+        ]);
+        state.execute_next();
+
+        assert_eq!(4, state.regs.y);
+        assert!(state.regs.sta.is_empty());
+    }
+
+    #[test]
+    fn test_dey_zero_flag() {
+        let mut state: ComputerState = ComputerState::new();
+        state.regs.y = 1;
+        state.set_up_state(vec![
+            opcode_from_operation(dey),
+        ]);
+        state.execute_next();
+
+        assert_eq!(0, state.regs.y);
+        assert!(state.regs.sta.contains_only(StatusRegister::Z));
+    }
+
+    #[test]
+    fn test_dey_negative_flag() {
+        let mut state: ComputerState = ComputerState::new();
+        state.regs.y = 0;
+        state.set_up_state(vec![
+            opcode_from_operation(dey),
+        ]);
+        state.execute_next();
+
+        assert_eq!(0xFF, state.regs.y);
+        assert!(state.regs.sta.contains_only(StatusRegister::N));
+    }
+
+
+    // TEST INX
+    #[test]
+    fn test_inx() {
+        let mut state: ComputerState = ComputerState::new();
+        state.regs.x = 5;
+        state.set_up_state(vec![
+            opcode_from_operation(inx),
+        ]);
+        state.execute_next();
+
+        assert_eq!(6, state.regs.x);
+        assert!(state.regs.sta.is_empty());
+    }
+
+    #[test]
+    fn test_inx_zero_flag() {
+        let mut state: ComputerState = ComputerState::new();
+        state.regs.x = 0xFF;
+        state.set_up_state(vec![
+            opcode_from_operation(inx),
+        ]);
+        state.execute_next();
+
+        assert_eq!(0, state.regs.x);
+        assert!(state.regs.sta.contains_only(StatusRegister::Z));
+    }
+
+    #[test]
+    fn test_inx_negative_flag() {
+        let mut state: ComputerState = ComputerState::new();
+        state.regs.x = 0x7F;
+        state.set_up_state(vec![
+            opcode_from_operation(inx),
+        ]);
+        state.execute_next();
+
+        assert_eq!(0x80, state.regs.x);
+        assert!(state.regs.sta.contains_only(StatusRegister::N));
+    }
+
+
+    // TEST INY
+    #[test]
+    fn test_iny() {
+        let mut state: ComputerState = ComputerState::new();
+        state.regs.y = 5;
+        state.set_up_state(vec![
+            opcode_from_operation(iny),
+        ]);
+        state.execute_next();
+
+        assert_eq!(6, state.regs.y);
+        assert!(state.regs.sta.is_empty());
+    }
+
+    #[test]
+    fn test_iny_zero_flag() {
+        let mut state: ComputerState = ComputerState::new();
+        state.regs.y = 0xFF;
+        state.set_up_state(vec![
+            opcode_from_operation(iny),
+        ]);
+        state.execute_next();
+
+        assert_eq!(0, state.regs.y);
+        assert!(state.regs.sta.contains_only(StatusRegister::Z));
+    }
+
+    #[test]
+    fn test_iny_negative_flag() {
+        let mut state: ComputerState = ComputerState::new();
+        state.regs.y = 0xFF;
+        state.set_up_state(vec![
+            opcode_from_operation(iny),
+        ]);
+        state.execute_next();
+
+        assert_eq!(0, state.regs.y);
+        assert!(state.regs.sta.contains_only(StatusRegister::Z));
+    }
 }
