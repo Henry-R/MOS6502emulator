@@ -3,7 +3,7 @@ use crate::computer_state::status_register::{get_zero_neg_flags};
 
 // AND
 /// AND (bitwise and)
-fn and(acc: u8, value: u8) -> (u8, StatusRegister) {
+const fn and(acc: u8, value: u8) -> (u8, StatusRegister) {
     let result = acc & value;
     (result, get_zero_neg_flags(result))
 }
