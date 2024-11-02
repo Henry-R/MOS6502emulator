@@ -50,7 +50,7 @@ impl StatusRegister {
     pub const fn contains(&self, flag: StatusRegister) -> bool { !self.intersect(flag).is_empty() }
 
     pub const fn contains_only(&self, flag: StatusRegister) -> bool {
-        self.difference(flag).is_empty()
+        self.data ^ flag.data == 0
     }
 
     /// Get Conditional Flag
