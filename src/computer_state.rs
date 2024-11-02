@@ -123,10 +123,31 @@ impl ComputerState {
         usize::from(self.fetch_nibble_from_addr(addr))
     }
 
-    /// Moves the PC up by one and fetches that constant from memory
+    /// Fetches the byte at the PC, and increments the PC by 1
     fn fetch_next_byte(&mut self) -> u8 {
         let result = self.fetch_byte_from_addr(self.regs.pc);
         self.regs.pc += 1;
+        result
+    }
+
+    /// Fetches the nibble at the PC, and increments the PC by 2
+    fn fetch_next_nibble(&mut self) -> u16 {
+        let result = self.fetch_nibble_from_addr(self.regs.pc);
+        self.regs.pc += 2;
+        result
+    }
+
+    /// Fetches the 8-bit address at the PC, and increments the PC by 1
+    fn fetch_next_zp_addr(&mut self) -> usize {
+        let result = self.fetch_zp_addr_from_addr(self.regs.pc);
+        self.regs.pc += 1;
+        result
+    }
+
+    /// Fetches the 16-bit address at the PC, and increments the PC by 2
+    fn fetch_next_ab_addr(&mut self) -> usize {
+        let result = self.fetch_ab_addr_from_addr(self.regs.pc);
+        self.regs.pc += 2;
         result
     }
 
@@ -149,7 +170,7 @@ impl ComputerState {
 
     /// Fetches the operand as an address of an absolute address mode instruction
     fn fetch_absolute_address(&mut self) -> usize {
-        usize::from(self.fetch_nibble_from_addr(self.regs.pc))
+        self.fetch_next_ab_addr()
     }
 
     /// Fetches the operand as an absolute address and adds the X index to that address
@@ -167,14 +188,14 @@ impl ComputerState {
     /// TODO finish this documentation when I have more sleep
     fn fetch_indirect_x_address(&mut self) -> usize {
         let indirect_addr = self.fetch_zero_page_x_address();
-        usize::from(self.fetch_nibble_from_addr(indirect_addr))
+        self.fetch_ab_addr_from_addr(indirect_addr)
     }
 
     fn fetch_indirect_y_address(&mut self) -> usize {
-        let indirect_addr = usize::from(self.fetch_next_byte());
-        let y = u16::from(self.regs.y);
+        let indirect_addr = self.fetch_next_zp_addr();
+        let y = usize::from(self.regs.y);
 
-        usize::from(self.fetch_nibble_from_addr(indirect_addr) + y)
+        self.fetch_ab_addr_from_addr(indirect_addr) + y
     }
 
     /// Moves the PC up by one and fetches that constant from memory
