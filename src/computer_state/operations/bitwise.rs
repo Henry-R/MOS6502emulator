@@ -300,3 +300,51 @@ pub fn rol_ab(state: &mut ComputerState)
 /// Opcode: 3E
 pub fn rol_abx(state: &mut ComputerState)
 { rol_adapter(state, ComputerState::fetch_absolute_x_address) }
+
+
+/// ROR (Rotate right one bit)
+const fn ror(value: u8, carry: u8) -> (u8, StatusRegister) {
+    let result = (value >> 1) + (carry << 7);
+    let flags = get_zero_neg_flags(result).union(
+        StatusRegister::C.get_cond((value & 0x01) != 0));
+
+    (result, flags)
+}
+
+fn ror_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usize) {
+    let carry = state.get_carry();
+    let zp_addr = addr_fn(state);
+    let zp_val = state.fetch_byte_from_addr(zp_addr);
+    let (result, flags) = rol(zp_val, carry);
+
+    state.set_byte_at_addr(zp_addr, result);
+    state.regs.sta = state.regs.sta.difference(StatusRegister::C);
+    state.regs.sta |= flags;
+}
+
+/// ROR (accumulator addressing mode)
+/// Opcode: 6A
+pub fn ror_acc(state: &mut ComputerState) {
+    let carry = state.get_carry();
+    let (result, flags) = ror(state.regs.acc, carry);
+
+    state.regs.acc = result;
+    state.regs.sta = state.regs.sta.difference(StatusRegister::C);
+    state.regs.sta |= flags;
+}
+/// ROR (zero_page addressing mode)
+/// Opcode: 66
+pub fn ror_zp(state: &mut ComputerState)
+{ ror_adapter(state, ComputerState::fetch_zero_page_address) }
+/// ROR (zero_page X addressing mode)
+/// Opcode: 76
+pub fn ror_zpx(state: &mut ComputerState)
+{ ror_adapter(state, ComputerState::fetch_zero_page_x_address) }
+/// ROR (absolute addressing mode)
+/// Opcode: 6E
+pub fn ror_ab(state: &mut ComputerState)
+{ ror_adapter(state, ComputerState::fetch_absolute_address) }
+/// ROR (absolute X addressing mode)
+/// Opcode: 7E
+pub fn ror_abx(state: &mut ComputerState)
+{ ror_adapter(state, ComputerState::fetch_absolute_x_address) }
