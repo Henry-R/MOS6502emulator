@@ -209,49 +209,49 @@ pub fn asl_abx(state: &mut ComputerState)
 
 
 /// LSR (logical shift right)
-fn lsr(state: &mut ComputerState, value: u8) -> u8 {
-    let (result, overflow) = value.overflowing_shr(1);
+const fn lsr(value: u8) -> (u8, StatusRegister) {
+    let bits = value.count_ones();
+    let result = value >> 1;
+    let overflow = bits != result.count_ones();
 
-    // FLAGS
-    state.regs.sta =
-        StatusRegister::C.get_cond(overflow) |
-        get_zero_neg_flags(result);
+    let flags =
+        StatusRegister::C.get_cond(overflow).union(
+            get_zero_neg_flags(result));
 
-    result
+    (result, flags)
 }
+
+fn lsr_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usize) {
+    let zp_addr = addr_fn(state);
+    let zp_val = state.fetch_byte_from_addr(zp_addr);
+    let (result, flags) = lsr(zp_val);
+    state.set_byte_at_addr(zp_addr, result);
+    state.regs.sta |= flags;
+}
+
 /// LSR (accumulator addressing mode)
 /// Opcode: 4A
 pub fn lsr_acc(state: &mut ComputerState) {
-    state.regs.acc = lsr(state, state.regs.acc);
+    let (result, flags) = lsr(state.regs.acc);
+    state.regs.acc = result;
+    state.regs.sta |= flags;
 }
 /// LSR (zero_page addressing mode)
 /// Opcode: 46
-pub fn lsr_zp(state: &mut ComputerState) {
-    let zp_addr = state.fetch_zero_page_address();
-    let zp_val = state.mem[zp_addr];
-    state.mem[zp_addr] = lsr(state, zp_val);
-}
+pub fn lsr_zp(state: &mut ComputerState)
+{ lsr_adapter(state, ComputerState::fetch_zero_page_address) }
 /// LSR (zero_page X addressing mode)
 /// Opcode: 56
-pub fn lsr_zpx(state: &mut ComputerState) {
-    let zpx_addr = state.fetch_zero_page_x_address();
-    let zpx_val = state.mem[zpx_addr];
-    state.mem[zpx_addr] = lsr(state, zpx_val);
-}
+pub fn lsr_zpx(state: &mut ComputerState)
+{ lsr_adapter(state, ComputerState::fetch_zero_page_x_address) }
 /// LSR (absolute addressing mode)
 /// Opcode: 4E
-pub fn lsr_ab(state: &mut ComputerState) {
-    let ab_addr = state.fetch_absolute_address();
-    let ab_val = state.mem[ab_addr];
-    state.mem[ab_addr] = lsr(state, ab_val);
-}
+pub fn lsr_ab(state: &mut ComputerState)
+{ lsr_adapter(state, ComputerState::fetch_absolute_address) }
 /// LSR (absolute X addressing mode)
 /// Opcode: 5E
-pub fn lsr_abx(state: &mut ComputerState) {
-    let abx_addr = state.fetch_absolute_x_address();
-    let abx_val = state.mem[abx_addr];
-    state.mem[abx_addr] = lsr(state, abx_val);
-}
+pub fn lsr_abx(state: &mut ComputerState)
+{ lsr_adapter(state, ComputerState::fetch_absolute_x_address) }
 
 
 /// ROL (Rotate left one bit)
