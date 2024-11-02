@@ -140,6 +140,28 @@ pub fn eor_iny(state: &mut ComputerState)
 { eor_adapter(state, ComputerState::fetch_indirect_y) }
 
 
+/// BIT (Bit test)
+const fn bit(acc: u8, value: u8) -> StatusRegister {
+    StatusRegister::Z.get_cond(acc & value == 0).union(
+    StatusRegister::N.get_cond((value & 0x80) == 0x80).union(
+    StatusRegister::V.get_cond((value & 0x40) == 0x40)))
+}
+
+fn bit_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
+    let flags = bit(state.regs.acc, addr_fn(state));
+    state.regs.sta |= flags;
+}
+
+/// BIT (zero-page addressing mode)
+/// Opcode: 24
+pub fn bit_zp(state: &mut ComputerState)
+{ bit_adapter(state, ComputerState::fetch_zero_page) }
+/// BIT (absolute addressing mode)
+/// Opcode: 2C
+pub fn bit_ab(state: &mut ComputerState)
+{ bit_adapter(state, ComputerState::fetch_absolute) }
+
+
 /// ASL (arithmetic shift left)
 fn asl(state: &mut ComputerState, value: u8) -> u8 {
     let (result, overflow) = value.overflowing_shl(1);
@@ -238,20 +260,3 @@ fn rol(_n: u8, _old_flags: StatusRegister) -> (u8, StatusRegister) {
     (0, StatusRegister::new())
 }
 
-
-/// BIT (Bit test)
-fn bit(_state: &mut ComputerState, _value: u8) {
-    // TODO()
-}
-/// BIT (zero-page addressing mode)
-/// Opcode: 24
-pub fn bit_zp(state: &mut ComputerState) {
-    let zp_val = state.fetch_zero_page();
-    bit(state, zp_val)
-}
-/// BIT (absolute addressing mode)
-/// Opcode: 2C
-pub fn bit_ab(state: &mut ComputerState) {
-    let ab_val = state.fetch_absolute();
-    bit(state, ab_val)
-}
