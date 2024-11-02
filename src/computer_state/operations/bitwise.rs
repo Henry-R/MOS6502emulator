@@ -255,8 +255,8 @@ pub fn lsr_abx(state: &mut ComputerState)
 
 
 /// ROL (Rotate left one bit)
-const fn rol(value: u8) -> (u8, StatusRegister) {
-    let result = value.rotate_left(1);
+const fn rol(value: u8, carry: u8) -> (u8, StatusRegister) {
+    let result = (value << 1) + carry;
     let flags = get_zero_neg_flags(result).union(
         StatusRegister::C.get_cond((value & 0x80) != 0));
 
@@ -264,18 +264,24 @@ const fn rol(value: u8) -> (u8, StatusRegister) {
 }
 
 fn rol_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usize) {
+    let carry = state.get_carry();
     let zp_addr = addr_fn(state);
     let zp_val = state.fetch_byte_from_addr(zp_addr);
-    let (result, flags) = rol(zp_val);
+    let (result, flags) = rol(zp_val, carry);
+
     state.set_byte_at_addr(zp_addr, result);
+    state.regs.sta = state.regs.sta.difference(StatusRegister::C);
     state.regs.sta |= flags;
 }
 
 /// ROL (accumulator addressing mode)
 /// Opcode: 2A
 pub fn rol_acc(state: &mut ComputerState) {
-    let (result, flags) = rol(state.regs.acc);
+    let carry = state.get_carry();
+    let (result, flags) = rol(state.regs.acc, carry);
+
     state.regs.acc = result;
+    state.regs.sta = state.regs.sta.difference(StatusRegister::C);
     state.regs.sta |= flags;
 }
 /// ROL (zero_page addressing mode)
