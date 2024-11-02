@@ -273,24 +273,24 @@ fn rol_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usi
 
 /// ROL (accumulator addressing mode)
 /// Opcode: 2A
-fn rol_acc(state: &mut ComputerState) {
+pub fn rol_acc(state: &mut ComputerState) {
     let (result, flags) = rol(state.regs.acc);
     state.regs.acc = result;
     state.regs.sta |= flags;
 }
 /// ROL (zero_page addressing mode)
 /// Opcode: 26
-fn rol_zp(state: &mut ComputerState)
+pub fn rol_zp(state: &mut ComputerState)
 { rol_adapter(state, ComputerState::fetch_zero_page_address) }
 /// ROL (zero_page X addressing mode)
 /// Opcode: 36
-fn rol_zpx(state: &mut ComputerState)
+pub fn rol_zpx(state: &mut ComputerState)
 { rol_adapter(state, ComputerState::fetch_zero_page_x_address) }
 /// ROL (absolute addressing mode)
 /// Opcode: 2E
-fn rol_ab(state: &mut ComputerState)
+pub fn rol_ab(state: &mut ComputerState)
 { rol_adapter(state, ComputerState::fetch_absolute_address) }
 /// ROL (absolute X addressing mode)
 /// Opcode: 3E
-fn rol_abx(state: &mut ComputerState)
+pub fn rol_abx(state: &mut ComputerState)
 { rol_adapter(state, ComputerState::fetch_absolute_x_address) }
