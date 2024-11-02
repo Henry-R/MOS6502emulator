@@ -19,8 +19,6 @@ impl StatusRegister {
     pub const Z: StatusRegister = StatusRegister {data: 1 << 5};
     /// Carry flag
     pub const C: StatusRegister = StatusRegister {data: 1 << 6};
-    /// Empty flag
-    pub const EMPTY: StatusRegister = StatusRegister {data: 0};
 
     /// Constructs a status register with every flag set to 0
     pub const fn new() -> Self { Self {data: 0} }
@@ -56,7 +54,7 @@ impl StatusRegister {
     /// Get Conditional Flag
     /// Returns these flags if the condition is true, else empty flags
     pub const fn get_cond(self, cond: bool) -> StatusRegister {
-        if cond { self } else { StatusRegister::EMPTY }
+        if cond { self } else { StatusRegister::new() }
     }
 }
 
