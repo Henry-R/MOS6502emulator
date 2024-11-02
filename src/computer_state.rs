@@ -72,11 +72,6 @@ impl ComputerState {
         self.mem[index] = value;
     }
 
-    /// Gets the value at the given address
-    pub fn get_addr(&self, index: usize) -> u8 {
-        self.mem[index]
-    }
-
     /// Inserts the given value at the position pointed to by the PC; increments the PC
     pub fn insert_at_pc(&mut self, value: u8) {
         self.set_addr(value, self.regs.pc);
@@ -107,24 +102,24 @@ impl ComputerState {
     // FETCH INSTRUCTIONS
     // These instructions help the emulator fetch memory according to addressing modes
     /// Returns the byte of data at the given address
-    fn fetch_byte_from_addr(&self, addr: usize) -> u8 {
+    pub fn fetch_byte_from_addr(&self, addr: usize) -> u8 {
         self.mem[addr]
     }
 
     /// Returns 16-bits of data at the given address in little endian byte-order
-    fn fetch_nibble_from_addr(&self, addr: usize) -> u16 {
+    pub fn fetch_nibble_from_addr(&self, addr: usize) -> u16 {
         let lo_byte = u16::from(self.fetch_byte_from_addr(addr));
         let hi_byte = u16::from(self.fetch_byte_from_addr(addr + 1));
         (hi_byte << 8) + lo_byte
     }
 
     /// Returns the 8-bit address at the given address
-    fn fetch_zp_addr_from_addr(&self, addr: usize) -> usize {
+    pub fn fetch_zp_addr_from_addr(&self, addr: usize) -> usize {
         usize::from(self.fetch_byte_from_addr(addr))
     }
 
     /// Returns the 16-bit address the given address in little endian byte-order
-    fn fetch_ab_addr_from_addr(&self, addr: usize) -> usize {
+    pub fn fetch_ab_addr_from_addr(&self, addr: usize) -> usize {
         usize::from(self.fetch_nibble_from_addr(addr))
     }
 
