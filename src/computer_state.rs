@@ -3,6 +3,7 @@ use crate::computer_state::status_register::StatusRegister;
 
 pub(crate) mod status_register;
 pub(crate) mod operations;
+mod registers;
 
 pub struct Registers {
     // (A) Accumulator
