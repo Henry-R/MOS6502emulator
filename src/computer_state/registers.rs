@@ -1,5 +1,5 @@
 
-struct Accumulator {
+pub struct Accumulator {
     acc: u8
 }
 impl Accumulator {
@@ -17,7 +17,7 @@ impl Accumulator {
 }
 
 
-struct ProgramCounter {
+pub struct ProgramCounter {
     pc: usize
 }
 impl ProgramCounter {
@@ -61,16 +61,16 @@ impl ProgramCounter {
 }
 
 
-struct Stack<'a> {
+pub struct Stack<'a> {
+    stk: usize,
     stk_mem: &'a mut [u8],
-    stk: usize
 }
-impl Stack {
+impl Stack<'_> {
     /// Constructs stack pointer initialised to the top of the stack page
     pub fn new(stk_mem: &mut [u8]) -> Stack
     { Stack {
+        stk: stk_mem.len(),
         stk_mem,
-        stk: stk_mem.len()
     } }
 
     /// Returns the stack pointer's index in memory

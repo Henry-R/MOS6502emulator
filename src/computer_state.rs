@@ -1,4 +1,5 @@
 use crate::computer_state::operations::opcode_from_operation;
+use crate::computer_state::registers::*;
 use crate::computer_state::status_register::StatusRegister;
 
 pub(crate) mod status_register;
@@ -10,8 +11,6 @@ pub struct Registers {
     pub acc: u8,
     // (P) Status register
     pub sta: StatusRegister,
-    // (PC) Program counter
-    pub pc: usize,
     // (S) Stack pointer
     pub stk: u8,
     // (X) Index register
@@ -39,6 +38,7 @@ pub struct ComputerState {
     mem: [u8; MEMORY_SIZE],
 
     pub regs: Registers,
+    pc: ProgramCounter,
 }
 
 impl ComputerState {
@@ -48,11 +48,11 @@ impl ComputerState {
             regs: Registers {
                 acc: 0,
                 sta: StatusRegister::new(),
-                pc: 0,
                 stk: 0xFF,  // Stack grows downwards, so initialise stack to top of memory
                 x: 0,
                 y: 0,
             },
+            pc: ProgramCounter::new(0),
         }
     }
 
@@ -70,8 +70,8 @@ impl ComputerState {
     // MEMORY ACCESS
     /// Inserts the given value at the position pointed to by the PC; increments the PC
     pub fn insert_at_pc(&mut self, value: u8) {
-        self.set_byte_at_addr(self.regs.pc, value);
-        self.regs.pc += 1;
+        self.set_byte_at_addr(self.pc.get(), value);
+        self.pc.add_unsigned(1);
     }
 
     /// Inserts the given instruction at the position pointed to by the PC; increments the PC
@@ -81,11 +81,11 @@ impl ComputerState {
     }
 
     pub fn set_up_state(&mut self, bytes: Vec<u8>) {
-        let old_pc = self.regs.pc;
+        let old_pc = self.pc.get();
         for byte in bytes {
             self.insert_at_pc(byte);
         }
-        self.regs.pc = old_pc;
+        self.pc.set(old_pc);
     }
 
 
@@ -133,29 +133,29 @@ impl ComputerState {
 
     /// Fetches the byte at the PC, and increments the PC by 1
     fn fetch_next_byte(&mut self) -> u8 {
-        let result = self.fetch_byte_from_addr(self.regs.pc);
-        self.regs.pc += 1;
+        let result = self.fetch_byte_from_addr(self.pc.get());
+        self.pc.add_unsigned(1);
         result
     }
 
     /// Fetches the nibble at the PC, and increments the PC by 2
     fn fetch_next_nibble(&mut self) -> u16 {
-        let result = self.fetch_nibble_from_addr(self.regs.pc);
-        self.regs.pc += 2;
+        let result = self.fetch_nibble_from_addr(self.pc.get());
+        self.pc.add_unsigned(2);
         result
     }
 
     /// Fetches the 8-bit address at the PC, and increments the PC by 1
     fn fetch_next_zp_addr(&mut self) -> usize {
-        let result = self.fetch_zp_addr_from_addr(self.regs.pc);
-        self.regs.pc += 1;
+        let result = self.fetch_zp_addr_from_addr(self.pc.get());
+        self.pc.add_unsigned(1);
         result
     }
 
     /// Fetches the 16-bit address at the PC, and increments the PC by 2
     fn fetch_next_ab_addr(&mut self) -> usize {
-        let result = self.fetch_ab_addr_from_addr(self.regs.pc);
-        self.regs.pc += 2;
+        let result = self.fetch_ab_addr_from_addr(self.pc.get());
+        self.pc.add_unsigned(2);
         result
     }
 
