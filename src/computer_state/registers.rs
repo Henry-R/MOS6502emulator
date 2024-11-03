@@ -1,20 +1,37 @@
 
+struct Accumulator {
+    data: u8
+}
+impl Accumulator {
+    /// Constructs accumulator initialised to the given value
+    pub fn new(acc: u8) -> Self
+    { Self { data: acc } }
+
+    /// Gets the value inside the accumulator
+    pub const fn get(&self) -> u8
+    { self.data }
+
+    /// Sets the value inside the accumulator
+    pub fn set(&mut self, value: u8)
+    { self.data = value }
+}
+
+
 struct ProgramCounter {
     data: usize
 }
-
 impl ProgramCounter {
     /// Constructs program counter initialised to point at the given address
     pub fn new(pc: usize) -> Self
     { Self { data: pc } }
 
-    /// Sets new address in the PC
-    pub fn set(&mut self, new_pc: usize)
-    { self.data = new_pc }
-
     /// Gets current address in the PC
     pub const fn get(&self) -> usize
     { self.data }
+
+    /// Sets new address in the PC
+    pub fn set(&mut self, new_pc: usize)
+    { self.data = new_pc }
 
     /// Adds an unsigned offset to the PC
     pub fn add_unsigned(&mut self, value: u8)

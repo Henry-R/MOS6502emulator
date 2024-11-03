@@ -230,6 +230,11 @@ impl ComputerState {
         self.mem[self.fetch_zero_page_y_address()]
     }
 
+    fn fetch_relative(&mut self) -> i8 {
+        let raw_offset = self.fetch_next_byte();
+        ((0xFF ^ raw_offset) + 1) as i8
+    }
+
     /// Fetches the memory at the target location of an absolute address mode instruction
     fn fetch_absolute(&mut self) -> u8 { self.mem[self.fetch_absolute_address()] }
 
