@@ -56,7 +56,7 @@ fn test_and_zp() {
         opcode_from_operation(and_zp),
         0xF5
     ]);
-    state.set_byte_at_addr(0xF5, 0x55);
+    state.mem.set_byte_at_addr(0xF5, 0x55);
     state.execute_next();
 
     assert_eq!(0x41, state.acc.get());
@@ -67,12 +67,12 @@ fn test_and_zp() {
 fn test_and_zpx() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0x41);
-    state.x = 0x50;
+    state.set_x(0x50);
     state.set_up_state(vec![
         opcode_from_operation(and_zpx),
         0x30
     ]);
-    state.set_byte_at_addr(0x80, 0x55);
+    state.mem.set_byte_at_addr(0x80, 0x55);
     state.execute_next();
 
     assert_eq!(0x41, state.acc.get());
@@ -88,7 +88,7 @@ fn test_and_ab() {
         0x30,
         0x05
     ]);
-    state.set_byte_at_addr(0x0530, 0x55);
+    state.mem.set_byte_at_addr(0x0530, 0x55);
     state.execute_next();
 
     assert_eq!(0x41, state.acc.get());
@@ -99,13 +99,13 @@ fn test_and_ab() {
 fn test_and_abx() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0x41);
-    state.x = 0x0A;
+    state.set_x(0x0A);
     state.set_up_state(vec![
         opcode_from_operation(and_abx),
         0x30,
         0x05
     ]);
-    state.set_byte_at_addr(0x053A, 0x55);
+    state.mem.set_byte_at_addr(0x053A, 0x55);
     state.execute_next();
 
     assert_eq!(0x41, state.acc.get());
@@ -116,13 +116,13 @@ fn test_and_abx() {
 fn test_and_aby() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0x41);
-    state.y = 0x0A;
+    state.set_y(0x0A);
     state.set_up_state(vec![
         opcode_from_operation(and_aby),
         0x30,
         0x05
     ]);
-    state.set_byte_at_addr(0x053A, 0x55);
+    state.mem.set_byte_at_addr(0x053A, 0x55);
     state.execute_next();
 
     assert_eq!(0x41, state.acc.get());
@@ -133,13 +133,13 @@ fn test_and_aby() {
 fn test_and_inx() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0x41);
-    state.x = 0x22;
+    state.set_x(0x22);
     state.set_up_state(vec![
         opcode_from_operation(and_inx),
         0x55
     ]);
-    state.set_nibble_at_addr(0x77, 0x1234);
-    state.set_byte_at_addr(0x1234, 0x43);
+    state.mem.set_nibble_at_addr(0x77, 0x1234);
+    state.mem.set_byte_at_addr(0x1234, 0x43);
     state.execute_next();
 
     assert_eq!(0x41, state.acc.get());
@@ -150,13 +150,13 @@ fn test_and_inx() {
 fn test_and_iny() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0xFF);
-    state.y = 0x22;
+    state.set_y(0x22);
     state.set_up_state(vec![
         opcode_from_operation(and_iny),
         0x41
     ]);
-    state.set_nibble_at_addr(0x41, 0x1234);
-    state.set_byte_at_addr(0x1256, 0x29);
+    state.mem.set_nibble_at_addr(0x41, 0x1234);
+    state.mem.set_byte_at_addr(0x1256, 0x29);
     state.execute_next();
 
     assert_eq!(0x29, state.acc.get());
@@ -215,7 +215,7 @@ fn test_or_zp() {
         opcode_from_operation(or_zp),
         0xF5
     ]);
-    state.set_byte_at_addr(0xF5, 0x10);
+    state.mem.set_byte_at_addr(0xF5, 0x10);
     state.execute_next();
 
     assert_eq!(0x35, state.acc.get());
@@ -226,12 +226,12 @@ fn test_or_zp() {
 fn test_or_zpx() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0x42);
-    state.x = 0x50;
+    state.set_x(0x50);
     state.set_up_state(vec![
         opcode_from_operation(or_zpx),
         0x30
     ]);
-    state.set_byte_at_addr(0x80, 0x81);
+    state.mem.set_byte_at_addr(0x80, 0x81);
     state.execute_next();
 
     assert_eq!(0xC3, state.acc.get());
@@ -247,7 +247,7 @@ fn test_or_ab() {
         0x30,
         0x05
     ]);
-    state.set_byte_at_addr(0x0530, 0x55);
+    state.mem.set_byte_at_addr(0x0530, 0x55);
     state.execute_next();
 
     assert_eq!(0x55, state.acc.get());
@@ -258,13 +258,13 @@ fn test_or_ab() {
 fn test_or_abx() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0x53);
-    state.x = 0x0A;
+    state.set_x(0x0A);
     state.set_up_state(vec![
         opcode_from_operation(or_abx),
         0x30,
         0x05
     ]);
-    state.set_byte_at_addr(0x053A, 0x40);
+    state.mem.set_byte_at_addr(0x053A, 0x40);
     state.execute_next();
 
     assert_eq!(0x53, state.acc.get());
@@ -275,13 +275,13 @@ fn test_or_abx() {
 fn test_or_aby() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0x02);
-    state.y = 0x0A;
+    state.set_y(0x0A);
     state.set_up_state(vec![
         opcode_from_operation(or_aby),
         0x30,
         0x05
     ]);
-    state.set_byte_at_addr(0x053A, 0x20);
+    state.mem.set_byte_at_addr(0x053A, 0x20);
     state.execute_next();
 
     assert_eq!(0x22, state.acc.get());
@@ -292,13 +292,13 @@ fn test_or_aby() {
 fn test_or_inx() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(1);
-    state.x = 0x22;
+    state.set_x(0x22);
     state.set_up_state(vec![
         opcode_from_operation(or_inx),
         0x55
     ]);
-    state.set_nibble_at_addr(0x77, 0x1234);
-    state.set_byte_at_addr(0x1234, 3);
+    state.mem.set_nibble_at_addr(0x77, 0x1234);
+    state.mem.set_byte_at_addr(0x1234, 3);
     state.execute_next();
 
     assert_eq!(3, state.acc.get());
@@ -309,13 +309,13 @@ fn test_or_inx() {
 fn test_or_iny() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0xFF);
-    state.y = 0x22;
+    state.set_y(0x22);
     state.set_up_state(vec![
         opcode_from_operation(or_iny),
         0x41
     ]);
-    state.set_nibble_at_addr(0x41, 0x1234);
-    state.set_byte_at_addr(0x1256, 0x23);
+    state.mem.set_nibble_at_addr(0x41, 0x1234);
+    state.mem.set_byte_at_addr(0x1256, 0x23);
     state.execute_next();
 
     assert_eq!(0xFF, state.acc.get());
@@ -374,7 +374,7 @@ fn test_eor_zp() {
         opcode_from_operation(eor_zp),
         0xF5
     ]);
-    state.set_byte_at_addr(0xF5, 0x31);
+    state.mem.set_byte_at_addr(0xF5, 0x31);
     state.execute_next();
 
     assert_eq!(0x14, state.acc.get());
@@ -385,12 +385,12 @@ fn test_eor_zp() {
 fn test_eor_zpx() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0x23);
-    state.x = 0x50;
+    state.set_x(0x50);
     state.set_up_state(vec![
         opcode_from_operation(eor_zpx),
         0x30
     ]);
-    state.set_byte_at_addr(0x80, 0x31);
+    state.mem.set_byte_at_addr(0x80, 0x31);
     state.execute_next();
 
     assert_eq!(0x12, state.acc.get());
@@ -406,7 +406,7 @@ fn test_eor_ab() {
         0x30,
         0x05
     ]);
-    state.set_byte_at_addr(0x0530, 0x55);
+    state.mem.set_byte_at_addr(0x0530, 0x55);
     state.execute_next();
 
     assert_eq!(0x14, state.acc.get());
@@ -417,13 +417,13 @@ fn test_eor_ab() {
 fn test_eor_abx() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0x53);
-    state.x = 0x0A;
+    state.set_x(0x0A);
     state.set_up_state(vec![
         opcode_from_operation(eor_abx),
         0x30,
         0x05
     ]);
-    state.set_byte_at_addr(0x053A, 0x40);
+    state.mem.set_byte_at_addr(0x053A, 0x40);
     state.execute_next();
 
     assert_eq!(0x13, state.acc.get());
@@ -434,13 +434,13 @@ fn test_eor_abx() {
 fn test_eor_aby() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0x02);
-    state.y = 0x0A;
+    state.set_y(0x0A);
     state.set_up_state(vec![
         opcode_from_operation(eor_aby),
         0x30,
         0x05
     ]);
-    state.set_byte_at_addr(0x053A, 0x20);
+    state.mem.set_byte_at_addr(0x053A, 0x20);
     state.execute_next();
 
     assert_eq!(0x22, state.acc.get());
@@ -451,13 +451,13 @@ fn test_eor_aby() {
 fn test_eor_inx() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0x19);
-    state.x = 0x22;
+    state.set_x(0x22);
     state.set_up_state(vec![
         opcode_from_operation(eor_inx),
         0x55
     ]);
-    state.set_nibble_at_addr(0x77, 0x1234);
-    state.set_byte_at_addr(0x1234, 0x28);
+    state.mem.set_nibble_at_addr(0x77, 0x1234);
+    state.mem.set_byte_at_addr(0x1234, 0x28);
     state.execute_next();
 
     assert_eq!(0x31, state.acc.get());
@@ -468,13 +468,13 @@ fn test_eor_inx() {
 fn test_eor_iny() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0x35);
-    state.y = 0x22;
+    state.set_y(0x22);
     state.set_up_state(vec![
         opcode_from_operation(eor_iny),
         0x41
     ]);
-    state.set_nibble_at_addr(0x41, 0x1234);
-    state.set_byte_at_addr(0x1256, 0x23);
+    state.mem.set_nibble_at_addr(0x41, 0x1234);
+    state.mem.set_byte_at_addr(0x1256, 0x23);
     state.execute_next();
 
     assert_eq!(0x16, state.acc.get());
@@ -491,11 +491,11 @@ fn test_bit_zp() {
         opcode_from_operation(bit_zp),
         0x41
     ]);
-    state.set_byte_at_addr(0x41, 0x35);
+    state.mem.set_byte_at_addr(0x41, 0x35);
     state.execute_next();
 
     assert_eq!(0x23, state.acc.get());
-    assert_eq!(0x35, state.fetch_byte_from_addr(0x41));
+    assert_eq!(0x35, state.mem.fetch_byte_from_addr(0x41));
     assert!(state.sta.is_empty());
 }
 
@@ -507,7 +507,7 @@ fn test_bit_zp_zero_flag() {
         opcode_from_operation(bit_zp),
         0x41
     ]);
-    state.set_byte_at_addr(0x41, 0x22);
+    state.mem.set_byte_at_addr(0x41, 0x22);
     state.execute_next();
 
     assert!(state.sta.contains_only(StatusRegister::Z));
@@ -521,7 +521,7 @@ fn test_bit_zp_negative_flag() {
         opcode_from_operation(bit_zp),
         0x41
     ]);
-    state.set_byte_at_addr(0x41, 0xA5);
+    state.mem.set_byte_at_addr(0x41, 0xA5);
     state.execute_next();
 
     assert!(state.sta.contains_only(StatusRegister::N));
@@ -535,7 +535,7 @@ fn test_bit_zp_overflow_flag() {
         opcode_from_operation(bit_zp),
         0x41
     ]);
-    state.set_byte_at_addr(0x41, 0x45);
+    state.mem.set_byte_at_addr(0x41, 0x45);
     state.execute_next();
 
     assert!(state.sta.contains_only(StatusRegister::V));
@@ -549,7 +549,7 @@ fn test_bit_zp_zero_negative_overflow_flag() {
         opcode_from_operation(bit_zp),
         0x41
     ]);
-    state.set_byte_at_addr(0x41, 0xC5);
+    state.mem.set_byte_at_addr(0x41, 0xC5);
     state.execute_next();
 
     assert!(state.sta.contains_only(StatusRegister::Z | StatusRegister::N | StatusRegister::V));
@@ -564,7 +564,7 @@ fn test_bit_ab() {
         0x41,
         0x90
     ]);
-    state.set_byte_at_addr(0x9041, 0x35);
+    state.mem.set_byte_at_addr(0x9041, 0x35);
     state.execute_next();
 
     assert!(state.sta.is_empty());
@@ -631,25 +631,25 @@ fn test_asl_zp() {
         opcode_from_operation(asl_zp),
         0x10
     ]);
-    state.set_byte_at_addr(0x10, 0x09);
+    state.mem.set_byte_at_addr(0x10, 0x09);
     state.execute_next();
 
-    assert_eq!(0x12, state.fetch_byte_from_addr(0x10));
+    assert_eq!(0x12, state.mem.fetch_byte_from_addr(0x10));
     assert!(state.sta.is_empty());
 }
 
 #[test]
 fn test_asl_zpx() {
     let mut state: ComputerState = ComputerState::new();
-    state.x = 0x05;
+    state.set_x(0x05);
     state.set_up_state(vec![
         opcode_from_operation(asl_zpx),
         0x10
     ]);
-    state.set_byte_at_addr(0x15, 0x09);
+    state.mem.set_byte_at_addr(0x15, 0x09);
     state.execute_next();
 
-    assert_eq!(0x12, state.fetch_byte_from_addr(0x15));
+    assert_eq!(0x12, state.mem.fetch_byte_from_addr(0x15));
     assert!(state.sta.is_empty());
 }
 
@@ -661,26 +661,26 @@ fn test_asl_ab() {
         0x10,
         0x85
     ]);
-    state.set_byte_at_addr(0x8510, 0x09);
+    state.mem.set_byte_at_addr(0x8510, 0x09);
     state.execute_next();
 
-    assert_eq!(0x12, state.fetch_byte_from_addr(0x8510));
+    assert_eq!(0x12, state.mem.fetch_byte_from_addr(0x8510));
     assert!(state.sta.is_empty());
 }
 
 #[test]
 fn test_asl_abx() {
     let mut state: ComputerState = ComputerState::new();
-    state.x = 0x05;
+    state.set_x(0x05);
     state.set_up_state(vec![
         opcode_from_operation(asl_abx),
         0x10,
         0x85
     ]);
-    state.set_byte_at_addr(0x8515, 0x09);
+    state.mem.set_byte_at_addr(0x8515, 0x09);
     state.execute_next();
 
-    assert_eq!(0x12, state.fetch_byte_from_addr(0x8515));
+    assert_eq!(0x12, state.mem.fetch_byte_from_addr(0x8515));
     assert!(state.sta.is_empty());
 }
 
@@ -732,25 +732,25 @@ fn test_lsr_zp() {
         opcode_from_operation(lsr_zp),
         0x05
     ]);
-    state.set_byte_at_addr(0x05, 8);
+    state.mem.set_byte_at_addr(0x05, 8);
     state.execute_next();
 
-    assert_eq!(4, state.fetch_byte_from_addr(0x05));
+    assert_eq!(4, state.mem.fetch_byte_from_addr(0x05));
     assert!(state.sta.is_empty());
 }
 
 #[test]
 fn test_lsr_zpx() {
     let mut state: ComputerState = ComputerState::new();
-    state.x = 0x05;
+    state.set_x(0x05);
     state.set_up_state(vec![
         opcode_from_operation(lsr_zpx),
         0x05
     ]);
-    state.set_byte_at_addr(0x0A, 8);
+    state.mem.set_byte_at_addr(0x0A, 8);
     state.execute_next();
 
-    assert_eq!(4, state.fetch_byte_from_addr(0x0A));
+    assert_eq!(4, state.mem.fetch_byte_from_addr(0x0A));
     assert!(state.sta.is_empty());
 }
 
@@ -762,26 +762,26 @@ fn test_lsr_ab() {
         0x05,
         0x08
     ]);
-    state.set_byte_at_addr(0x0805, 8);
+    state.mem.set_byte_at_addr(0x0805, 8);
     state.execute_next();
 
-    assert_eq!(4, state.fetch_byte_from_addr(0x0805));
+    assert_eq!(4, state.mem.fetch_byte_from_addr(0x0805));
     assert!(state.sta.is_empty());
 }
 
 #[test]
 fn test_lsr_abx() {
     let mut state: ComputerState = ComputerState::new();
-    state.x = 0x05;
+    state.set_x(0x05);
     state.set_up_state(vec![
         opcode_from_operation(lsr_abx),
         0x05,
         0x08
     ]);
-    state.set_byte_at_addr(0x080A, 8);
+    state.mem.set_byte_at_addr(0x080A, 8);
     state.execute_next();
 
-    assert_eq!(4, state.fetch_byte_from_addr(0x080A));
+    assert_eq!(4, state.mem.fetch_byte_from_addr(0x080A));
     assert!(state.sta.is_empty());
 }
 
@@ -862,25 +862,25 @@ fn test_rol_zp() {
         opcode_from_operation(rol_zp),
         0x10
     ]);
-    state.set_byte_at_addr(0x10, 0x9);
+    state.mem.set_byte_at_addr(0x10, 0x9);
     state.execute_next();
 
-    assert_eq!(0x12, state.fetch_byte_from_addr(0x10));
+    assert_eq!(0x12, state.mem.fetch_byte_from_addr(0x10));
     assert!(state.sta.is_empty());
 }
 
 #[test]
 fn test_rol_zpx() {
     let mut state: ComputerState = ComputerState::new();
-    state.x = 0x05;
+    state.set_x(0x05);
     state.set_up_state(vec![
         opcode_from_operation(rol_zpx),
         0x10
     ]);
-    state.set_byte_at_addr(0x15, 0x9);
+    state.mem.set_byte_at_addr(0x15, 0x9);
     state.execute_next();
 
-    assert_eq!(0x12, state.fetch_byte_from_addr(0x15));
+    assert_eq!(0x12, state.mem.fetch_byte_from_addr(0x15));
     assert!(state.sta.is_empty());
 }
 
@@ -892,26 +892,26 @@ fn test_rol_ab() {
         0x10,
         0x11
     ]);
-    state.set_byte_at_addr(0x1110, 0x9);
+    state.mem.set_byte_at_addr(0x1110, 0x9);
     state.execute_next();
 
-    assert_eq!(0x12, state.fetch_byte_from_addr(0x1110));
+    assert_eq!(0x12, state.mem.fetch_byte_from_addr(0x1110));
     assert!(state.sta.is_empty());
 }
 
 #[test]
 fn test_rol_abx() {
     let mut state: ComputerState = ComputerState::new();
-    state.x = 0x05;
+    state.set_x(0x05);
     state.set_up_state(vec![
         opcode_from_operation(rol_abx),
         0x10,
         0x11
     ]);
-    state.set_byte_at_addr(0x1115, 0x9);
+    state.mem.set_byte_at_addr(0x1115, 0x9);
     state.execute_next();
 
-    assert_eq!(0x12, state.fetch_byte_from_addr(0x1115));
+    assert_eq!(0x12, state.mem.fetch_byte_from_addr(0x1115));
     assert!(state.sta.is_empty());
 }
 
@@ -978,25 +978,25 @@ fn test_ror_zp() {
         opcode_from_operation(ror_zp),
         0x10
     ]);
-    state.set_byte_at_addr(0x10, 0x08);
+    state.mem.set_byte_at_addr(0x10, 0x08);
     state.execute_next();
 
-    assert_eq!(0x04, state.fetch_byte_from_addr(0x10));
+    assert_eq!(0x04, state.mem.fetch_byte_from_addr(0x10));
     assert!(state.sta.is_empty());
 }
 
 #[test]
 fn test_ror_zpx() {
     let mut state: ComputerState = ComputerState::new();
-    state.x = 0x05;
+    state.set_x(0x05);
     state.set_up_state(vec![
         opcode_from_operation(ror_zpx),
         0x10
     ]);
-    state.set_byte_at_addr(0x15, 0x08);
+    state.mem.set_byte_at_addr(0x15, 0x08);
     state.execute_next();
 
-    assert_eq!(0x04, state.fetch_byte_from_addr(0x15));
+    assert_eq!(0x04, state.mem.fetch_byte_from_addr(0x15));
     assert!(state.sta.is_empty());
 }
 
@@ -1008,25 +1008,25 @@ fn test_ror_ab() {
         0x10,
         0x75
     ]);
-    state.set_byte_at_addr(0x7510, 0x08);
+    state.mem.set_byte_at_addr(0x7510, 0x08);
     state.execute_next();
 
-    assert_eq!(0x04, state.fetch_byte_from_addr(0x7510));
+    assert_eq!(0x04, state.mem.fetch_byte_from_addr(0x7510));
     assert!(state.sta.is_empty());
 }
 
 #[test]
 fn test_ror_abx() {
     let mut state: ComputerState = ComputerState::new();
-    state.x = 0x05;
+    state.set_x(0x05);
     state.set_up_state(vec![
         opcode_from_operation(ror_abx),
         0x10,
         0x75
     ]);
-    state.set_byte_at_addr(0x7515, 0x08);
+    state.mem.set_byte_at_addr(0x7515, 0x08);
     state.execute_next();
 
-    assert_eq!(0x04, state.fetch_byte_from_addr(0x7515));
+    assert_eq!(0x04, state.mem.fetch_byte_from_addr(0x7515));
     assert!(state.sta.is_empty());
 }

@@ -1,4 +1,5 @@
 use crate::computer_state::{ComputerState, StatusRegister};
+use crate::computer_state::memory::Memory;
 use crate::computer_state::status_register::{get_zero_neg_flags};
 
 // ADDITION
@@ -22,8 +23,8 @@ const fn adc(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
 
 /// Mutates the state of the computer according to the result of addition
 /// Acts as an adapter between the implementation of add and the computer
-fn adc_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
-    let (result, flags) = adc(state.acc.get(), addr_fn(state), state.get_carry());
+fn adc_adapter(state: &mut ComputerState, addr_fn: fn(&mut Memory) -> u8) {
+    let (result, flags) = adc(state.acc.get(), addr_fn(&mut state.mem), state.get_carry());
 
     state.acc.set(result);
     state.sta |= flags;
@@ -32,35 +33,35 @@ fn adc_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8)
 /// ADC (intermediate addressing mode)
 /// Opcode: 69
 pub fn adc_im(state: &mut ComputerState)
-{ adc_adapter(state, ComputerState::fetch_intermediate); }
+{ adc_adapter(state, Memory::fetch_intermediate); }
 /// ADC (zero-page addressing mode)
 /// Opcode: 65
 pub fn adc_zp(state: &mut ComputerState)
-{ adc_adapter(state, ComputerState::fetch_zero_page); }
+{ adc_adapter(state, Memory::fetch_zero_page); }
 /// ADC (zero-page X addressing mode)
 /// Opcode: 75
 pub fn adc_zpx(state: &mut ComputerState)
-{ adc_adapter(state, ComputerState::fetch_zero_page_x); }
+{ adc_adapter(state, Memory::fetch_zero_page_x); }
 /// ADC (absolute addressing mode)
 /// Opcode: 6D
 pub fn adc_ab(state: &mut ComputerState)
-{ adc_adapter(state, ComputerState::fetch_absolute); }
+{ adc_adapter(state, Memory::fetch_absolute); }
 /// ADC (absolute X addressing mode)
 /// Opcode: 7D
 pub fn adc_abx(state: &mut ComputerState)
-{ adc_adapter(state, ComputerState::fetch_absolute_x); }
+{ adc_adapter(state, Memory::fetch_absolute_x); }
 /// ADC (absolute Y addressing mode)
 /// Opcode: 79
 pub fn adc_aby(state: &mut ComputerState)
-{ adc_adapter(state, ComputerState::fetch_absolute_y); }
+{ adc_adapter(state, Memory::fetch_absolute_y); }
 /// ADC (indirect X addressing mode)
 /// Opcode: 61
 pub fn adc_inx(state: &mut ComputerState)
-{ adc_adapter(state, ComputerState::fetch_indirect_x);}
+{ adc_adapter(state, Memory::fetch_indirect_x);}
 /// ADC (indirect Y addressing mode)
 /// Opcode: 71
 pub fn adc_iny(state: &mut ComputerState)
-{ adc_adapter(state, ComputerState::fetch_indirect_y); }
+{ adc_adapter(state, Memory::fetch_indirect_y); }
 
 
 // SUBTRACTION
@@ -75,8 +76,8 @@ const fn sbc(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
 
 /// Mutates the state of the computer according to the result of subtraction
 /// Acts as an adapter between the implementation of sub and the computer
-fn sbc_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
-    let (result, flags) = sbc(state.acc.get(), addr_fn(state), state.get_carry());
+fn sbc_adapter(state: &mut ComputerState, addr_fn: fn(&mut Memory) -> u8) {
+    let (result, flags) = sbc(state.acc.get(), addr_fn(&mut state.mem), state.get_carry());
 
     state.acc.set(result);
     state.sta |= flags;
@@ -85,35 +86,35 @@ fn sbc_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8)
 /// SBC (intermediate addressing mode)
 /// Opcode: E9
 pub fn sbc_im(state: &mut ComputerState)
-{ sbc_adapter(state, ComputerState::fetch_intermediate); }
+{ sbc_adapter(state, Memory::fetch_intermediate); }
 /// SBC (zero-page addressing mode)
 /// Opcode: E5
 pub fn sbc_zp(state: &mut ComputerState)
-{ sbc_adapter(state, ComputerState::fetch_zero_page); }
+{ sbc_adapter(state, Memory::fetch_zero_page); }
 /// SBC (zero-page X addressing mode)
 /// Opcode:F5
 pub fn sbc_zpx(state: &mut ComputerState)
-{ sbc_adapter(state, ComputerState::fetch_zero_page_x); }
+{ sbc_adapter(state, Memory::fetch_zero_page_x); }
 /// SBC (absolute addressing mode)
 /// Opcode: ED
 pub fn sbc_ab(state: &mut ComputerState)
-{ sbc_adapter(state, ComputerState::fetch_absolute); }
+{ sbc_adapter(state, Memory::fetch_absolute); }
 /// SBC (absolute X addressing mode)
 /// Opcode: FD
 pub fn sbc_abx(state: &mut ComputerState)
-{ sbc_adapter(state, ComputerState::fetch_absolute_x); }
+{ sbc_adapter(state, Memory::fetch_absolute_x); }
 /// SBC (absolute Y addressing mode)
 /// Opcode: F9
 pub fn sbc_aby(state: &mut ComputerState)
-{ sbc_adapter(state, ComputerState::fetch_absolute_y); }
+{ sbc_adapter(state, Memory::fetch_absolute_y); }
 /// SBC (indirect X addressing mode)
 /// Opcode: E1
 pub fn sbc_inx(state: &mut ComputerState)
-{ sbc_adapter(state, ComputerState::fetch_indirect_x); }
+{ sbc_adapter(state, Memory::fetch_indirect_x); }
 /// SBC (indirect Y addressing mode)
 /// Opcode: F1
 pub fn sbc_iny(state: &mut ComputerState)
-{ sbc_adapter(state, ComputerState::fetch_indirect_y); }
+{ sbc_adapter(state, Memory::fetch_indirect_y); }
 
 
 /// DEC (Decrement memory by one)
@@ -126,42 +127,42 @@ const fn dec(val: u8) -> (u8, StatusRegister) {
 
 /// Mutates the state of the computer according to the result of taking the decrement
 /// Acts as an adapter between the implementation of dec and the computer
-fn dec_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usize) {
-    let addr = addr_fn(state);
-    let (result, flags) = dec(state.fetch_byte_from_addr(addr));
-    state.set_byte_at_addr(addr, result);
+fn dec_adapter(state: &mut ComputerState, addr_fn: fn(&mut Memory) -> usize) {
+    let addr = addr_fn(&mut state.mem);
+    let (result, flags) = dec(state.mem.fetch_byte_from_addr(addr));
+    state.mem.set_byte_at_addr(addr, result);
     state.sta |= flags;
 }
 
 /// DEC (zero-page addressing mode)
 /// Opcode: C6
 pub fn dec_zp(state: &mut ComputerState)
-{ dec_adapter(state, ComputerState::fetch_zero_page_address) }
+{ dec_adapter(state, Memory::fetch_zero_page_address) }
 /// DEC (zero-page X addressing mode)
 /// Opcode: D6
 pub fn dec_zpx(state: &mut ComputerState)
-{ dec_adapter(state, ComputerState::fetch_zero_page_x_address) }
+{ dec_adapter(state, Memory::fetch_zero_page_x_address) }
 /// DEC (absolute addressing mode)
 /// Opcode: CE
 pub fn dec_ab(state: &mut ComputerState)
-{ dec_adapter(state, ComputerState::fetch_absolute_address) }
+{ dec_adapter(state, Memory::fetch_absolute_address) }
 /// DEC (absolute X addressing mode)
 /// Opcode: DE
 pub fn dec_abx(state: &mut ComputerState)
-{ dec_adapter(state, ComputerState::fetch_absolute_x_address) }
+{ dec_adapter(state, Memory::fetch_absolute_x_address) }
 
 /// DEX (implied addressing mode)
 /// Opcode: CA
 pub fn dex(state: &mut ComputerState) {
-    let (result, flags) = dec(state.x);
-    state.x = result;
+    let (result, flags) = dec(state.get_x() as u8);
+    state.set_x(usize::from(result));
     state.sta |= flags
 }
 /// DEY (implied addressing mode)
 /// Opcode: 88
 pub fn dey(state: &mut ComputerState) {
-    let (result, flags) = dec(state.y);
-    state.y = result;
+    let (result, flags) = dec(state.get_y() as u8);
+    state.set_y(usize::from(result));
     state.sta |= flags
 }
 
@@ -176,41 +177,41 @@ const fn inc(val: u8) -> (u8, StatusRegister) {
 
 /// Mutates the state of the computer according to the result of taking the increment
 /// Acts as an adapter between the implementation of inc and the computer
-fn inc_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usize) {
-    let addr = addr_fn(state);
-    let (result, flags) = inc(state.fetch_byte_from_addr(addr));
-    state.set_byte_at_addr(addr, result);
+fn inc_adapter(state: &mut ComputerState, addr_fn: fn(&mut Memory) -> usize) {
+    let addr = addr_fn(&mut state.mem);
+    let (result, flags) = inc(state.mem.fetch_byte_from_addr(addr));
+    state.mem.set_byte_at_addr(addr, result);
     state.sta |= flags;
 }
 
 /// INC (zero-page addressing mode)
 /// Opcode: E6
 pub fn inc_zp(state: &mut ComputerState)
-{ inc_adapter(state, ComputerState::fetch_zero_page_address) }
+{ inc_adapter(state, Memory::fetch_zero_page_address) }
 /// INC (zero-page X addressing mode)
 /// Opcode: F6
 pub fn inc_zpx(state: &mut ComputerState)
-{ inc_adapter(state, ComputerState::fetch_zero_page_x_address) }
+{ inc_adapter(state, Memory::fetch_zero_page_x_address) }
 /// INC (absolute addressing mode)
 /// Opcode: EE
 pub fn inc_ab(state: &mut ComputerState)
-{ inc_adapter(state, ComputerState::fetch_absolute_address) }
+{ inc_adapter(state, Memory::fetch_absolute_address) }
 /// INC (absolute X addressing mode)
 /// Opcode: FE
 pub fn inc_abx(state: &mut ComputerState)
-{ inc_adapter(state, ComputerState::fetch_absolute_x_address) }
+{ inc_adapter(state, Memory::fetch_absolute_x_address) }
 
 /// INX (implied addressing mode)
 /// Opcode: E8
 pub fn inx(state: &mut ComputerState) {
-    let (result, flags) = inc(state.x);
-    state.x = result;
+    let (result, flags) = inc(state.get_x() as u8);
+    state.set_x(usize::from(result));
     state.sta |= flags
 }
 /// INY (implied addressing mode)
 /// Opcode: C8
 pub fn iny(state: &mut ComputerState) {
-    let (result, flags) = inc(state.y);
-    state.y = result;
+    let (result, flags) = inc(state.get_y() as u8);
+    state.set_y(usize::from(result));
     state.sta |= flags
 }
