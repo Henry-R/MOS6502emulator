@@ -6,19 +6,6 @@ pub(crate) mod status_register;
 pub(crate) mod operations;
 mod registers;
 
-pub struct Registers {
-    // (A) Accumulator
-    pub acc: u8,
-    // (P) Status register
-    pub sta: StatusRegister,
-    // (S) Stack pointer
-    pub stk: u8,
-    // (X) Index register
-    pub x: u8,
-    // (Y) Index register
-    pub y: u8
-}
-
 // Important constants
 pub const MEMORY_SIZE: usize = 2usize.pow(16);
 // Important memory locations
@@ -37,22 +24,26 @@ pub struct ComputerState {
     // Last 6 bytes are reserved for interrupts ($FFFA-$FFFF)
     mem: [u8; MEMORY_SIZE],
 
-    pub regs: Registers,
-    pc: ProgramCounter,
+    pub acc: Accumulator,
+    pub sta: StatusRegister,
+    //pub stk: Stack<'a>,
+    pub pc: ProgramCounter,
+    pub x: u8,
+    pub y: u8,
 }
 
 impl ComputerState {
     pub fn new() -> ComputerState {
+        let raw_mem = [0u8; MEMORY_SIZE];
+
         ComputerState {
-            mem: [0u8; MEMORY_SIZE],
-            regs: Registers {
-                acc: 0,
-                sta: StatusRegister::new(),
-                stk: 0xFF,  // Stack grows downwards, so initialise stack to top of memory
-                x: 0,
-                y: 0,
-            },
+            mem: raw_mem,
+            acc: Accumulator::new(0),
+            sta: StatusRegister::new(),
+            //stk: Stack::new(&mut raw_mem),
             pc: ProgramCounter::new(0),
+            x: 0,
+            y: 0
         }
     }
 
@@ -92,7 +83,7 @@ impl ComputerState {
 
     // REGISTER INSTRUCTIONS
     pub const fn get_carry(&self) -> u8 {
-        if self.regs.sta.contains(StatusRegister::C) { 1 } else { 0 }
+        if self.sta.contains(StatusRegister::C) { 1 } else { 0 }
     }
 
     // SET INSTRUCTIONS
@@ -167,13 +158,13 @@ impl ComputerState {
     /// Fetches the operand as a zero_page address and adds the X index to that address
     /// If this addition overflows, it will wrap around
     fn fetch_zero_page_x_address(&mut self) -> usize {
-        self.fetch_zero_page_address().wrapping_add(usize::from(self.regs.x))
+        self.fetch_zero_page_address().wrapping_add(usize::from(self.x))
     }
 
     /// Fetches the operand as a zero_page address and adds the Y index to that address
     /// If this addition overflows, it will wrap around
     fn fetch_zero_page_y_address(&mut self) -> usize {
-        self.fetch_zero_page_address().wrapping_add(usize::from(self.regs.y))
+        self.fetch_zero_page_address().wrapping_add(usize::from(self.y))
     }
 
     /// Fetches the operand as an address of an absolute address mode instruction
@@ -184,13 +175,13 @@ impl ComputerState {
     /// Fetches the operand as an absolute address and adds the X index to that address
     /// If this addition overflows, it will wrap around
     fn fetch_absolute_x_address(&mut self) -> usize {
-        self.fetch_absolute_address() + usize::from(self.regs.x)
+        self.fetch_absolute_address() + usize::from(self.x)
     }
 
     /// Fetches the operand as an absolute address and adds the Y index to that address
     /// If this addition overflows, it will wrap around
     fn fetch_absolute_y_address(&mut self) -> usize {
-        self.fetch_absolute_address() + usize::from(self.regs.y)
+        self.fetch_absolute_address() + usize::from(self.y)
     }
 
     /// TODO finish this documentation when I have more sleep
@@ -201,7 +192,7 @@ impl ComputerState {
 
     fn fetch_indirect_y_address(&mut self) -> usize {
         let indirect_addr = self.fetch_next_zp_addr();
-        let y = usize::from(self.regs.y);
+        let y = usize::from(self.y);
 
         self.fetch_ab_addr_from_addr(indirect_addr) + y
     }

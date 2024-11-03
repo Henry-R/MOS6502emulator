@@ -23,10 +23,10 @@ const fn adc(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
 /// Mutates the state of the computer according to the result of addition
 /// Acts as an adapter between the implementation of add and the computer
 fn adc_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
-    let (result, flags) = adc(state.regs.acc, addr_fn(state), state.get_carry());
+    let (result, flags) = adc(state.acc.get(), addr_fn(state), state.get_carry());
 
-    state.regs.acc = result;
-    state.regs.sta |= flags;
+    state.acc.set(result);
+    state.sta |= flags;
 }
 
 /// ADC (intermediate addressing mode)
@@ -76,10 +76,10 @@ const fn sbc(acc: u8, n: u8, carry: u8) -> (u8, StatusRegister) {
 /// Mutates the state of the computer according to the result of subtraction
 /// Acts as an adapter between the implementation of sub and the computer
 fn sbc_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
-    let (result, flags) = sbc(state.regs.acc, addr_fn(state), state.get_carry());
+    let (result, flags) = sbc(state.acc.get(), addr_fn(state), state.get_carry());
 
-    state.regs.acc = result;
-    state.regs.sta |= flags;
+    state.acc.set(result);
+    state.sta |= flags;
 }
 
 /// SBC (intermediate addressing mode)
@@ -130,7 +130,7 @@ fn dec_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usi
     let addr = addr_fn(state);
     let (result, flags) = dec(state.fetch_byte_from_addr(addr));
     state.set_byte_at_addr(addr, result);
-    state.regs.sta |= flags;
+    state.sta |= flags;
 }
 
 /// DEC (zero-page addressing mode)
@@ -153,16 +153,16 @@ pub fn dec_abx(state: &mut ComputerState)
 /// DEX (implied addressing mode)
 /// Opcode: CA
 pub fn dex(state: &mut ComputerState) {
-    let (result, flags) = dec(state.regs.x);
-    state.regs.x = result;
-    state.regs.sta |= flags
+    let (result, flags) = dec(state.x);
+    state.x = result;
+    state.sta |= flags
 }
 /// DEY (implied addressing mode)
 /// Opcode: 88
 pub fn dey(state: &mut ComputerState) {
-    let (result, flags) = dec(state.regs.y);
-    state.regs.y = result;
-    state.regs.sta |= flags
+    let (result, flags) = dec(state.y);
+    state.y = result;
+    state.sta |= flags
 }
 
 
@@ -180,7 +180,7 @@ fn inc_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usi
     let addr = addr_fn(state);
     let (result, flags) = inc(state.fetch_byte_from_addr(addr));
     state.set_byte_at_addr(addr, result);
-    state.regs.sta |= flags;
+    state.sta |= flags;
 }
 
 /// INC (zero-page addressing mode)
@@ -203,14 +203,14 @@ pub fn inc_abx(state: &mut ComputerState)
 /// INX (implied addressing mode)
 /// Opcode: E8
 pub fn inx(state: &mut ComputerState) {
-    let (result, flags) = inc(state.regs.x);
-    state.regs.x = result;
-    state.regs.sta |= flags
+    let (result, flags) = inc(state.x);
+    state.x = result;
+    state.sta |= flags
 }
 /// INY (implied addressing mode)
 /// Opcode: C8
 pub fn iny(state: &mut ComputerState) {
-    let (result, flags) = inc(state.regs.y);
-    state.regs.y = result;
-    state.regs.sta |= flags
+    let (result, flags) = inc(state.y);
+    state.y = result;
+    state.sta |= flags
 }

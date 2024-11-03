@@ -11,9 +11,9 @@ const fn and(acc: u8, value: u8) -> (u8, StatusRegister) {
 /// Mutates the state of the computer according to the result of logical and
 /// Acts as an adapter between the implementation of 'AND' and the computer
 fn and_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
-    let (result, flags) = and(state.regs.acc, addr_fn(state));
-    state.regs.acc = result;
-    state.regs.sta |= flags;
+    let (result, flags) = and(state.acc.get(), addr_fn(state));
+    state.acc.set(result);
+    state.sta |= flags;
 }
 
 /// AND (intermediate addressing mode)
@@ -59,9 +59,9 @@ const fn or(acc: u8, value: u8) -> (u8, StatusRegister) {
 /// Mutates the state of the computer according to the result of logical or
 /// Acts as an adapter between the implementation of 'OR' and the computer
 fn or_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
-    let (result, flags) = or(state.regs.acc, addr_fn(state));
-    state.regs.acc = result;
-    state.regs.sta |= flags;
+    let (result, flags) = or(state.acc.get(), addr_fn(state));
+    state.acc.set(result);
+    state.sta |= flags;
 }
 
 /// OR (intermediate addressing mode)
@@ -107,9 +107,9 @@ fn eor(acc: u8, value: u8) -> (u8, StatusRegister) {
 /// Mutates the state of the computer according to the result of logical exclusive or
 /// Acts as an adapter between the implementation of 'XOR' and the computer
 fn eor_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
-    let (result, flags) = eor(state.regs.acc, addr_fn(state));
-    state.regs.acc = result;
-    state.regs.sta |= flags;
+    let (result, flags) = eor(state.acc.get(), addr_fn(state));
+    state.acc.set(result);
+    state.sta |= flags;
 }
 
 /// EOR (intermediate addressing mode)
@@ -156,8 +156,8 @@ const fn bit(acc: u8, value: u8) -> StatusRegister {
 /// Mutates the state of the computer according to the result of the bit test
 /// Acts as an adapter between the implementation of 'BIT' and the computer
 fn bit_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> u8) {
-    let flags = bit(state.regs.acc, addr_fn(state));
-    state.regs.sta |= flags;
+    let flags = bit(state.acc.get(), addr_fn(state));
+    state.sta |= flags;
 }
 
 /// BIT (zero-page addressing mode)
@@ -190,15 +190,15 @@ fn asl_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usi
     let zp_val = state.fetch_byte_from_addr(zp_addr);
     let (result, flags) = asl(zp_val);
     state.set_byte_at_addr(zp_addr, result);
-    state.regs.sta |= flags;
+    state.sta |= flags;
 }
 
 /// ASL (accumulator addressing mode)
 /// Opcode: 0A
 pub fn asl_acc(state: &mut ComputerState) {
-    let (result, flags) = asl(state.regs.acc);
-    state.regs.acc = result;
-    state.regs.sta |= flags;
+    let (result, flags) = asl(state.acc.get());
+    state.acc.set(result);
+    state.sta |= flags;
 }
 /// ASL (zero_page addressing mode)
 /// Opcode: 06
@@ -238,15 +238,15 @@ fn lsr_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usi
     let zp_val = state.fetch_byte_from_addr(zp_addr);
     let (result, flags) = lsr(zp_val);
     state.set_byte_at_addr(zp_addr, result);
-    state.regs.sta |= flags;
+    state.sta |= flags;
 }
 
 /// LSR (accumulator addressing mode)
 /// Opcode: 4A
 pub fn lsr_acc(state: &mut ComputerState) {
-    let (result, flags) = lsr(state.regs.acc);
-    state.regs.acc = result;
-    state.regs.sta |= flags;
+    let (result, flags) = lsr(state.acc.get());
+    state.acc.set(result);
+    state.sta |= flags;
 }
 /// LSR (zero_page addressing mode)
 /// Opcode: 46
@@ -284,19 +284,19 @@ fn rol_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usi
     let (result, flags) = rol(zp_val, carry);
 
     state.set_byte_at_addr(zp_addr, result);
-    state.regs.sta = state.regs.sta.difference(StatusRegister::C);
-    state.regs.sta |= flags;
+    state.sta = state.sta.difference(StatusRegister::C);
+    state.sta |= flags;
 }
 
 /// ROL (accumulator addressing mode)
 /// Opcode: 2A
 pub fn rol_acc(state: &mut ComputerState) {
     let carry = state.get_carry();
-    let (result, flags) = rol(state.regs.acc, carry);
+    let (result, flags) = rol(state.acc.get(), carry);
 
-    state.regs.acc = result;
-    state.regs.sta = state.regs.sta.difference(StatusRegister::C);
-    state.regs.sta |= flags;
+    state.acc.set(result);
+    state.sta = state.sta.difference(StatusRegister::C);
+    state.sta |= flags;
 }
 /// ROL (zero_page addressing mode)
 /// Opcode: 26
@@ -334,19 +334,19 @@ fn ror_adapter(state: &mut ComputerState, addr_fn: fn(&mut ComputerState) -> usi
     let (result, flags) = ror(zp_val, carry);
 
     state.set_byte_at_addr(zp_addr, result);
-    state.regs.sta = state.regs.sta.difference(StatusRegister::C);
-    state.regs.sta |= flags;
+    state.sta = state.sta.difference(StatusRegister::C);
+    state.sta |= flags;
 }
 
 /// ROR (accumulator addressing mode)
 /// Opcode: 6A
 pub fn ror_acc(state: &mut ComputerState) {
     let carry = state.get_carry();
-    let (result, flags) = ror(state.regs.acc, carry);
+    let (result, flags) = ror(state.acc.get(), carry);
 
-    state.regs.acc = result;
-    state.regs.sta = state.regs.sta.difference(StatusRegister::C);
-    state.regs.sta |= flags;
+    state.acc.set(result);
+    state.sta = state.sta.difference(StatusRegister::C);
+    state.sta |= flags;
 }
 /// ROR (zero_page addressing mode)
 /// Opcode: 66
