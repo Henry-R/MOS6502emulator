@@ -30,6 +30,12 @@ impl Memory {
         self.set_byte_at_addr(addr + 1, hi_byte);
     }
 
+    /// Inserts the given value at the position pointed to by the PC; increments the PC
+    pub fn insert_at_pc(&mut self, value: u8) {
+        self.set_byte_at_addr(self.pc.get(), value);
+        self.pc.add_unsigned(1);
+    }
+
 
     // FETCH INSTRUCTIONS
     // These instructions help the emulator fetch memory according to addressing modes

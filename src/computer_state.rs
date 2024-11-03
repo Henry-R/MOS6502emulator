@@ -1,5 +1,4 @@
 use crate::computer_state::memory::Memory;
-use crate::computer_state::operations::opcode_from_operation;
 use crate::computer_state::registers::*;
 use crate::computer_state::status_register::StatusRegister;
 
@@ -7,16 +6,6 @@ pub(crate) mod status_register;
 pub(crate) mod operations;
 mod registers;
 mod memory;
-
-// Important constants
-pub const MEMORY_SIZE: usize = 2usize.pow(16);
-// Important memory locations
-pub const PAGE_SIZE: usize = 0xFF;
-pub const ZERO_PAGE: usize = 0x0000;
-pub const STACK_PAGE: usize = 0x0100;
-pub const NON_MASKABLE_INTERRUPT_HANDLER: u16 = 0xFFFA;
-pub const POWER_ON_RESET_LOCATION: u16 = 0xFFFC;
-pub const INTERRUPT_REQUEST_HANDLER: u16 = 0xFFFE;
 
 pub struct ComputerState {
     // MEMORY
@@ -70,22 +59,10 @@ impl ComputerState {
     }
 
     // MEMORY ACCESS
-    /// Inserts the given value at the position pointed to by the PC; increments the PC
-    pub fn insert_at_pc(&mut self, value: u8) {
-        self.mem.set_byte_at_addr(self.mem.pc.get(), value);
-        self.mem.pc.add_unsigned(1);
-    }
-
-    /// Inserts the given instruction at the position pointed to by the PC; increments the PC
-    pub fn insert_operation_at_pc(&mut self, op: operations::MosOp) {
-        let opcode = opcode_from_operation(op);
-        self.insert_at_pc(opcode);
-    }
-
     pub fn set_up_state(&mut self, bytes: Vec<u8>) {
         let old_pc = self.mem.pc.get();
         for byte in bytes {
-            self.insert_at_pc(byte);
+            self.mem.insert_at_pc(byte);
         }
         self.mem.pc.set(old_pc);
     }
