@@ -162,7 +162,15 @@ impl Memory {
 
     pub fn fetch_relative(&mut self) -> i8 {
         let raw_offset = self.fetch_next_byte();
-        ((0xFF ^ raw_offset) + 1) as i8
+
+        (if raw_offset & (1 << 0) != 0 { 1 << 0 } else { 0 }) |
+        (if raw_offset & (1 << 1) != 0 { 1 << 1 } else { 0 }) |
+        (if raw_offset & (1 << 2) != 0 { 1 << 2 } else { 0 }) |
+        (if raw_offset & (1 << 3) != 0 { 1 << 3 } else { 0 }) |
+        (if raw_offset & (1 << 4) != 0 { 1 << 4 } else { 0 }) |
+        (if raw_offset & (1 << 5) != 0 { 1 << 5 } else { 0 }) |
+        (if raw_offset & (1 << 6) != 0 { 1 << 6 } else { 0 }) |
+        (if raw_offset & (1 << 7) != 0 { 1 << 7 } else { 0 })
     }
 
     /// Fetches the memory at the target location of an absolute address mode instruction
