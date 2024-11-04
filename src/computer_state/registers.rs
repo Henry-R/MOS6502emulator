@@ -37,10 +37,6 @@ impl ProgramCounter {
     pub fn add_unsigned(&mut self, value: u8)
     { self.pc += usize::from(value) }
 
-    /// Reinterpret cast unsigned to signed
-    const fn unsigned_reinterpret_signed(value: u8) -> i8 {
-        ((0xFF ^ value) + 1) as i8
-    }
     /// Adds a signed offset to an usize address
     const fn add_signed_to_usize(signed: i8, unsigned: usize) -> usize {
         if signed > 0 {
@@ -53,10 +49,9 @@ impl ProgramCounter {
     /// Adds the raw signed offset to the PC.
     /// Although this method takes an unsigned value,
     /// this value will be reinterpreted as a signed value
-    pub fn add_signed(&mut self, value: u8)
+    pub fn add_signed(&mut self, value: i8)
     {
-        let offset = Self::unsigned_reinterpret_signed(value);
-        self.pc += Self::add_signed_to_usize(offset, self.pc);
+        self.pc = Self::add_signed_to_usize(value, self.pc);
     }
 }
 
