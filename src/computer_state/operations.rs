@@ -1,12 +1,14 @@
 use super::ComputerState;
+
 use arithmetic::*;
 use bitwise::*;
 use flags::*;
 use interrupt::*;
+use branch::*;
 
 pub(crate) mod arithmetic;
 mod interrupt;
-mod branch;
+pub(crate) mod branch;
 pub(crate) mod bitwise;
 mod flags;
 
@@ -37,7 +39,7 @@ const INSTRUCTION_TABLE: [MosOp; 256] = [
               nop,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
  /* A */ brk,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
               nop,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
- /* B */ brk,      nop,      nop,      nop,      clo,      nop,      nop,      nop,
+ /* B */ brc,      nop,      nop,      nop,      clo,      nop,      nop,      nop,
               nop,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
  /* C */ brk,      nop,      nop,      dec_zp,   iny,      dex,      nop,      dec_ab,
               nop,      nop,      nop,      nop,      nop,      nop,      nop,      nop,
