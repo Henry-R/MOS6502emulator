@@ -18,40 +18,35 @@ impl Accumulator {
 
 
 pub struct ProgramCounter {
-    pc: usize
+    pc: u16
 }
 impl ProgramCounter {
     /// Constructs program counter initialised to point at the given address
     pub fn new(pc: usize) -> Self
-    { Self { pc } }
+    { Self { pc: pc as u16 } }
 
     /// Gets current address in the PC
-    pub const fn get(&self) -> usize
-    { self.pc }
+    pub fn get(&self) -> usize
+    { usize::from(self.pc) }
 
     /// Sets new address in the PC
     pub fn set(&mut self, new_pc: usize)
-    { self.pc = new_pc }
+    { self.pc = new_pc as u16 }
 
     /// Adds an unsigned offset to the PC
     pub fn add_unsigned(&mut self, value: u8)
-    { self.pc += usize::from(value) }
-
-    /// Adds a signed offset to an usize address
-    const fn add_signed_to_usize(signed: i8, unsigned: usize) -> usize {
-        if signed > 0 {
-            unsigned + signed as usize
-        } else {
-            unsigned + (-signed) as usize
-        }
-    }
+    { self.pc += u16::from(value) }
 
     /// Adds the raw signed offset to the PC.
     /// Although this method takes an unsigned value,
     /// this value will be reinterpreted as a signed value
     pub fn add_signed(&mut self, value: i8)
     {
-        self.pc = Self::add_signed_to_usize(value, self.pc);
+        if value > 0 {
+            self.pc = self.pc.wrapping_add(value as u16)
+        } else {
+            self.pc = self.pc.wrapping_sub((-value) as u16)
+        }
     }
 }
 
