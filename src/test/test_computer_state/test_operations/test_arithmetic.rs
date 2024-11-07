@@ -11,7 +11,7 @@ use crate::computer_state::status_register::StatusRegister;
 fn test_adc_im() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(36);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(adc_im),
         36
     ]);
@@ -25,7 +25,7 @@ fn test_adc_im() {
 fn test_adc_im_zero_flag() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(adc_im),
         0
     ]);
@@ -39,7 +39,7 @@ fn test_adc_im_zero_flag() {
 fn test_adc_im_carry_flag() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(72);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(adc_im),
         200
     ]);
@@ -53,7 +53,7 @@ fn test_adc_im_carry_flag() {
 fn test_adc_im_zero_and_carry_flag() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(1);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(adc_im),
         0xFF
     ]);
@@ -67,7 +67,7 @@ fn test_adc_im_zero_and_carry_flag() {
 fn test_adc_im_negative_flag() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(32);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(adc_im),
         200
     ]);
@@ -81,7 +81,7 @@ fn test_adc_im_negative_flag() {
 fn test_adc_im_overflow_positive() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(32);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(adc_im),
         120
     ]);
@@ -95,7 +95,7 @@ fn test_adc_im_overflow_positive() {
 fn test_adc_im_overflow_negative() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(144);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(adc_im),
         208
     ]);
@@ -109,7 +109,7 @@ fn test_adc_im_overflow_negative() {
 fn test_adc_zp() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(36);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(adc_zp),
         0xF1
     ]);
@@ -125,7 +125,7 @@ fn test_adc_zpx() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(36);
     state.set_x(5);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(adc_zpx),
         0xF1
     ]);
@@ -140,7 +140,7 @@ fn test_adc_zpx() {
 fn test_adc_ab() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(36);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(adc_ab),
         0xF1,
         0x36
@@ -157,7 +157,7 @@ fn test_adc_abx() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(36);
     state.set_x(8);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(adc_abx),
         0xF1,
         0x36
@@ -174,7 +174,7 @@ fn test_adc_aby() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(36);
     state.set_y(8);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(adc_aby),
         0xF1,
         0x36
@@ -191,7 +191,7 @@ fn test_adc_inx() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(36);
     state.set_x(0x22);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(adc_inx),
         0x41
     ]);
@@ -208,7 +208,7 @@ fn test_adc_iny() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(36);
     state.set_y(0x22);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(adc_iny),
         0x41
     ]);
@@ -226,7 +226,7 @@ fn test_adc_iny() {
 fn test_sbc_im() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0x50);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(sbc_im),
         0x20
     ]);
@@ -240,7 +240,7 @@ fn test_sbc_im() {
 fn test_sbc_im_borrow() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0xD0);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(sbc_im),
         0xF0
     ]);
@@ -254,7 +254,7 @@ fn test_sbc_im_borrow() {
 fn test_sbc_im_overflow() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(0x50);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(sbc_im),
         0xB0
     ]);
@@ -268,7 +268,7 @@ fn test_sbc_im_overflow() {
 fn test_sbc_im_zero_flag() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(50);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(sbc_im),
         50
     ]);
@@ -282,7 +282,7 @@ fn test_sbc_im_zero_flag() {
 fn test_sbc_zp() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(36);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(sbc_zp),
         0xF1
     ]);
@@ -298,7 +298,7 @@ fn test_sbc_zpx() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(36);
     state.set_x(5);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(sbc_zpx),
         0xF1
     ]);
@@ -313,7 +313,7 @@ fn test_sbc_zpx() {
 fn test_sbc_ab() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(36);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(sbc_ab),
         0xF1,
         0x36
@@ -330,7 +330,7 @@ fn test_sbc_abx() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(36);
     state.set_x(8);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(sbc_abx),
         0xF1,
         0x36
@@ -347,7 +347,7 @@ fn test_sbc_aby() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(36);
     state.set_y(8);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(sbc_aby),
         0xF1,
         0x36
@@ -364,7 +364,7 @@ fn test_sbc_inx() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(36);
     state.set_x(0x22);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(sbc_inx),
         0x41
     ]);
@@ -381,7 +381,7 @@ fn test_sbc_iny() {
     let mut state: ComputerState = ComputerState::new();
     state.acc.set(36);
     state.set_y(0x22);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(sbc_iny),
         0x41
     ]);
@@ -398,7 +398,7 @@ fn test_sbc_iny() {
 #[test]
 fn test_dec_zp() {
     let mut state: ComputerState = ComputerState::new();
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(dec_zp),
         0xF1
     ]);
@@ -412,7 +412,7 @@ fn test_dec_zp() {
 #[test]
 fn test_dec_zp_zero_flag() {
     let mut state: ComputerState = ComputerState::new();
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(dec_zp),
         0xF1
     ]);
@@ -426,7 +426,7 @@ fn test_dec_zp_zero_flag() {
 #[test]
 fn test_dec_zp_negative_flag() {
     let mut state: ComputerState = ComputerState::new();
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(dec_zp),
         0xF1
     ]);
@@ -441,7 +441,7 @@ fn test_dec_zp_negative_flag() {
 fn test_dec_zpx() {
     let mut state: ComputerState = ComputerState::new();
     state.set_x(0x10);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(dec_zpx),
         0x45
     ]);
@@ -455,7 +455,7 @@ fn test_dec_zpx() {
 #[test]
 fn test_dec_ab() {
     let mut state: ComputerState = ComputerState::new();
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(dec_ab),
         0x45,
         0x1A
@@ -471,7 +471,7 @@ fn test_dec_ab() {
 fn test_dec_abx() {
     let mut state: ComputerState = ComputerState::new();
     state.set_x(0x10);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(dec_abx),
         0x45,
         0x1A
@@ -488,7 +488,7 @@ fn test_dec_abx() {
 #[test]
 fn test_inc_zp() {
     let mut state: ComputerState = ComputerState::new();
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(inc_zp),
         0xF1
     ]);
@@ -502,7 +502,7 @@ fn test_inc_zp() {
 #[test]
 fn test_inc_zp_zero_flag() {
     let mut state: ComputerState = ComputerState::new();
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(inc_zp),
         0xF1
     ]);
@@ -516,7 +516,7 @@ fn test_inc_zp_zero_flag() {
 #[test]
 fn test_inc_zp_negative_flag() {
     let mut state: ComputerState = ComputerState::new();
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(inc_zp),
         0xF1
     ]);
@@ -531,7 +531,7 @@ fn test_inc_zp_negative_flag() {
 fn test_inc_zpx() {
     let mut state: ComputerState = ComputerState::new();
     state.set_x(0x10);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(inc_zpx),
         0x45
     ]);
@@ -545,7 +545,7 @@ fn test_inc_zpx() {
 #[test]
 fn test_inc_ab() {
     let mut state: ComputerState = ComputerState::new();
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(inc_ab),
         0x45,
         0x1A
@@ -561,7 +561,7 @@ fn test_inc_ab() {
 fn test_inc_abx() {
     let mut state: ComputerState = ComputerState::new();
     state.set_x(0x10);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(inc_abx),
         0x45,
         0x1A
@@ -579,7 +579,7 @@ fn test_inc_abx() {
 fn test_dex() {
     let mut state: ComputerState = ComputerState::new();
     state.set_x(5);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(dex),
     ]);
     state.execute_next();
@@ -592,7 +592,7 @@ fn test_dex() {
 fn test_dex_zero_flag() {
     let mut state: ComputerState = ComputerState::new();
     state.set_x(1);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(dex),
     ]);
     state.execute_next();
@@ -605,7 +605,7 @@ fn test_dex_zero_flag() {
 fn test_dex_negative_flag() {
     let mut state: ComputerState = ComputerState::new();
     state.set_x(0);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(dex),
     ]);
     state.execute_next();
@@ -620,7 +620,7 @@ fn test_dex_negative_flag() {
 fn test_dey() {
     let mut state: ComputerState = ComputerState::new();
     state.set_y(5);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(dey),
     ]);
     state.execute_next();
@@ -633,7 +633,7 @@ fn test_dey() {
 fn test_dey_zero_flag() {
     let mut state: ComputerState = ComputerState::new();
     state.set_y(1);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(dey),
     ]);
     state.execute_next();
@@ -646,7 +646,7 @@ fn test_dey_zero_flag() {
 fn test_dey_negative_flag() {
     let mut state: ComputerState = ComputerState::new();
     state.set_y(0);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(dey),
     ]);
     state.execute_next();
@@ -661,7 +661,7 @@ fn test_dey_negative_flag() {
 fn test_inx() {
     let mut state: ComputerState = ComputerState::new();
     state.set_x(5);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(inx),
     ]);
     state.execute_next();
@@ -674,7 +674,7 @@ fn test_inx() {
 fn test_inx_zero_flag() {
     let mut state: ComputerState = ComputerState::new();
     state.set_x(0xFF);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(inx),
     ]);
     state.execute_next();
@@ -687,7 +687,7 @@ fn test_inx_zero_flag() {
 fn test_inx_negative_flag() {
     let mut state: ComputerState = ComputerState::new();
     state.set_x(0x7F);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(inx),
     ]);
     state.execute_next();
@@ -702,7 +702,7 @@ fn test_inx_negative_flag() {
 fn test_iny() {
     let mut state: ComputerState = ComputerState::new();
     state.set_y(5);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(iny),
     ]);
     state.execute_next();
@@ -715,7 +715,7 @@ fn test_iny() {
 fn test_iny_zero_flag() {
     let mut state: ComputerState = ComputerState::new();
     state.set_y(0xFF);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(iny),
     ]);
     state.execute_next();
@@ -728,7 +728,7 @@ fn test_iny_zero_flag() {
 fn test_iny_negative_flag() {
     let mut state: ComputerState = ComputerState::new();
     state.set_y(0xFF);
-    state.set_up_state(vec![
+    state.set_up_state(&vec![
         opcode_from_operation(iny),
     ]);
     state.execute_next();

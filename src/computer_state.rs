@@ -59,10 +59,10 @@ impl ComputerState {
     }
 
     // MEMORY ACCESS
-    pub fn set_up_state(&mut self, bytes: Vec<u8>) {
+    pub fn set_up_state(&mut self, bytes: &[u8]) {
         let old_pc = self.mem.pc.get();
         for byte in bytes {
-            self.mem.insert_at_pc(byte);
+            self.mem.insert_at_pc(*byte);
         }
         self.mem.pc.set(old_pc);
     }
