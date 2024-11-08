@@ -22,7 +22,7 @@ macro_rules! add_op {
 pub type MosOp = fn (&mut ComputerState);
 
 const INSTRUCTION_COUNT: usize = 256;
-const INSTRUCTION_LIST: [(MosOp, &str, usize); 139] = [
+const INSTRUCTION_LIST: [(MosOp, &str, usize); 146] = [
     // LOAD / STORE OPERATIONS
     // load accumulator
     add_op!(nop, 0xA9),
@@ -246,21 +246,28 @@ const INSTRUCTION_LIST: [(MosOp, &str, usize); 139] = [
 
     // BRANCHES
     // branch if carry flag clear
+    add_op!(bcc, 0x90),
 
     // branch if carry flag set
     add_op!(bcs, 0xB0),
 
     // branch if zero flag set
+    add_op!(beq, 0xF0),
 
     // branch if negative flag set
+    add_op!(bmi, 0x30),
 
     // branch if zero flag clear
+    add_op!(bne, 0xD0),
 
     // branch if negative flag clear
+    add_op!(bpl, 0x10),
 
     // branch if overflow flag clear
+    add_op!(bvs, 0x70),
 
     // branch if overflow flag set
+    add_op!(bvc, 0x50),
 
 
     // STATUS FLAG CHANGES

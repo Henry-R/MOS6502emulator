@@ -68,13 +68,6 @@ impl Memory {
         result
     }
 
-    /// Fetches the nibble at the PC, and increments the PC by 2
-    pub fn fetch_next_nibble(&mut self) -> u16 {
-        let result = self.fetch_nibble_from_addr(self.pc.get());
-        self.pc.add_unsigned(2);
-        result
-    }
-
     /// Fetches the 8-bit address at the PC, and increments the PC by 1
     pub fn fetch_next_zp_addr(&mut self) -> usize {
         let result = self.fetch_zp_addr_from_addr(self.pc.get());

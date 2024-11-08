@@ -6,6 +6,7 @@ use crate::computer_state::status_register::StatusRegister;
 #[test]
 fn test_brc_forward() {
     let mut state = ComputerState::new();
+    let old_pc = state.mem.pc.get();
     state.sta |= StatusRegister::C;
     state.set_up_state(&vec![
         opcode_from_operation(bcs),
@@ -13,19 +14,33 @@ fn test_brc_forward() {
     ]);
     state.execute_next();
 
-    assert_eq!(2 + 0x23, state.mem.pc.get());
+    assert_eq!(old_pc + 2 + 0x23, state.mem.pc.get());
 }
 
-#[ignore]
 #[test]
 fn test_brc_backwards() {
     let mut state = ComputerState::new();
+    let old_pc = state.mem.pc.get();
     state.sta |= StatusRegister::C;
     state.set_up_state(&vec![
         opcode_from_operation(bcs),
-        0xF0
+        0xF0 // -16
     ]);
     state.execute_next();
 
-    assert_eq!(2 + 2u16.wrapping_sub(0x0F) as usize, state.mem.pc.get());
+    // TODO double check 0x10 is the correct offset
+    assert_eq!(old_pc + 2u16.wrapping_sub(0x10) as usize, state.mem.pc.get());
+}
+
+#[test]
+fn test_brc_not_take() {
+    let mut state = ComputerState::new();
+    let old_pc = state.mem.pc.get();
+    state.set_up_state(&vec![
+        opcode_from_operation(bcs),
+        0xF0 // -16
+    ]);
+    state.execute_next();
+
+    assert_eq!(old_pc + 2, state.mem.pc.get());
 }
