@@ -7,6 +7,7 @@ use interrupt::*;
 use branch::*;
 use load_store::*;
 use register_transfers::*;
+use stack::*;
 
 pub mod arithmetic;
 pub mod interrupt;
@@ -15,6 +16,7 @@ pub mod bitwise;
 pub mod load_store;
 pub mod flags;
 pub mod register_transfers;
+pub mod stack;
 
 macro_rules! add_op {
     ($fn_ptr:expr, $address:expr) => {{
@@ -87,22 +89,22 @@ const INSTRUCTION_LIST: [(MosOp, &str, usize); 146] = [
 
     // STACK OPERATIONS
     // transfer stack pointer to x
-    add_op!(nop, 0xBA),
+    add_op!(tsx, 0xBA),
 
     // transfer x to stack pointer
-    add_op!(nop, 0x9A),
+    add_op!(txs, 0x9A),
 
     // push accumulator onto stack
-    add_op!(nop, 0x48),
+    add_op!(pha, 0x48),
 
     // push processor status onto stack
-    add_op!(nop, 0x08),
+    add_op!(php, 0x08),
 
     // pull accumulator from stack
-    add_op!(nop, 0x68),
+    add_op!(pla, 0x68),
 
     // pull processor status from stack
-    add_op!(nop, 0x28),
+    add_op!(plp, 0x28),
 
 
     // LOGICAL

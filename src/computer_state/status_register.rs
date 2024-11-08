@@ -24,21 +24,23 @@ impl StatusRegister {
     pub const fn new() -> Self { Self {data: 0} }
 
     /// Constructs a status register from a raw u8
-    const fn from_flags(flags: u8) -> Self { Self {data: flags} }
+    pub const fn from_byte(flags: u8) -> Self { Self {data: flags} }
+
+    pub const fn as_byte(&self) -> u8 { self.data }
 
     /// Returns the mathematical union of the internal flags and the given flag
     pub const fn union(&self, flags: StatusRegister) -> Self {
-        Self::from_flags(self.data | flags.data)
+        Self::from_byte(self.data | flags.data)
     }
 
     /// Returns the mathematical intersection of the internal flags and the given flag
     pub const fn intersect(&self, flags: StatusRegister) -> Self {
-        Self::from_flags(self.data & flags.data)
+        Self::from_byte(self.data & flags.data)
     }
 
     /// Returns the mathematical difference of the internal flags and the given flag
     pub const fn difference(&self, flags: StatusRegister) -> Self {
-        Self::from_flags(self.data & !flags.data)
+        Self::from_byte(self.data & !flags.data)
     }
 
     /// True if this status contains no flags

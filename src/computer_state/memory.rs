@@ -5,6 +5,7 @@ pub struct Memory {
     pub pc: ProgramCounter,
     pub x: usize,
     pub y: usize,
+    pub stk: usize,
 
     mem: [u8; MEMORY_SIZE],
 }
@@ -13,6 +14,7 @@ impl Memory {
         Memory {
             x: 0,
             y: 0,
+            stk: 0,
             pc: ProgramCounter::new(0),
             mem: [0; MEMORY_SIZE]
         }
@@ -184,4 +186,16 @@ impl Memory {
 
     /// Fetches the memory held at the address pointed to by the given address plus the Y index
     pub fn fetch_indirect_y(&mut self) -> u8 { self.mem[self.fetch_indirect_y_address()] }
+
+
+    // STACK INSTRUCTION
+    pub fn push_on_stack(&mut self, value: u8) {
+        self.set_byte_at_addr(self.stk, value);
+        self.stk -= 1;
+    }
+
+    pub fn pop_from_stack(&mut self) -> u8 {
+        self.stk += 1;
+        self.fetch_byte_from_addr(self.stk - 1)
+    }
 }

@@ -17,7 +17,6 @@ pub struct ComputerState {
 
     pub acc: Accumulator,
     pub sta: StatusRegister,
-    // Stack can be a subset of memory
 }
 
 impl ComputerState {
@@ -71,12 +70,16 @@ impl ComputerState {
     }
 
     // REGISTERS
-    pub fn get_x(&self) -> usize {
+    pub const fn get_x(&self) -> usize {
         self.mem.x
     }
 
-    pub fn get_y(&self) -> usize {
+    pub const fn get_y(&self) -> usize {
         self.mem.y
+    }
+
+    pub const fn get_stk(&self) -> usize {
+        self.mem.stk
     }
 
     pub fn set_x(&mut self, value: usize) {
@@ -85,6 +88,10 @@ impl ComputerState {
 
     pub fn set_y(&mut self, value: usize) {
         self.mem.y = value
+    }
+
+    pub fn set_stk(&mut self, value: usize) {
+        self.mem.stk = value
     }
 
 
