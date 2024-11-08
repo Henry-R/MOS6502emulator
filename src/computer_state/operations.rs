@@ -59,14 +59,14 @@ const INSTRUCTION_LIST: [(MosOp, &str, usize); 146] = [
     add_op!(sta_iny, 0x91),
 
     // store x register
-    add_op!(nop, 0x86),
-    add_op!(nop, 0x96),
-    add_op!(nop, 0x8E),
+    add_op!(stx_zp, 0x86),
+    add_op!(stx_zpy, 0x96),
+    add_op!(stx_ab, 0x8E),
 
     // store y register
-    add_op!(nop, 0x84),
-    add_op!(nop, 0x94),
-    add_op!(nop, 0x8C),
+    add_op!(sty_zp, 0x84),
+    add_op!(sty_zpx, 0x94),
+    add_op!(sty_ab, 0x8C),
 
 
     // REGISTER TRANSFERS

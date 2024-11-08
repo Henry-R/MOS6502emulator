@@ -169,3 +169,47 @@ pub fn sta_iny(state: &mut ComputerState) {
     let addr = Memory::fetch_indirect_y_address(&mut state.mem);
     state.mem.set_byte_at_addr(addr, state.acc.get())
 }
+
+
+/// STX (zero-page addressing mode)
+/// Opcode: 86
+pub fn stx_zp(state: &mut ComputerState) {
+    let addr = Memory::fetch_zero_page_address(&mut state.mem);
+    state.mem.set_byte_at_addr(addr, state.get_x() as u8)
+}
+
+/// STX (zero-page Y addressing mode)
+/// Opcode: 96
+pub fn stx_zpy(state: &mut ComputerState) {
+    let addr = Memory::fetch_zero_page_y_address(&mut state.mem);
+    state.mem.set_byte_at_addr(addr, state.get_x() as u8)
+}
+
+/// STX (absolute addressing mode)
+/// Opcode: 8E
+pub fn stx_ab(state: &mut ComputerState) {
+    let addr = Memory::fetch_absolute_address(&mut state.mem);
+    state.mem.set_byte_at_addr(addr, state.get_x() as u8)
+}
+
+
+/// STY (zero-page addressing mode)
+/// Opcode: 84
+pub fn sty_zp(state: &mut ComputerState) {
+    let addr = Memory::fetch_zero_page_address(&mut state.mem);
+    state.mem.set_byte_at_addr(addr, state.get_y() as u8)
+}
+
+/// STY (zero-page X addressing mode)
+/// Opcode: 94
+pub fn sty_zpx(state: &mut ComputerState) {
+    let addr = Memory::fetch_zero_page_x_address(&mut state.mem);
+    state.mem.set_byte_at_addr(addr, state.get_y() as u8)
+}
+
+/// STY (absolute addressing mode)
+/// Opcode: 8C
+pub fn sty_ab(state: &mut ComputerState) {
+    let addr = Memory::fetch_absolute_address(&mut state.mem);
+    state.mem.set_byte_at_addr(addr, state.get_y() as u8)
+}
