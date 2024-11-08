@@ -5,10 +5,10 @@ use bitwise::*;
 use flags::*;
 use interrupt::*;
 
-pub(crate) mod arithmetic;
+mod arithmetic;
 mod interrupt;
-pub(crate) mod branch;
-pub(crate) mod bitwise;
+mod branch;
+mod bitwise;
 mod flags;
 
 
