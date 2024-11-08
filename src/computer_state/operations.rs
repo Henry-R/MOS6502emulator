@@ -50,13 +50,13 @@ const INSTRUCTION_LIST: [(MosOp, &str, usize); 146] = [
     add_op!(ldy_aby, 0xBC),
 
     // store accumulator
-    add_op!(nop, 0x85),
-    add_op!(nop, 0x95),
-    add_op!(nop, 0x8D),
-    add_op!(nop, 0x9D),
-    add_op!(nop, 0x99),
-    add_op!(nop, 0x81),
-    add_op!(nop, 0x91),
+    add_op!(sta_zp, 0x85),
+    add_op!(sta_zpx, 0x95),
+    add_op!(sta_ab, 0x8D),
+    add_op!(sta_abx, 0x9D),
+    add_op!(sta_aby, 0x99),
+    add_op!(sta_inx, 0x81),
+    add_op!(sta_iny, 0x91),
 
     // store x register
     add_op!(nop, 0x86),
