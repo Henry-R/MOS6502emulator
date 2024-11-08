@@ -51,6 +51,10 @@ impl StatusRegister {
         self.data ^ flag.data == 0
     }
 
+    pub const fn flag_value(&self, flag: StatusRegister) -> u8 {
+        if self.contains(flag) { 1 } else { 0 }
+    }
+
     /// Get Conditional Flag
     /// Returns these flags if the condition is true, else empty flags
     pub const fn get_cond(self, cond: bool) -> StatusRegister {
