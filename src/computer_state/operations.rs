@@ -36,11 +36,11 @@ const INSTRUCTION_LIST: [(MosOp, &str, usize); 146] = [
     add_op!(lda_iny, 0xB1),
 
     // load x register
-    add_op!(nop, 0xA2),
-    add_op!(nop, 0xA6),
-    add_op!(nop, 0xB6),
-    add_op!(nop, 0xAE),
-    add_op!(nop, 0xBE),
+    add_op!(ldx_im, 0xA2),
+    add_op!(ldx_zp, 0xA6),
+    add_op!(ldx_zpy, 0xB6),
+    add_op!(ldx_ab, 0xAE),
+    add_op!(ldx_aby, 0xBE),
 
     // load y register
     add_op!(nop, 0xA0),

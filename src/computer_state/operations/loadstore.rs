@@ -3,8 +3,9 @@ use crate::computer_state::memory::Memory;
 
 /// LDA (immediate addressing mode)
 /// Opcode: A9
-pub fn lda_im(state: &mut ComputerState)
-{ state.acc.set(Memory::fetch_immediate(&mut state.mem)) }
+pub fn lda_im(state: &mut ComputerState) {
+    state.acc.set(Memory::fetch_immediate(&mut state.mem))
+}
 
 /// LDA (zero-page addressing mode)
 /// Opcode: A5
@@ -50,6 +51,33 @@ pub fn lda_iny(state: &mut ComputerState) {
 
 
 /// LDX (immediate addressing mode)
+/// Opcode: A2
+pub fn ldx_im(state: &mut ComputerState) {
+    state.set_x(usize::from(Memory::fetch_immediate(&mut state.mem)))
+}
 
+/// LDX (zero-page addressing mode)
+/// Opcode: A6
+pub fn ldx_zp(state: &mut ComputerState) {
+    state.set_x(usize::from(Memory::fetch_zero_page(&mut state.mem)))
+}
+
+/// LDX (zero-page Y addressing mode)
+/// Opcode: B6
+pub fn ldx_zpy(state: &mut ComputerState) {
+    state.set_x(usize::from(Memory::fetch_zero_page_y(&mut state.mem)))
+}
+
+/// LDX (absolute addressing mode)
+/// Opcode: AE
+pub fn ldx_ab(state: &mut ComputerState) {
+    state.set_x(usize::from(Memory::fetch_absolute(&mut state.mem)))
+}
+
+/// LDX (absolute Y addressing mode)
+/// Opcode: BE
+pub fn ldx_aby(state: &mut ComputerState) {
+    state.set_x(usize::from(Memory::fetch_absolute_y(&mut state.mem)))
+}
 
 
