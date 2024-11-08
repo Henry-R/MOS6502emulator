@@ -5,6 +5,7 @@ use bitwise::*;
 use flags::*;
 use interrupt::*;
 use branch::*;
+use loadstore::*;
 
 pub mod arithmetic;
 pub mod interrupt;
@@ -25,14 +26,14 @@ const INSTRUCTION_COUNT: usize = 256;
 const INSTRUCTION_LIST: [(MosOp, &str, usize); 146] = [
     // LOAD / STORE OPERATIONS
     // load accumulator
-    add_op!(nop, 0xA9),
-    add_op!(nop, 0xA5),
-    add_op!(nop, 0xB5),
-    add_op!(nop, 0xAD),
-    add_op!(nop, 0xBD),
-    add_op!(nop, 0xB9),
-    add_op!(nop, 0xA1),
-    add_op!(nop, 0xB1),
+    add_op!(lda_im, 0xA9),
+    add_op!(lda_zp, 0xA5),
+    add_op!(lda_zpx, 0xB5),
+    add_op!(lda_ab, 0xAD),
+    add_op!(lda_abx, 0xBD),
+    add_op!(lda_aby, 0xB9),
+    add_op!(lda_inx, 0xA1),
+    add_op!(lda_iny, 0xB1),
 
     // load x register
     add_op!(nop, 0xA2),
