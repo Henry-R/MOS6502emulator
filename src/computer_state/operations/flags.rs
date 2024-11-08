@@ -25,8 +25,6 @@ pub fn clv(state: &mut ComputerState) {
     state.sta = state.sta.difference(StatusRegister::V)
 }
 
-///
-
 /// SEC (Set carry flag)
 /// Opcode: 38
 pub fn sec(state: &mut ComputerState) {

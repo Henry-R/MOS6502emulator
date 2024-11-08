@@ -6,13 +6,15 @@ use flags::*;
 use interrupt::*;
 use branch::*;
 use load_store::*;
+use register_transfers::*;
 
 pub mod arithmetic;
 pub mod interrupt;
 pub mod branch;
 pub mod bitwise;
 pub mod load_store;
-mod flags;
+pub mod flags;
+pub mod register_transfers;
 
 macro_rules! add_op {
     ($fn_ptr:expr, $address:expr) => {{
@@ -71,16 +73,16 @@ const INSTRUCTION_LIST: [(MosOp, &str, usize); 146] = [
 
     // REGISTER TRANSFERS
     // transfer accumulator to x register
-    add_op!(nop, 0xAA),
+    add_op!(tax, 0xAA),
 
     // transfer accumulator to y register
-    add_op!(nop, 0xA8),
+    add_op!(tay, 0xA8),
 
     // transfer x register to accumulator
-    add_op!(nop, 0x8A),
+    add_op!(txa, 0x8A),
 
     // transfer y register to accumulator
-    add_op!(nop, 0x98),
+    add_op!(tya, 0x98),
 
 
     // STACK OPERATIONS
