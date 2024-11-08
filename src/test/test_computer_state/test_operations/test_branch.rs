@@ -8,7 +8,7 @@ fn test_brc_forward() {
     let mut state = ComputerState::new();
     state.sta |= StatusRegister::C;
     state.set_up_state(&vec![
-        opcode_from_operation(brc),
+        opcode_from_operation(bcs),
         0x23
     ]);
     state.execute_next();
@@ -22,7 +22,7 @@ fn test_brc_backwards() {
     let mut state = ComputerState::new();
     state.sta |= StatusRegister::C;
     state.set_up_state(&vec![
-        opcode_from_operation(brc),
+        opcode_from_operation(bcs),
         0xF0
     ]);
     state.execute_next();

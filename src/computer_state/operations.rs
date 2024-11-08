@@ -4,6 +4,7 @@ use arithmetic::*;
 use bitwise::*;
 use flags::*;
 use interrupt::*;
+use branch::*;
 
 pub(crate) mod arithmetic;
 mod interrupt;
@@ -21,7 +22,7 @@ macro_rules! add_op {
 pub type MosOp = fn (&mut ComputerState);
 
 const INSTRUCTION_COUNT: usize = 256;
-const INSTRUCTION_LIST: [(MosOp, &str, usize); 110] = [
+const INSTRUCTION_LIST: [(MosOp, &str, usize); 139] = [
     // LOAD / STORE OPERATIONS
     // load accumulator
     add_op!(nop, 0xA9),
@@ -187,24 +188,52 @@ const INSTRUCTION_LIST: [(MosOp, &str, usize); 110] = [
     add_op!(inc_abx, 0xFE),
 
     // increment x register
+    add_op!(inx, 0xE8),
 
     // increment y register
+    add_op!(iny, 0xC8),
 
     // decrement a memory location
+    add_op!(dec_zp, 0xC6),
+    add_op!(dec_zpx, 0xD6),
+    add_op!(dec_ab, 0xCE),
+    add_op!(dec_abx, 0xDE),
 
     // decrement x register
+    add_op!(dex, 0xCA),
 
     // decrement y register
+    add_op!(dey, 0x88),
 
 
     // SHIFTS
     // arithmetic shift left
+    add_op!(asl_acc, 0x0A),
+    add_op!(asl_zp, 0x06),
+    add_op!(asl_zpx, 0x16),
+    add_op!(asl_ab, 0x0E),
+    add_op!(asl_abx, 0x1A),
 
     // logical shift right
+    add_op!(lsr_acc, 0x4A),
+    add_op!(lsr_zp, 0x46),
+    add_op!(lsr_zpx, 0x56),
+    add_op!(lsr_ab, 0x4E),
+    add_op!(lsr_abx, 0x5A),
 
     // rotate left
+    add_op!(rol_acc, 0x2A),
+    add_op!(rol_zp, 0x26),
+    add_op!(rol_zpx, 0x36),
+    add_op!(rol_ab, 0x2E),
+    add_op!(rol_abx, 0x3E),
 
     // rotate right
+    add_op!(ror_acc, 0x6A),
+    add_op!(ror_zp, 0x66),
+    add_op!(ror_zpx, 0x76),
+    add_op!(ror_ab, 0x6E),
+    add_op!(ror_abx, 0x7E),
 
 
     // JUMPS & CALLS
@@ -219,6 +248,7 @@ const INSTRUCTION_LIST: [(MosOp, &str, usize); 110] = [
     // branch if carry flag clear
 
     // branch if carry flag set
+    add_op!(bcs, 0xB0),
 
     // branch if zero flag set
 
