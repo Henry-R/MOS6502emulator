@@ -131,7 +131,7 @@ impl Memory {
 
     /// Moves the PC up by one and fetches that constant from memory
     /// Wrapper around fetch_next_byte to make its use clearer
-    pub fn fetch_intermediate(&mut self) -> u8 {
+    pub fn fetch_immediate(&mut self) -> u8 {
         self.fetch_next_byte()
     }
 

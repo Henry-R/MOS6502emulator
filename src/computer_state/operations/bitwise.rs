@@ -20,7 +20,7 @@ fn and_adapter(state: &mut ComputerState, addr_fn: fn(&mut Memory) -> u8) {
 /// AND (intermediate addressing mode)
 /// Opcode: 29
 pub fn and_im(state: &mut ComputerState)
-{ and_adapter(state, Memory::fetch_intermediate) }
+{ and_adapter(state, Memory::fetch_immediate) }
 /// AND (zero-page addressing mode)
 /// Opcode: 25
 pub fn and_zp(state: &mut ComputerState)
@@ -68,7 +68,7 @@ fn or_adapter(state: &mut ComputerState, addr_fn: fn(&mut Memory) -> u8) {
 /// OR (intermediate addressing mode)
 /// Opcode: 09
 pub fn or_im(state: &mut ComputerState)
-{ or_adapter(state, Memory::fetch_intermediate) }
+{ or_adapter(state, Memory::fetch_immediate) }
 /// OR (zero-page addressing mode)
 /// Opcode: 05
 pub fn or_zp(state: &mut ComputerState)
@@ -116,7 +116,7 @@ fn eor_adapter(state: &mut ComputerState, addr_fn: fn(&mut Memory) -> u8) {
 /// EOR (intermediate addressing mode)
 /// Opcode: 49
 pub fn eor_im(state: &mut ComputerState)
-{ eor_adapter(state, Memory::fetch_intermediate) }
+{ eor_adapter(state, Memory::fetch_immediate) }
 /// EOR (zero-page addressing mode)
 /// Opcode: 45
 pub fn eor_zp(state: &mut ComputerState)

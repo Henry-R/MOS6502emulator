@@ -4,7 +4,7 @@ use crate::computer_state::memory::Memory;
 /// LDA (immediate addressing mode)
 /// Opcode: A9
 pub fn lda_im(state: &mut ComputerState)
-{ state.acc.set(Memory::fetch_intermediate(&mut state.mem)) }
+{ state.acc.set(Memory::fetch_immediate(&mut state.mem)) }
 
 /// LDA (zero-page addressing mode)
 /// Opcode: A5
@@ -47,6 +47,9 @@ pub fn lda_inx(state: &mut ComputerState) {
 pub fn lda_iny(state: &mut ComputerState) {
     state.acc.set(Memory::fetch_indirect_y(&mut state.mem))
 }
+
+
+/// LDX (immediate addressing mode)
 
 
 

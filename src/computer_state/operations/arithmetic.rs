@@ -33,7 +33,7 @@ fn adc_adapter(state: &mut ComputerState, addr_fn: fn(&mut Memory) -> u8) {
 /// ADC (intermediate addressing mode)
 /// Opcode: 69
 pub fn adc_im(state: &mut ComputerState)
-{ adc_adapter(state, Memory::fetch_intermediate); }
+{ adc_adapter(state, Memory::fetch_immediate); }
 /// ADC (zero-page addressing mode)
 /// Opcode: 65
 pub fn adc_zp(state: &mut ComputerState)
@@ -86,7 +86,7 @@ fn sbc_adapter(state: &mut ComputerState, addr_fn: fn(&mut Memory) -> u8) {
 /// SBC (intermediate addressing mode)
 /// Opcode: E9
 pub fn sbc_im(state: &mut ComputerState)
-{ sbc_adapter(state, Memory::fetch_intermediate); }
+{ sbc_adapter(state, Memory::fetch_immediate); }
 /// SBC (zero-page addressing mode)
 /// Opcode: E5
 pub fn sbc_zp(state: &mut ComputerState)
