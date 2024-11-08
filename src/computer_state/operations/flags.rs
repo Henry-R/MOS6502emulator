@@ -13,17 +13,19 @@ pub fn cld(state: &mut ComputerState) {
     state.sta = state.sta.difference(StatusRegister::D)
 }
 
-/// CLD (Clear interrupt disable status)
+/// CLI (Clear interrupt disable status)
 /// Opcode: 58
 pub fn cli(state: &mut ComputerState) {
     state.sta = state.sta.difference(StatusRegister::I)
 }
 
-/// CLD (Clear overflow flag)
+/// CLV (Clear overflow flag)
 /// Opcode: B8
-pub fn clo(state: &mut ComputerState) {
+pub fn clv(state: &mut ComputerState) {
     state.sta = state.sta.difference(StatusRegister::V)
 }
+
+///
 
 /// SEC (Set carry flag)
 /// Opcode: 38
