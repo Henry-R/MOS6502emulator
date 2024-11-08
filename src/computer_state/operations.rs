@@ -5,13 +5,13 @@ use bitwise::*;
 use flags::*;
 use interrupt::*;
 use branch::*;
-use loadstore::*;
+use load_store::*;
 
 pub mod arithmetic;
 pub mod interrupt;
 pub mod branch;
 pub mod bitwise;
-pub mod loadstore;
+pub mod load_store;
 mod flags;
 
 macro_rules! add_op {
