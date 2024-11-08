@@ -6,12 +6,12 @@ use flags::*;
 use interrupt::*;
 use branch::*;
 
-pub(crate) mod arithmetic;
-mod interrupt;
-pub(crate) mod branch;
-pub(crate) mod bitwise;
+pub mod arithmetic;
+pub mod interrupt;
+pub mod branch;
+pub mod bitwise;
+pub mod loadstore;
 mod flags;
-
 
 macro_rules! add_op {
     ($fn_ptr:expr, $address:expr) => {{
