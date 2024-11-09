@@ -9,3 +9,5 @@ mod test_branch;
 mod test_jump;
 #[cfg(test)]
 mod test_load_store;
+#[cfg(test)]
+mod test_stack;
