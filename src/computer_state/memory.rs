@@ -14,7 +14,7 @@ impl Memory {
         Memory {
             x: 0,
             y: 0,
-            stk: 0,
+            stk: 0xFF,
             pc: ProgramCounter::new(0),
             mem: [0; MEMORY_SIZE]
         }
@@ -53,7 +53,7 @@ impl Memory {
         (hi_byte << 8) + lo_byte
     }
 
-    fn fetch_next_nibble(&mut self) -> u16 {
+    pub fn fetch_next_nibble(&mut self) -> u16 {
         let result = self.fetch_nibble_from_addr(self.pc.get());
         self.pc.add_unsigned(2);
         result
@@ -212,11 +212,11 @@ impl Memory {
 
     pub fn pop_from_stack(&mut self) -> u8 {
         self.stk += 1;
-        self.fetch_byte_from_addr(self.stk - 1)
+        self.fetch_byte_from_addr(self.stk)
     }
 
     pub fn pop_nibble_from_stack(&mut self) -> u16 {
         self.stk += 2;
-        self.fetch_nibble_from_addr(self.stk - 2)
+        self.fetch_nibble_from_addr(self.stk)
     }
 }

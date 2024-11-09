@@ -29,7 +29,7 @@ macro_rules! add_op {
 pub type MosOp = fn (&mut ComputerState);
 
 const INSTRUCTION_COUNT: usize = 256;
-const INSTRUCTION_LIST: [(MosOp, &str, usize); 148] = [
+const INSTRUCTION_LIST: [(MosOp, &str, usize); 150] = [
     // LOAD / STORE OPERATIONS
     // load accumulator
     add_op!(lda_im, 0xA9),
@@ -249,9 +249,10 @@ const INSTRUCTION_LIST: [(MosOp, &str, usize); 148] = [
     add_op!(jmp_in, 0x6C),
 
     // jump to a subroutine
+    add_op!(jsr, 0x20),
 
     // return from subroutine
-
+    add_op!(rts, 0x60),
 
     // BRANCHES
     // branch if carry flag clear

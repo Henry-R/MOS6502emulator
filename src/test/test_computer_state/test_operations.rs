@@ -5,3 +5,5 @@ mod test_arithmetic;
 mod test_bitwise;
 #[cfg(test)]
 mod test_branch;
+#[cfg(test)]
+mod test_jump;
