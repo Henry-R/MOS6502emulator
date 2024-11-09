@@ -53,6 +53,12 @@ impl Memory {
         (hi_byte << 8) + lo_byte
     }
 
+    fn fetch_next_nibble(&mut self) -> u16 {
+        let result = self.fetch_nibble_from_addr(self.pc.get());
+        self.pc.add_unsigned(2);
+        result
+    }
+
     /// Returns the 8-bit address at the given address
     pub fn fetch_zp_addr_from_addr(&self, addr: usize) -> usize {
         usize::from(self.fetch_byte_from_addr(addr))
@@ -181,6 +187,11 @@ impl Memory {
         self.mem[self.fetch_absolute_y_address()]
     }
 
+    pub fn fetch_indirect(&mut self) -> u16 {
+        let addr = self.fetch_next_nibble();
+        self.fetch_nibble_from_addr(usize::from(addr))
+    }
+
     /// Fetches the memory held by the address given by the absolute address plus the X index
     pub fn fetch_indirect_x(&mut self) -> u8 { self.mem[self.fetch_indirect_x_address()] }
 
@@ -194,8 +205,18 @@ impl Memory {
         self.stk -= 1;
     }
 
+    pub fn push_nibble_on_stack(&mut self, value: u16) {
+        self.set_nibble_at_addr(self.stk, value);
+        self.stk -= 2;
+    }
+
     pub fn pop_from_stack(&mut self) -> u8 {
         self.stk += 1;
         self.fetch_byte_from_addr(self.stk - 1)
+    }
+
+    pub fn pop_nibble_from_stack(&mut self) -> u16 {
+        self.stk += 2;
+        self.fetch_nibble_from_addr(self.stk - 2)
     }
 }

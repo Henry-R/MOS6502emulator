@@ -8,6 +8,7 @@ use branch::*;
 use load_store::*;
 use register_transfers::*;
 use stack::*;
+use jumps_calls::*;
 
 pub mod arithmetic;
 pub mod interrupt;
@@ -17,6 +18,7 @@ pub mod load_store;
 pub mod flags;
 pub mod register_transfers;
 pub mod stack;
+pub mod jumps_calls;
 
 macro_rules! add_op {
     ($fn_ptr:expr, $address:expr) => {{
@@ -27,7 +29,7 @@ macro_rules! add_op {
 pub type MosOp = fn (&mut ComputerState);
 
 const INSTRUCTION_COUNT: usize = 256;
-const INSTRUCTION_LIST: [(MosOp, &str, usize); 146] = [
+const INSTRUCTION_LIST: [(MosOp, &str, usize); 148] = [
     // LOAD / STORE OPERATIONS
     // load accumulator
     add_op!(lda_im, 0xA9),
@@ -243,6 +245,8 @@ const INSTRUCTION_LIST: [(MosOp, &str, usize); 146] = [
 
     // JUMPS & CALLS
     // jump to another location
+    add_op!(jmp_ab, 0x4C),
+    add_op!(jmp_in, 0x6C),
 
     // jump to a subroutine
 
