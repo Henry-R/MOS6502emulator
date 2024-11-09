@@ -126,7 +126,7 @@ pub fn ldy_zp(state: &mut ComputerState) {
 
 /// LDY (zero-page X addressing mode)
 /// Opcode: B6
-pub fn ldy_zpy(state: &mut ComputerState) {
+pub fn ldy_zpx(state: &mut ComputerState) {
     let value = Memory::fetch_zero_page_x(&mut state.mem);
     ldy(state, value);
 }
@@ -140,7 +140,7 @@ pub fn ldy_ab(state: &mut ComputerState) {
 
 /// LDY (absolute X addressing mode)
 /// Opcode: BE
-pub fn ldy_aby(state: &mut ComputerState) {
+pub fn ldy_abx(state: &mut ComputerState) {
     let value = Memory::fetch_absolute_x(&mut state.mem);
     ldy(state, value);
 }

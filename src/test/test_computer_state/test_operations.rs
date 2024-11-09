@@ -7,3 +7,5 @@ mod test_bitwise;
 mod test_branch;
 #[cfg(test)]
 mod test_jump;
+#[cfg(test)]
+mod test_load_store;
