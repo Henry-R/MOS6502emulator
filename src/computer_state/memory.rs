@@ -200,23 +200,27 @@ impl Memory {
 
 
     // STACK INSTRUCTION
+    fn get_real_stack_addr(&self) -> usize {
+        self.stk + 0x0100
+    }
+
     pub fn push_on_stack(&mut self, value: u8) {
-        self.set_byte_at_addr(self.stk, value);
+        self.set_byte_at_addr(self.get_real_stack_addr(), value);
         self.stk -= 1;
     }
 
     pub fn push_nibble_on_stack(&mut self, value: u16) {
-        self.set_nibble_at_addr(self.stk, value);
+        self.set_nibble_at_addr(self.get_real_stack_addr(), value);
         self.stk -= 2;
     }
 
     pub fn pop_from_stack(&mut self) -> u8 {
         self.stk += 1;
-        self.fetch_byte_from_addr(self.stk)
+        self.fetch_byte_from_addr(self.get_real_stack_addr())
     }
 
     pub fn pop_nibble_from_stack(&mut self) -> u16 {
         self.stk += 2;
-        self.fetch_nibble_from_addr(self.stk)
+        self.fetch_nibble_from_addr(self.get_real_stack_addr())
     }
 }
