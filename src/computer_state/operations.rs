@@ -36,7 +36,7 @@ fn inv(_: &mut ComputerState) {
 }
 
 const INSTRUCTION_COUNT: usize = 256;
-const INSTRUCTION_LIST: [(MosOp, &str, usize); 150] = [
+const INSTRUCTION_LIST: [(MosOp, &str, usize); 151] = [
     // LOAD / STORE OPERATIONS
     // load accumulator
     add_op!(lda_im, 0xA9),
@@ -318,6 +318,8 @@ const INSTRUCTION_LIST: [(MosOp, &str, usize); 150] = [
     add_op!(nop, 0xEA),
 
     // return from interrupt
+    add_op!(rti, 0x40),
+
 ];
 
 const INSTRUCTION_DATA_TABLE: [(MosOp, &str); INSTRUCTION_COUNT] = {
