@@ -1,9 +1,9 @@
 use crate::computer_state::{ComputerState, StatusRegister};
 
 // CLEAR INSTRUCTIONS
-/// CLR (Clear carry flag)
+/// CLC (Clear carry flag)
 /// Opcode: 18
-pub fn clr(state: &mut ComputerState) {
+pub fn clc(state: &mut ComputerState) {
     state.sta = state.sta.difference(StatusRegister::C)
 }
 

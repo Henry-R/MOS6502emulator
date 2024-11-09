@@ -282,7 +282,7 @@ const INSTRUCTION_LIST: [(MosOp, &str, usize); 150] = [
 
     // STATUS FLAG CHANGES
     // clear carry flag
-    add_op!(clr, 0x18),
+    add_op!(clc, 0x18),
 
     // clear decimal mode flag
     add_op!(cld, 0xD8),
@@ -294,7 +294,7 @@ const INSTRUCTION_LIST: [(MosOp, &str, usize); 150] = [
     add_op!(clv, 0xB8),
 
     // set carry flag
-    add_op!(sec, 0xB8),
+    add_op!(sec, 0x38),
 
     // set decimal mode flag
     add_op!(sed, 0xF8),
