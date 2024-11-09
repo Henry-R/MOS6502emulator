@@ -98,13 +98,13 @@ impl Memory {
     /// Fetches the operand as a zero_page address and adds the X index to that address
     /// If this addition overflows, it will wrap around
     pub fn fetch_zero_page_x_address(&mut self) -> usize {
-        self.fetch_zero_page_address().wrapping_add(self.x)
+        (self.fetch_zero_page_address() as u8).wrapping_add(self.x as u8) as usize
     }
 
     /// Fetches the operand as a zero_page address and adds the Y index to that address
     /// If this addition overflows, it will wrap around
     pub fn fetch_zero_page_y_address(&mut self) -> usize {
-        self.fetch_zero_page_address().wrapping_add(self.y)
+        (self.fetch_zero_page_address() as u8).wrapping_add(self.y as u8) as usize
     }
 
     /// Fetches the operand as an address of an absolute address mode instruction
