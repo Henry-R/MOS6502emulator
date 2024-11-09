@@ -11,3 +11,5 @@ mod test_jump;
 mod test_load_store;
 #[cfg(test)]
 mod test_stack;
+#[cfg(test)]
+mod test_comparison;
