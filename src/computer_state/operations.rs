@@ -9,6 +9,7 @@ use load_store::*;
 use register_transfers::*;
 use stack::*;
 use jumps_calls::*;
+use comparison::*;
 
 pub mod arithmetic;
 pub mod interrupt;
@@ -19,6 +20,7 @@ pub mod flags;
 pub mod register_transfers;
 pub mod stack;
 pub mod jumps_calls;
+pub mod comparison;
 
 macro_rules! add_op {
     ($fn_ptr:expr, $address:expr) => {{
@@ -26,7 +28,7 @@ macro_rules! add_op {
     }};
 }
 
-pub type MosOp = fn (&mut ComputerState);
+type MosOp = fn (&mut ComputerState);
 
 /// Invalid instruction
 fn inv(_: &mut ComputerState) {
@@ -172,24 +174,24 @@ const INSTRUCTION_LIST: [(MosOp, &str, usize); 150] = [
     add_op!(sbc_iny, 0xF1),
 
     // compare accumulator
-    add_op!(nop, 0xC9),
-    add_op!(nop, 0xC5),
-    add_op!(nop, 0xD5),
-    add_op!(nop, 0xCD),
-    add_op!(nop, 0xDD),
-    add_op!(nop, 0xD9),
-    add_op!(nop, 0xC1),
-    add_op!(nop, 0xD1),
+    add_op!(cmp_im, 0xC9),
+    add_op!(cmp_zp, 0xC5),
+    add_op!(cmp_zpx, 0xD5),
+    add_op!(cmp_ab, 0xCD),
+    add_op!(cmp_abx, 0xDD),
+    add_op!(cmp_aby, 0xD9),
+    add_op!(cmp_inx, 0xC1),
+    add_op!(cmp_iny, 0xD1),
 
     // compare x register
-    add_op!(nop, 0xE0),
-    add_op!(nop, 0xE4),
-    add_op!(nop, 0xEC),
+    add_op!(cpx_im, 0xE0),
+    add_op!(cpx_zp, 0xE4),
+    add_op!(cpx_ab, 0xEC),
 
     // compare y register
-    add_op!(nop, 0xC0),
-    add_op!(nop, 0xC4),
-    add_op!(nop, 0xCC),
+    add_op!(cpy_im, 0xC0),
+    add_op!(cpy_zp, 0xC4),
+    add_op!(cpy_ab, 0xCC),
 
 
     // INCREMENTS & DECREMENTS
@@ -324,9 +326,9 @@ const INSTRUCTION_DATA_TABLE: [(MosOp, &str); INSTRUCTION_COUNT] = {
 
     let mut i = 0;
     while i < INSTRUCTION_LIST.len() {
-        let func      = INSTRUCTION_LIST[i].0;
-        let name      = INSTRUCTION_LIST[i].1;
-        let opcode    = INSTRUCTION_LIST[i].2;
+        let func= INSTRUCTION_LIST[i].0;
+        let name= INSTRUCTION_LIST[i].1;
+        let opcode= INSTRUCTION_LIST[i].2;
         tmp_data_table[opcode] = (func, name);
         i += 1;
     }
