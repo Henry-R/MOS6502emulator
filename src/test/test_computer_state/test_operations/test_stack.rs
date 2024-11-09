@@ -89,7 +89,7 @@ fn test_plp() {
         opcode_from_operation(clv),
         opcode_from_operation(plp),
     ]);
-    for i in 0..6 {
+    for _ in 0..6 {
         state.execute_next();
     }
 

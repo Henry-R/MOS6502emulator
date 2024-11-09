@@ -28,6 +28,11 @@ macro_rules! add_op {
 
 pub type MosOp = fn (&mut ComputerState);
 
+/// Invalid instruction
+fn inv(_: &mut ComputerState) {
+    panic!("Invalid Instruction!");
+}
+
 const INSTRUCTION_COUNT: usize = 256;
 const INSTRUCTION_LIST: [(MosOp, &str, usize); 150] = [
     // LOAD / STORE OPERATIONS
@@ -314,9 +319,10 @@ const INSTRUCTION_LIST: [(MosOp, &str, usize); 150] = [
 ];
 
 const INSTRUCTION_DATA_TABLE: [(MosOp, &str); INSTRUCTION_COUNT] = {
-    let mut tmp_data_table: [(MosOp, &str); INSTRUCTION_COUNT] = [(nop, "NOP"); INSTRUCTION_COUNT];
-    let mut i = 0;
+    let mut tmp_data_table: [(MosOp, &str); INSTRUCTION_COUNT] =
+        [(inv, "INVALID"); INSTRUCTION_COUNT];
 
+    let mut i = 0;
     while i < INSTRUCTION_LIST.len() {
         let func      = INSTRUCTION_LIST[i].0;
         let name      = INSTRUCTION_LIST[i].1;
